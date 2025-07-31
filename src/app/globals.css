@@ -19,7 +19,7 @@ body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Source Sans Pro', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -39,4 +39,26 @@ a {
   html {
     color-scheme: dark;
   }
+}
+
+.brand-text {
+  font-size: 18px;
+  font-weight: 600 !important;
+}
+
+.main-sidebar {
+  transition: width 0.3s ease-in-out !important;
+}
+
+.preloader {
+  transition: opacity 0.5s ease;
+}
+
+.preloader.hide {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.login-logo span{
+  font-size: 1.2rem;
 }

@@ -1,95 +1,261 @@
-import Image from "next/image";
+'use client';
+
+import { useEffect } from "react";
+import Section from "@/components/ui/Section";
 import styles from "./page.module.css";
+import ContentHeader from '@/components/ui/ContentHeader';
+import ContentWrapper from "@/components/ui/ContentWrapper";
+import Row from '@/components/ui/Row';
+import Col from '@/components/ui/Col';
+import SmallBox from "@/components/ui/SmallBox";
+import InfoBox from "@/components/ui/InfoBox";
+import Card from "@/components/ui/Card";
+import CardHeader from "@/components/ui/CardHeader";
+import CardBody from "@/components/ui/CardBody";
+import BarChart from "@/components/charts/BarChart";
+import { defaultBarChartOptions } from '@/utils/chartConfig';
+import CardFooter from "@/components/ui/CardFooter";
+import { useDashboardData } from '@/hooks/useDashboardData';
 
-export default function Home() {
+
+export default function HomePage() {
+
+  const { alerts, isLoading } = useDashboardData();
+  if (isLoading) return <div>Loading...</div>;
+
+  console.log('alerts data', alerts);
+
+  const breadcrumbItems = [
+    { label: 'Home', href: '/' },
+    { label: 'Dashboard', active: true },
+  ];
+
+  const chartData = {
+    labels: ['Red', 'Blue', 'Yellow'],
+    datasets: [
+      {
+        label: 'Compliant',
+        backgroundColor: '#007bff',
+        borderColor: '#007bff',
+        data: [1000, 2000, 3000, 2500, 2700, 2500, 3000],
+        // barPercentage: 1.0,
+        // categoryPercentage: 0.8
+      },
+      {
+        label: 'Non-Compliant',
+        backgroundColor: '#6c757d',
+        borderColor: '#6c757d',
+        data: [700, 1700, 2700, 2000, 1800, 1500, 2000],
+        // barPercentage: 1.0,
+        // categoryPercentage: 0.8
+      }
+    ]
+  };
+
+  const chartOptions = {
+    ...defaultBarChartOptions,
+    plugins: {
+      ...defaultBarChartOptions.plugins,
+      legend: {
+        display: false // override display from false → true
+      }
+    },
+    scales: {
+      ...defaultBarChartOptions.scales,
+      y: {
+        ...defaultBarChartOptions.scales?.y,
+        ticks: {
+          ...defaultBarChartOptions.scales?.y?.ticks,
+          callback: function (value: string | number) {
+            if (typeof value === 'number' && value >= 1000) {
+              return `${value / 1000}k`;
+            }
+            return `${value}`;
+          },
+          font: {
+            weight: 'bold' as const  // Fix: explicitly cast to allowed literal
+          }
+        }
+      }
+    }
+  };
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+      <ContentWrapper>
+        <ContentHeader title="Dashboard" breadcrumbItems={breadcrumbItems} />
+        <Section className="content">
+          <div className="container-fluid">
+            <Row>
+              <Col className="col-lg-4 col-6">
+                {/* <SmallBox
+                  value={500}
+                  label="Workstations"
+                  iconClass="fas fa-building"
+                  bgColorClass="bg-info"
+                  link="/"
+                /> */}
+                <InfoBox
+                  iconClass="fas fa-building"
+                  bgColorClass="bg-info"
+                  label="Workstations"
+                  value={3200}
+                  // unit="%"
+                />
+              </Col>
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+              <Col className="col-lg-4 col-6">
+                {/* <SmallBox
+                  value={2500}
+                  label="Compliant Systems"
+                  iconClass="ion ion-bag"
+                  bgColorClass="bg-success"
+                  link="/"
+                /> */}
+                <InfoBox
+                  iconClass="fas fa-shield-alt"
+                  bgColorClass="bg-primary"
+                  label="Compliant Systems"
+                  value={2500}
+                  // unit="%"
+                />
+              </Col>
+
+              <Col className="col-lg-4 col-6">
+                {/* <SmallBox
+                  value={700}
+                  label="Non-Compliant Systems"
+                  iconClass="fas fa-exclamation-triangle"
+                  bgColorClass="bg-danger"
+                  link="/"
+                /> */}
+                <InfoBox
+                  iconClass="fas fa-exclamation-triangle"
+                  bgColorClass="bg-gray"
+                  label="Non-Compliant Systems"
+                  value={700}
+                  // unit="%"
+                />
+              </Col>
+            </Row>
+
+            <Row>
+              <Col className="col-lg-7">
+                  <Card>
+                    <CardHeader 
+                      title="Recent Non-Compliant Systems" 
+                      transparentBorder={true}
+                      showTools={false}
+                      actionText="" 
+                      actionHref="javascript:void(0);" 
+                    />
+                    <CardBody className="p-0">
+                      <div className="table-responsive p-0" style={{ height: '330px' }}>
+                      <table className="table table-head-fixed text-nowrap">
+                        <thead>
+                        <tr>
+                          <th>Date time</th>
+                          <th>System name</th>
+                          <th>Issue</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><a href="pages/examples/invoice.html">OR9842</a></td>
+                            <td>Call of Duty IV</td>
+                            <td><span className="text-danger">Shipped</span></td>
+                          </tr>
+                          <tr>
+                            <td><a href="pages/examples/invoice.html">OR1848</a></td>
+                            <td>Samsung Smart TV</td>
+                            <td><span className="text-danger">Pending</span></td>
+                          </tr>
+                          <tr>
+                            <td><a href="pages/examples/invoice.html">OR7429</a></td>
+                            <td>iPhone 6 Plus</td>
+                            <td><span className="text-danger">Delivered</span></td>
+                          </tr>
+                          <tr>
+                            <td><a href="pages/examples/invoice.html">OR7429</a></td>
+                            <td>Samsung Smart TV</td>
+                            <td><span className="text-danger">Processing</span></td>
+                          </tr>
+                          <tr>
+                            <td><a href="pages/examples/invoice.html">OR1848</a></td>
+                            <td>Samsung Smart TV</td>
+                            <td><span className="text-danger">Pending</span></td>
+                          </tr>
+                          <tr>
+                            <td><a href="pages/examples/invoice.html">OR9842</a></td>
+                            <td>Call of Duty IV</td>
+                            <td><span className="text-danger">Shipped</span></td>
+                          </tr>
+                          <tr>
+                            <td><a href="pages/examples/invoice.html">OR1848</a></td>
+                            <td>Samsung Smart TV</td>
+                            <td><span className="text-danger">Pending</span></td>
+                          </tr>
+                          <tr>
+                            <td><a href="pages/examples/invoice.html">OR7429</a></td>
+                            <td>iPhone 6 Plus</td>
+                            <td><span className="text-danger">Delivered</span></td>
+                          </tr>
+                          <tr>
+                            <td><a href="pages/examples/invoice.html">OR7429</a></td>
+                            <td>Samsung Smart TV</td>
+                            <td><span className="text-danger">Processing</span></td>
+                          </tr>
+                          <tr>
+                            <td><a href="pages/examples/invoice.html">OR1848</a></td>
+                            <td>Samsung Smart TV</td>
+                            <td><span className="text-danger">Pending</span></td>
+                          </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </CardBody>
+                    <CardFooter rightLabel="View All" />
+                  </Card>
+              </Col>
+              <Col className="col-lg-5">
+                  <Card>
+                    <CardHeader title="Compliant vs. Non-Compliant Systems" actionText="" actionHref="javascript:void(0);" />
+                    <CardBody>
+                      {/* <div className="d-flex">
+                        <p className="d-flex flex-column">
+                          <span className="text-bold text-lg">$18,230.00</span>
+                          <span>Sales Over Time</span>
+                        </p>
+                        <p className="ml-auto d-flex flex-column text-right">
+                          <span className="text-success">
+                            <i className="fas fa-arrow-up"></i> 33.1%
+                          </span>
+                          <span className="text-muted">Since last month</span>
+                        </p>
+                      </div> */}
+
+                      <div className="position-relative mb-4">
+                        <BarChart
+                          id="compliantChart"
+                          data={chartData}
+                          options={chartOptions}
+                          className="compliantChart"
+                        />
+                      </div>
+
+                      <div className="d-flex flex-row justify-content-end">
+                        <span className="mr-2">
+                          <i className="fas fa-square text-primary"></i> Compliant
+                        </span>
+                        <span>
+                          <i className="fas fa-square text-gray"></i> Non-Compliant
+                        </span>
+                      </div>
+                    </CardBody>
+                  </Card>
+              </Col>
+            </Row>
+          </div>
+        </Section>
+      </ContentWrapper>
   );
 }
