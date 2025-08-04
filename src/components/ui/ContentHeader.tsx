@@ -6,7 +6,7 @@ import Heading from '@/components/ui/Heading';
 
 interface ContentHeaderProps {
   title: string;
-  breadcrumbItems: BreadcrumbItem[];
+  breadcrumbItems?: BreadcrumbItem[];
 }
 
 const ContentHeader: React.FC<ContentHeaderProps> = ({ title, breadcrumbItems }) => {
@@ -18,8 +18,7 @@ const ContentHeader: React.FC<ContentHeaderProps> = ({ title, breadcrumbItems })
             <Heading level={1} variant="primary" className={'m-0'}>{title}</Heading>
           </div>
           <div className="col-sm-6">
-            
-            <Breadcrumb items={breadcrumbItems} />
+            {breadcrumbItems && <Breadcrumb items={breadcrumbItems} />}
           </div>
         </div>
       </div>

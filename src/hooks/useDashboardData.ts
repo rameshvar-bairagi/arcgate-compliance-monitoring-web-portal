@@ -1,22 +1,39 @@
 import { useAppDispatch } from '@/hooks/useRedux';
-import { fetchDashboardAlerts } from '@/services/dashboardService';
+import { fetchDashboardAlerts, fetchDashboardCompliance } from '@/services/dashboardService';
+import { ComplianceRequestBody } from '@/types/dashboard';
 import { useQuery } from '@tanstack/react-query';
 
-export const useDashboardData = () => {
-//   const summaryQuery = useQuery({
-//     queryKey: ['dashboard', 'summary'],
-//     queryFn: fetchDashboardSummary,
-//   });
+export const useDashboardData = (body: ComplianceRequestBody, enabled: boolean = false) => {
+  
+  const {
+    data: complianceData,
+    isLoading: complianceLoading,
+    error: complianceError,
+    refetch: refetchCompliance, // 👈 custom alias
+  } = useQuery({
+    queryKey: ['dashboard', body] as [string, ComplianceRequestBody],
+    queryFn: fetchDashboardCompliance,
+    enabled,
+  });
 
-  const alertsQuery = useQuery({
+  const {
+    data: alerts,
+    isLoading: alertsLoading,
+    error: alertsError,
+    refetch: refetchAlerts, // 👈 custom alias
+  } = useQuery({
     queryKey: ['dashboard', 'alerts'],
     queryFn: fetchDashboardAlerts,
   });
 
   return {
-    // summary: summaryQuery.data,
-    alerts: alertsQuery.data,
-    isLoading: alertsQuery.isLoading,
-    error: alertsQuery.error,
+    complianceData,
+    complianceLoading,
+    complianceError,
+    refetchCompliance, // 👈 return
+    alerts,
+    alertsLoading,
+    alertsError,
+    refetchAlerts, // 👈 return
   };
 };
