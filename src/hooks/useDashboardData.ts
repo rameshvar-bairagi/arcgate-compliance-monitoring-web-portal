@@ -9,7 +9,7 @@ export const useDashboardData = (body: ComplianceRequestBody, enabled: boolean =
     data: complianceData,
     isLoading: complianceLoading,
     error: complianceError,
-    refetch: refetchCompliance, // 👈 custom alias
+    refetch: refetchCompliance, // custom alias
   } = useQuery({
     queryKey: ['dashboard', body] as [string, ComplianceRequestBody],
     queryFn: fetchDashboardCompliance,
@@ -20,7 +20,7 @@ export const useDashboardData = (body: ComplianceRequestBody, enabled: boolean =
     data: alertsData,
     isLoading: alertsLoading,
     error: alertsError,
-    refetch: refetchAlerts, // 👈 custom alias
+    refetch: refetchAlerts, // custom alias
   } = useQuery({
     queryKey: ['dashboard', 'alerts'],
     queryFn: fetchDashboardAlerts,
