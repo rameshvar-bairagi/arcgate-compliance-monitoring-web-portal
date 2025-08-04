@@ -6,7 +6,7 @@ import { QueryFunctionContext } from '@tanstack/react-query'
 export const fetchDashboardAlerts = async () => {
   // const state = store.getState();
   // const token = state.auth.token;
-  const res = await api.post('/alert', {});
+  const res = await api.get('/alert', {});
   
   console.log('fetchDashboardAlerts', res.data)
   return res.data;

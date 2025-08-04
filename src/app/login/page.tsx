@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AxiosError } from 'axios';
@@ -23,14 +24,26 @@ import { loginSchema, LoginFormData } from '@/schemas/loginSchema';
 export default function LoginPage() {
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const [rememberMe, setRememberMe] = useState(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
+
+  useEffect(() => {
+    const remembered = localStorage.getItem('rememberMe') === 'true';
+    const savedUsername = localStorage.getItem('username') || '';
+
+    if (remembered && savedUsername) {
+      setRememberMe(true);
+      setValue('username', savedUsername);
+    }
+  }, [setValue]);
 
   const mutation = useMutation({
     mutationFn: loginUser,
@@ -53,6 +66,14 @@ export default function LoginPage() {
 
   const onSubmit = (data: LoginFormData) => {
     // console.log('login form data', data);
+    if (rememberMe) {
+      localStorage.setItem('rememberMe', 'true');
+      localStorage.setItem('username', data.username);
+    } else {
+      localStorage.removeItem('rememberMe');
+      localStorage.removeItem('username');
+    }
+
     mutation.mutate(data);
   };
 
@@ -96,7 +117,12 @@ export default function LoginPage() {
             <div className="row">
               <div className="col-8">
                 <div className="icheck-primary">
-                  <input type="checkbox" id="remember" />
+                  <input
+                    type="checkbox"
+                    id="remember"
+                    checked={rememberMe}
+                    onChange={() => setRememberMe(!rememberMe)}
+                  />
                   <label htmlFor="remember">&nbsp;Remember Me</label>
                 </div>
               </div>
