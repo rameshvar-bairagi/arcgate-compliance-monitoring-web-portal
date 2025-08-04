@@ -13,11 +13,11 @@ export const formatDateTime = (dateString: string): string => {
 export const getBadgeClass = (level: string = ''): string => {
   switch (level.toLowerCase()) {
     case 'l1':
-      return 'badge badge-danger m-1';
+      return 'badge badge-info m-1';
     case 'l2':
       return 'badge badge-warning m-1';
     case 'l3':
-      return 'badge badge-info m-1';
+      return 'badge badge-danger m-1';
     default:
       return 'badge badge-info m-1';
   }

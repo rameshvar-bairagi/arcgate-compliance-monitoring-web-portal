@@ -10,7 +10,15 @@ const api = axios.create({
 
 api.interceptors.request.use((config) => {
   const token = store.getState().auth.token;
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  if (config.headers) {
+    config.headers.set('Content-Type', 'application/json');
+    config.withCredentials = true;
+
+    if (token) {
+      config.headers.set('Authorization', `Bearer ${token}`);
+    }
+  }
+
   return config;
 });
 

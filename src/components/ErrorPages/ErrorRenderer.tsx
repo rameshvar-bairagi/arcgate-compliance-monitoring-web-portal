@@ -12,7 +12,8 @@ type ErrorRendererProps = {
 export default function ErrorRenderer({ error }: ErrorRendererProps) {
   console.log('errorerrorerror', error)
   const status = error?.response?.status;
-  // const message = error?.response?.message;
+  const code = error?.code;
+  const message = error?.message;
   return (
     <ContentWrapper>
         <ContentHeader title={`${status} Error Page`} />
@@ -21,11 +22,10 @@ export default function ErrorRenderer({ error }: ErrorRendererProps) {
                 <Heading level={2} variant="primary" className={`headline ${status === 500 ? 'text-danger' : 'text-warning'}`}> {status}</Heading>
                 <div className="error-content">
                     <Heading level={3} >
-                        <i className={`fas fa-exclamation-triangle ${status === 500 ? 'text-danger' : 'text-warning'}`}></i> Oops! Page not found.
+                        <i className={`fas fa-exclamation-triangle ${status === 500 ? 'text-danger' : 'text-warning'}`}></i> {code}
                     </Heading>
                     <p>
-                        We could not find the page you were looking for.
-                        Meanwhile, you may <a href="../../index.html">return to dashboard</a> or try using the search form.
+                        {message}
                     </p>
                 </div>
             </div>

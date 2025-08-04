@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { FieldError } from 'react-hook-form';
 
 type InputGroupProps = {
@@ -30,11 +30,15 @@ const InputGroup = React.forwardRef<HTMLInputElement, InputGroupProps>(
       ...rest
     } = props;
 
+    const [showPassword, setShowPassword] = useState(false);
+    const isPasswordField = type === 'password';
+    const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
+
     return (
       <div className={`input-group ${groupClassName}`}>
         <input
           ref={ref}
-          type={type}
+          type={isPasswordField ? (showPassword ? 'text' : 'password') : type}
           name={name}
           className={`form-control ${error ? 'is-invalid' : ''}`}
           placeholder={placeholder}
@@ -43,13 +47,21 @@ const InputGroup = React.forwardRef<HTMLInputElement, InputGroupProps>(
           required={required}
           {...rest}
         />
-        {iconClass && (
-          <div className="input-group-append">
+        <div className="input-group-append">
+          {isPasswordField ? (
+            <div
+              className="input-group-text"
+              style={{ cursor: 'pointer' }}
+              onClick={togglePasswordVisibility}
+            >
+              <span className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`} />
+            </div>
+          ) : iconClass ? (
             <div className="input-group-text">
               <span className={iconClass} />
             </div>
-          </div>
-        )}
+          ) : null}
+        </div>
         {error && (
           <div className="w-100 text-danger text-sm mt-1">
             {typeof error === 'string' ? error : error.message}

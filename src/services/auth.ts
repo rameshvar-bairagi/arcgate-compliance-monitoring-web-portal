@@ -1,5 +1,4 @@
-import axios from 'axios';
-import { API_BASE_URL } from '@/constants/api';
+import api from '@/lib/axios';
 
 type LoginPayload = {
   username: string;
@@ -12,17 +11,7 @@ type LoginResponse = {
 
 export const refreshToken = async (): Promise<string | null> => {
   try {
-    const res = await axios.post(
-      `${API_BASE_URL}/refresh-token`, // Third-party API endpoint
-      {},
-      {
-        withCredentials: true, // Send secure cookie
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-
+    const res = await api.post('/refresh-token', {});
     return res.data.token; // assuming response has: { token: "..." }
   } catch (err) {
     console.error('Token refresh failed', err);
@@ -31,11 +20,6 @@ export const refreshToken = async (): Promise<string | null> => {
 };
 
 export const loginUser = async (payload: LoginPayload): Promise<LoginResponse> => {
-  const response = await axios.post(`${API_BASE_URL}/authenticate`, payload, {
-    withCredentials: true, // for refresh token cookie
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  const response = await api.post('/authenticate', payload);
   return response.data;
 };

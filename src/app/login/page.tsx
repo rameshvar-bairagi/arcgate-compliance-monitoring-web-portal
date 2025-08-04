@@ -3,7 +3,6 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AxiosError } from 'axios';
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import Image from 'next/image';
@@ -36,7 +35,7 @@ export default function LoginPage() {
   const mutation = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
-        console.log();
+        // console.log();
         dispatch(
         login({
           token: data.accessToken,
@@ -46,13 +45,14 @@ export default function LoginPage() {
     },
     onError: (error: AxiosError<{ message: string }>) => {
       console.log('login error',error)
-      const message = error?.response?.data?.message || 'Login failed';
+      // const message = error?.response?.data?.message || 'Login failed';
+      const message = 'Login failed';
       toast.error(message);
     },
   });
 
   const onSubmit = (data: LoginFormData) => {
-    console.log('login form data', data);
+    // console.log('login form data', data);
     mutation.mutate(data);
   };
 

@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Section from "@/components/ui/Section";
-import styles from "./page.module.css";
+// import styles from "./page.module.css";
 import ContentHeader from '@/components/ui/ContentHeader';
 import ContentWrapper from "@/components/ui/ContentWrapper";
 import Row from '@/components/ui/Row';
 import Col from '@/components/ui/Col';
-import SmallBox from "@/components/ui/SmallBox";
+// import SmallBox from "@/components/ui/SmallBox";
 import InfoBox from "@/components/ui/InfoBox";
 import Card from "@/components/ui/Card";
 import CardHeader from "@/components/ui/CardHeader";
@@ -24,7 +24,6 @@ import {
   getChartDataFromCompliance,
   getDateOptions
 } from '@/utils/commonMethod';
-import { format } from 'date-fns';
 
 export default function HomePage() {
   const dateOptions = getDateOptions();
