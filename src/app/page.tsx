@@ -132,10 +132,10 @@ export default function HomePage() {
         <Section className="content">
           <div className="container-fluid">
             <Row>
-              <Col>
-                Please uncomment if you are not visible api data in src-&gt;app-&gt;page.tsx
+              <Col className="col-12">
+                {/* Please uncomment if you are not visible api data in src-&gt;app-&gt;page.tsx */}
                 <button className="btn btn-primary mb-3" onClick={handleFetchData}>
-                  Load Dashboard Data
+                  Call Dashboard and Alert API
                 </button>
                 {/* <div className="col-lg-12 col-12">
                   <h2>Compliance Data</h2>
