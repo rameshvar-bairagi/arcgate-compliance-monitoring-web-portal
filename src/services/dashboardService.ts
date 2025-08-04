@@ -15,6 +15,7 @@ export const fetchDashboardAlerts = async () => {
     },
     withCredentials: true, // Optional: needed if backend sets cookies
   });
+  
   console.log('fetchDashboardAlerts', res.data)
   return res.data;
 };

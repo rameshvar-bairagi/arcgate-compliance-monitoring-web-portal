@@ -16,87 +16,67 @@ import BarChart from "@/components/charts/BarChart";
 import { defaultBarChartOptions } from '@/utils/chartConfig';
 import CardFooter from "@/components/ui/CardFooter";
 import { useDashboardData } from '@/hooks/useDashboardData';
-import { ComplianceRequestBody } from '@/types/dashboard';
+import { ComplianceRequestBody, AlertsData } from '@/types/dashboard';
+import { 
+  formatDateTime, 
+  getBadgeClass, 
+  getComplianceTotals, 
+  getChartDataFromCompliance,
+  getDateOptions
+} from '@/utils/commonMethod';
+import { format } from 'date-fns';
 
 export default function HomePage() {
-
-  // const requestBody: ComplianceRequestBody = {
-  //   date: '2025-07-29',
-  //   complianceRule: '',
-  //   clientGroup: '',
-  // };
+  const dateOptions = getDateOptions();
+  const [selectedGroup, setSelectedGroup] = useState(dateOptions[0].value); // default to Today
 
   const [requestBody, setRequestBody] = useState<ComplianceRequestBody>({
-    date: '2025-07-29',
+    date: selectedGroup,
     complianceRule: '',
     clientGroup: '',
   });
-
-  // const {
-  //   complianceData,
-  //   alerts,
-  //   complianceLoading,
-  //   complianceError,
-  //   refetch,
-  //   isLoading,
-  //   error,
-  // } = useDashboardData(requestBody, false); // disabled initially
 
   const {
     complianceData,
     complianceLoading,
     complianceError,
-    alerts,
+    alertsData,
     alertsLoading,
     alertsError,
     refetchCompliance,
     refetchAlerts,
+    // refetchAll,
   } = useDashboardData(requestBody, true); // or false if you want manual trigger
 
-  // Later on some button click
-  const handleFetchData = () => {
-    refetchCompliance();
-    refetchAlerts();
-  };
-
-  // const {
-  //   complianceData,
-  //   complianceLoading,
-  //   complianceError,
-  //   alerts,
-  //   isLoading,
-  //   error,
-  // } = useDashboardData(requestBody);
-
-  // if (complianceLoading || isLoading) return <div>Loading...</div>;
-  // if (complianceError || error) return <div>Error loading dashboard data</div>;
+  const alertsDatas = alertsData as AlertsData;
 
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
     { label: 'Dashboard', active: true },
   ];
 
-  const chartData = {
-    labels: ['Red', 'Blue', 'Yellow'],
-    datasets: [
-      {
-        label: 'Compliant',
-        backgroundColor: '#007bff',
-        borderColor: '#007bff',
-        data: [1000, 2000, 3000, 2500, 2700, 2500, 3000],
-        // barPercentage: 1.0,
-        // categoryPercentage: 0.8
-      },
-      {
-        label: 'Non-Compliant',
-        backgroundColor: '#6c757d',
-        borderColor: '#6c757d',
-        data: [700, 1700, 2700, 2000, 1800, 1500, 2000],
-        // barPercentage: 1.0,
-        // categoryPercentage: 0.8
-      }
-    ]
-  };
+  const chartData = getChartDataFromCompliance(complianceData);
+  // const chartData = {
+  //   labels: ['29-07-2025', '30-07-2025', '01-08-2025', '02-08-2025', '03-08-2025'],
+  //   datasets: [
+  //     {
+  //       label: 'Compliant',
+  //       backgroundColor: '#007bff',
+  //       borderColor: '#007bff',
+  //       data: [1000, 2000, 3000, 2500, 2700, 2500, 3000],
+  //       // barPercentage: 1.0,
+  //       // categoryPercentage: 0.8
+  //     },
+  //     {
+  //       label: 'Non-Compliant',
+  //       backgroundColor: '#6c757d',
+  //       borderColor: '#6c757d',
+  //       data: [700, 1700, 2700, 2000, 1800, 1500, 2000],
+  //       // barPercentage: 1.0,
+  //       // categoryPercentage: 0.8
+  //     }
+  //   ]
+  // };
 
   const chartOptions = {
     ...defaultBarChartOptions,
@@ -126,25 +106,37 @@ export default function HomePage() {
     }
   };
 
+  useEffect(() => {
+    setRequestBody(prev => ({
+      ...prev,
+      date: selectedGroup,
+    }));
+  }, [selectedGroup]);
+
+  const handleFetchData = () => {
+    refetchCompliance();
+    refetchAlerts();
+  };
+
   return (
       <ContentWrapper>
-        <ContentHeader title="Dashboard" breadcrumbItems={breadcrumbItems} />
+        <ContentHeader 
+          title="Dashboard"
+          showSelect={true}
+          options={dateOptions}
+          selected={selectedGroup}
+          onChange={(val) => setSelectedGroup(val)}
+          placeholder="Select Date"
+          breadcrumbItems={breadcrumbItems} 
+        />
         <Section className="content">
           <div className="container-fluid">
             <Row>
-              <Col className="col-12">
-                {/* Please uncomment if you are not visible api data in src-&gt;app-&gt;page.tsx */}
-                <button className="btn btn-primary mb-3" onClick={handleFetchData}>
+              {/* <Col className="col-12">
+                <button className="btn btn-default mb-3" onClick={handleFetchData}>
                   Call Dashboard and Alert API
                 </button>
-                {/* <div className="col-lg-12 col-12">
-                  <h2>Compliance Data</h2>
-                  <pre>{JSON.stringify(complianceData, null, 2)}</pre>
-
-                  <h2>Alerts</h2>
-                  <pre>{JSON.stringify(alerts, null, 2)}</pre>
-                </div> */}
-              </Col>
+              </Col> */}
               <Col className="col-lg-4 col-6">
                 {/* <SmallBox
                   value={500}
@@ -157,7 +149,7 @@ export default function HomePage() {
                   iconClass="fas fa-building"
                   bgColorClass="bg-info"
                   label="Workstations"
-                  value={3200}
+                  value={getComplianceTotals(complianceData)?.totalWorkStations || 0}
                   // unit="%"
                 />
               </Col>
@@ -174,7 +166,7 @@ export default function HomePage() {
                   iconClass="fas fa-shield-alt"
                   bgColorClass="bg-primary"
                   label="Compliant Systems"
-                  value={2500}
+                  value={getComplianceTotals(complianceData)?.complianceCount || 0}
                   // unit="%"
                 />
               </Col>
@@ -191,7 +183,7 @@ export default function HomePage() {
                   iconClass="fas fa-exclamation-triangle"
                   bgColorClass="bg-gray"
                   label="Non-Compliant Systems"
-                  value={700}
+                  value={getComplianceTotals(complianceData)?.nonComplianceCount || 0}
                   // unit="%"
                 />
               </Col>
@@ -209,65 +201,44 @@ export default function HomePage() {
                     />
                     <CardBody className="p-0">
                       <div className="table-responsive p-0" style={{ height: '330px' }}>
-                      <table className="table table-head-fixed text-nowrap">
-                        <thead>
-                        <tr>
-                          <th>Date time</th>
-                          <th>System name</th>
-                          <th>Issue</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td><a href="pages/examples/invoice.html">OR9842</a></td>
-                            <td>Call of Duty IV</td>
-                            <td><span className="text-danger">Shipped</span></td>
-                          </tr>
-                          <tr>
-                            <td><a href="pages/examples/invoice.html">OR1848</a></td>
-                            <td>Samsung Smart TV</td>
-                            <td><span className="text-danger">Pending</span></td>
-                          </tr>
-                          <tr>
-                            <td><a href="pages/examples/invoice.html">OR7429</a></td>
-                            <td>iPhone 6 Plus</td>
-                            <td><span className="text-danger">Delivered</span></td>
-                          </tr>
-                          <tr>
-                            <td><a href="pages/examples/invoice.html">OR7429</a></td>
-                            <td>Samsung Smart TV</td>
-                            <td><span className="text-danger">Processing</span></td>
-                          </tr>
-                          <tr>
-                            <td><a href="pages/examples/invoice.html">OR1848</a></td>
-                            <td>Samsung Smart TV</td>
-                            <td><span className="text-danger">Pending</span></td>
-                          </tr>
-                          <tr>
-                            <td><a href="pages/examples/invoice.html">OR9842</a></td>
-                            <td>Call of Duty IV</td>
-                            <td><span className="text-danger">Shipped</span></td>
-                          </tr>
-                          <tr>
-                            <td><a href="pages/examples/invoice.html">OR1848</a></td>
-                            <td>Samsung Smart TV</td>
-                            <td><span className="text-danger">Pending</span></td>
-                          </tr>
-                          <tr>
-                            <td><a href="pages/examples/invoice.html">OR7429</a></td>
-                            <td>iPhone 6 Plus</td>
-                            <td><span className="text-danger">Delivered</span></td>
-                          </tr>
-                          <tr>
-                            <td><a href="pages/examples/invoice.html">OR7429</a></td>
-                            <td>Samsung Smart TV</td>
-                            <td><span className="text-danger">Processing</span></td>
-                          </tr>
-                          <tr>
-                            <td><a href="pages/examples/invoice.html">OR1848</a></td>
-                            <td>Samsung Smart TV</td>
-                            <td><span className="text-danger">Pending</span></td>
-                          </tr>
+                        <table className="table table-head-fixed text-wrap">
+                          <thead>
+                            <tr>
+                              <th>Date time</th>
+                              <th>System name</th>
+                              <th>Metrics name</th>
+                              <th>Issue</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {Object.entries(alertsDatas || {}).filter(([_, alerts]) => alerts && alerts.length > 0).length === 0 ? (
+                              <tr>
+                                <td colSpan={4} className="text-center text-muted">No data available</td>
+                              </tr>
+                            ) : (
+                              Object.entries(alertsDatas || {}).map(([systemKey, alerts], index) => {
+                                if (!alerts || alerts?.length === 0) return null;
+
+                                const { systemDate, level, ip } = alerts[0]; // All alerts share these
+
+                                return (
+                                  <tr key={`${systemKey}-${index}`}>
+                                    <td style={{ whiteSpace: 'nowrap' }}>
+                                      {formatDateTime(systemDate)}
+                                    </td>
+                                    <td>{systemKey}</td>
+                                    <td>
+                                      {alerts.map((alert, i) => (
+                                        <span key={i} className={getBadgeClass(alert.level)}>
+                                          {alert.metricsName}
+                                        </span>
+                                      ))}
+                                    </td>
+                                    <td><span className="text-danger">{level}</span></td>
+                                  </tr>
+                                );
+                              })
+                            )}
                           </tbody>
                         </table>
                       </div>
@@ -293,12 +264,19 @@ export default function HomePage() {
                       </div> */}
 
                       <div className="position-relative mb-4">
-                        <BarChart
-                          id="compliantChart"
-                          data={chartData}
-                          options={chartOptions}
-                          className="compliantChart"
-                        />
+                        {chartData.datasets.every(ds => ds.data.length === 0 || ds.data.every(d => d === 0)) ? (
+                          <div className="text-center text-muted py-5">
+                            <i className="fas fa-info-circle mr-2" />
+                            No data available
+                          </div>
+                        ) : (
+                          <BarChart
+                            id="compliantChart"
+                            data={chartData}
+                            options={chartOptions}
+                            className="compliantChart"
+                          />
+                        )}
                       </div>
 
                       <div className="d-flex flex-row justify-content-end">

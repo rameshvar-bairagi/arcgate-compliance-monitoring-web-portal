@@ -17,7 +17,7 @@ export const useDashboardData = (body: ComplianceRequestBody, enabled: boolean =
   });
 
   const {
-    data: alerts,
+    data: alertsData,
     isLoading: alertsLoading,
     error: alertsError,
     refetch: refetchAlerts, // 👈 custom alias
@@ -26,14 +26,19 @@ export const useDashboardData = (body: ComplianceRequestBody, enabled: boolean =
     queryFn: fetchDashboardAlerts,
   });
 
+  // const refetchAll = async () => {
+  //   await Promise.all([refetchCompliance(), refetchAlerts()]);
+  // };
+
   return {
     complianceData,
     complianceLoading,
     complianceError,
-    refetchCompliance, // 👈 return
-    alerts,
+    alertsData,
     alertsLoading,
     alertsError,
-    refetchAlerts, // 👈 return
+    refetchCompliance, // manually refetch compliance only
+    refetchAlerts, // manually refetch alerts only
+    // refetchAll, // call both in parallel
   };
 };
