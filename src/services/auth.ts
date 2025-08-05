@@ -25,6 +25,11 @@ export const loginUser = async (payload: LoginPayload): Promise<LoginResponse> =
   return response.data;
 };
 
+export const logoutUser = async (): Promise<string | null> => {
+  const response = await api.post('/logout');
+  return response.data;
+};
+
 export const getUserProfile = async (): Promise<UserResponse> => {
   const response = await api.get('/user/profile');
   return response.data;

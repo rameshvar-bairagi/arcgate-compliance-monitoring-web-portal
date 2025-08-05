@@ -72,12 +72,16 @@ export const getChartDataFromCompliance = (complianceData: ComplianceItem[]) => 
         backgroundColor: '#007bff',
         borderColor: '#007bff',
         data: compliantCounts,
+        // barPercentage: 1.0,
+        // categoryPercentage: 0.8
       },
       {
         label: 'Non-Compliant',
         backgroundColor: '#6c757d',
         borderColor: '#6c757d',
         data: nonCompliantCounts,
+        // barPercentage: 1.0,
+        // categoryPercentage: 0.8
       },
     ],
   };
