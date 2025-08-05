@@ -29,7 +29,7 @@ function ProvidersWrapper({ children }: { children: ReactNode }) {
     <>
       <BodyThemeManager />
       <AdminScripts />
-      <PreloaderManager />
+      {loading && <PreloaderManager />}
       <AuthGuard>{children}</AuthGuard>
       {/* Show devtools only in development */}
       {process.env.NODE_ENV === 'development' && (

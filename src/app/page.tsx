@@ -49,6 +49,7 @@ export default function HomePage() {
   } = useDashboardData(requestBody, true); // or false if you want manual trigger
 
   const alertsDatas = alertsData as AlertsData;
+  // console.log('alertsDatas', alertsDatas);
 
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
