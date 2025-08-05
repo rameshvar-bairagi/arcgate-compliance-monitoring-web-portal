@@ -18,9 +18,10 @@ const queryClient = new QueryClient();
 
 function ProvidersWrapper({ children }: { children: ReactNode }) {
   const { loading, error } = useInitializeAuth();
-  if (loading) {
-    return null; // or show a spinner if needed
-  }
+
+  // if (loading) {
+  //   return null; // or show a spinner if needed
+  // }
 
   if (error) return <ErrorRenderer error={error} />;
 
@@ -28,9 +29,12 @@ function ProvidersWrapper({ children }: { children: ReactNode }) {
     <>
       <BodyThemeManager />
       <AdminScripts />
-      <PreloaderManager />
+      {loading && <PreloaderManager />}
       <AuthGuard>{children}</AuthGuard>
-      <ReactQueryDevtools initialIsOpen={false} position="bottom" />
+      {/* Show devtools only in development */}
+      {process.env.NODE_ENV === 'development' && (
+        <ReactQueryDevtools initialIsOpen={false} position="bottom" />
+      )}
     </>
   );
 }

@@ -3,22 +3,22 @@ import { store } from '@/store';
 import { logout, login } from '@/store/slices/authSlice';
 import { refreshToken } from '@/services/auth';
 import { API_BASE_URL } from '@/constants/api';
+import { toast } from 'react-toastify';
 
 const api = axios.create({
   baseURL: API_BASE_URL,  // "http://192.168.0.238:8080/api/metrics";
+  // baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 api.interceptors.request.use((config) => {
   const token = store.getState().auth.token;
-  if (config.headers) {
-    config.headers.set('Content-Type', 'application/json');
-    config.withCredentials = true;
-
-    if (token) {
-      config.headers.set('Authorization', `Bearer ${token}`);
-    }
+  if (token) {
+    config.headers.set('Authorization', `Bearer ${token}`);
   }
-
   return config;
 });
 
@@ -26,16 +26,21 @@ api.interceptors.response.use(
   (res) => res,
   async (error) => {
     const originalRequest = error.config;
-
-    if (
-      error.response?.status === 401 &&
+    const status = error?.response?.status;
+    if (status === 403 || status === 401) {
+      store.dispatch(logout());
+      toast.error('Session expired. Please log in again.');
+      return Promise.reject(error);
+    }
+    if (status === 401 &&
       !originalRequest._retry &&
       typeof window !== 'undefined'
     ) {
       originalRequest._retry = true;
       try {
         const token = await refreshToken() || ''; // Use from auth.ts
-        if (!token) throw new Error('Failed to refresh token');
+        if (!token) console.log('Failed to refresh token');
+        // if (!token) throw new Error('Failed to refresh token');
 
         store.dispatch(login({ token }));
 

@@ -10,15 +10,17 @@ interface CardFooterProps {
 }
 
 const CardFooter: React.FC<CardFooterProps> = ({
-  rightLabel = 'View All Orders',
+  rightLabel,
   onLeftClick,
   onRightClick
 }) => {
   return (
     <div className="card-footer clearfix">
-      <Button onClick={onRightClick} className="btn btn-sm btn-secondary float-right">
-        {rightLabel}
-      </Button>
+      {rightLabel && (
+        <Button onClick={onRightClick} className="btn btn-sm btn-secondary float-right">
+          {rightLabel}
+        </Button>
+      )}
     </div>
   );
 };

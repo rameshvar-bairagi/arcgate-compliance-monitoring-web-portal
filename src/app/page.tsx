@@ -199,7 +199,7 @@ export default function HomePage() {
                       actionHref="javascript:void(0);" 
                     />
                     <CardBody className="p-0">
-                      <div className="table-responsive p-0" style={{ height: '330px' }}>
+                      <div className="table-responsive p-0" style={{ height: '364px' }}>
                         <table className="table table-head-fixed text-wrap">
                           <thead>
                             <tr>
@@ -233,7 +233,7 @@ export default function HomePage() {
                                         </span>
                                       ))}
                                     </td>
-                                    <td><span className="text-danger">{level}</span></td>
+                                    <td><span className={getBadgeClass(level)}>{level}</span></td>
                                   </tr>
                                 );
                               })
@@ -242,7 +242,7 @@ export default function HomePage() {
                         </table>
                       </div>
                     </CardBody>
-                    <CardFooter rightLabel="View All" />
+                    <CardFooter rightLabel="" />
                   </Card>
               </Col>
               <Col className="col-lg-5">
