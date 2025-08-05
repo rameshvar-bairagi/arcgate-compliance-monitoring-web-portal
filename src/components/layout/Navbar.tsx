@@ -47,8 +47,9 @@ export default function Navbar() {
         },
         onError: (error: AxiosError<{ message: string }>) => {
             console.log('logout error',error)
+            dispatch(logout());
             // const message = error?.response?.data?.message || 'Login failed';
-            const message = 'Loout failed';
+            const message = 'Logout failed';
             toast.error(message);
         },
     });
