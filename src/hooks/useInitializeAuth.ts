@@ -6,11 +6,12 @@ import { AxiosError } from 'axios';
 
 export const useInitializeAuth = () => {
   const dispatch = useAppDispatch();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<AxiosError | null>(null);
 
   useEffect(() => {
     const initialize = async () => {
+      setLoading(true);
       try {
         // const token = await refreshToken();
         const token = localStorage.getItem('token');

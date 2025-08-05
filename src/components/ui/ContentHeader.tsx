@@ -34,14 +34,12 @@ const ContentHeader: React.FC<ContentHeaderProps> = ({
           <div className="col-sm-3"></div>
           <div className="col-sm-3">
             {showSelect ? (
-              <div style={{ minWidth: '200px' }}>
                 <CustomSelect
                   options={options}
                   selected={selected}
                   onChange={onChange}
                   placeholder={placeholder}
                 />
-              </div>
             ) : (
               breadcrumbItems && (
                 <Breadcrumb items={breadcrumbItems} />

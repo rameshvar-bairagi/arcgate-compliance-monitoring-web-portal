@@ -27,7 +27,7 @@ export default function ClientLayoutWrapper({ children }: { children: ReactNode 
   const auth = useAppSelector((state) => state.auth);
   const loading = !auth.token && !isLoginPage;
 
-  console.log('Auth State:', auth);
+  // console.log('Auth State:', auth);
 
   if (!hasMounted || loading) {
     return (
