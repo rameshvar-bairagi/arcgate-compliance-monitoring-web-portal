@@ -136,7 +136,7 @@ export default function HomePage() {
                   Call Dashboard and Alert API
                 </button>
               </Col> */}
-              <Col className="col-lg-4 col-6">
+              <Col className="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4">
                 {/* <SmallBox
                   value={500}
                   label="Workstations"
@@ -153,7 +153,7 @@ export default function HomePage() {
                 />
               </Col>
 
-              <Col className="col-lg-4 col-6">
+              <Col className="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4">
                 {/* <SmallBox
                   value={2500}
                   label="Compliant Systems"
@@ -170,7 +170,7 @@ export default function HomePage() {
                 />
               </Col>
 
-              <Col className="col-lg-4 col-6">
+              <Col className="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4">
                 {/* <SmallBox
                   value={700}
                   label="Non-Compliant Systems"

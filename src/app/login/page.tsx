@@ -127,7 +127,10 @@ export default function LoginPage() {
                 </div>
               </div>
               <div className="col-4">
-                <Button type="submit" className="btn btn-primary btn-block" disabled={mutation.isPending}>
+                <Button type="submit" className="btn btn-primary btn-block d-flex align-items-center justify-content-center gap-2" disabled={mutation.isPending}>
+                  {mutation.isPending && (
+                    <span className="spinner-border spinner-border-sm text-light" role="status" aria-hidden="true"></span>
+                  )}
                   {mutation.isPending ? 'Signing in...' : 'Sign In'}
                 </Button>
               </div>
