@@ -10,8 +10,8 @@ import Image from 'next/image';
 import { useMutation } from '@tanstack/react-query';
 
 import { useAppDispatch } from '@/hooks/useRedux';
-import { login } from '@/store/slices/authSlice';
-import { loginUser } from '@/services/auth';
+import { login, setUserProfile } from '@/store/slices/authSlice';
+import { getUserProfile, loginUser } from '@/services/auth';
 
 import Heading from '@/components/ui/Heading';
 import Button from '@/components/ui/Button';
@@ -47,13 +47,14 @@ export default function LoginPage() {
 
   const mutation = useMutation({
     mutationFn: loginUser,
-    onSuccess: (data) => {
-        // console.log();
-        dispatch(
-        login({
-          token: data.accessToken,
-        })
-      );
+    onSuccess: async (data) => {
+      // console.log();
+      dispatch(login({token: data.accessToken}));
+
+      // fetch profile and store in Redux
+      const user = await getUserProfile();
+      dispatch(setUserProfile(user));
+
       router.push('/');
     },
     onError: (error: AxiosError<{ message: string }>) => {

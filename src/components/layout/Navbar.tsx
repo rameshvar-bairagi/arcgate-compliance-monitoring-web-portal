@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { useAppDispatch } from '@/hooks/useRedux';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { logout } from '@/store/slices/authSlice';
 import { useRouter } from 'next/navigation';
 import ThemeToggle from '../ui/ThemeToggle';
@@ -19,15 +19,18 @@ export default function Navbar() {
     const dispatch = useAppDispatch();
     const router = useRouter();
 
+    const userProfile = useAppSelector((state) => state.auth.userProfile);
+    console.log(userProfile, 'userProfile');
+
     // Close dropdown when clicking outside
     useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-        if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setDropdownOpen(false);
-        }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+            setDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
     const handleLogout = () => {
@@ -101,7 +104,7 @@ export default function Navbar() {
 
                     {dropdownOpen && (
                         <div className="dropdown-menu dropdown-menu-lg dropdown-menu-right show" style={{ position: 'absolute', right: 0 }}>
-                        <span className="dropdown-item-text"><i className="fas fa-user mr-2"></i> Arcgate</span>
+                        <span className="dropdown-item-text"><i className="fas fa-user mr-2"></i> {userProfile?.username}</span>
                         <div className="dropdown-divider" />
                             <Button onClick={handleLogout} className="dropdown-item">
                                 <i className="fas fa-sign-out-alt mr-2"></i> Logout

@@ -1,13 +1,16 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { UserResponse } from '@/types/user';
 
 interface AuthState {
   isAuthenticated: boolean;
   token: string | null;
+  userProfile: UserResponse | null;
 }
 
 const initialState: AuthState = {
   isAuthenticated: false, // Don't initialize from localStorage
   token: null,
+  userProfile: null
 };
 
 const authSlice = createSlice({
@@ -27,8 +30,11 @@ const authSlice = createSlice({
       state.token = null;
       localStorage.removeItem('token');
     },
+    setUserProfile(state, action: PayloadAction<UserResponse>) {
+      state.userProfile = action.payload;
+    },
   },
 });
 
-export const { login, logout } = authSlice.actions;
+export const { login, logout, setUserProfile } = authSlice.actions;
 export default authSlice.reducer;

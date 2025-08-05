@@ -1,4 +1,5 @@
 import api from '@/lib/axios';
+import { UserResponse } from '@/types/user';
 
 type LoginPayload = {
   username: string;
@@ -21,5 +22,10 @@ export const refreshToken = async (): Promise<string | null> => {
 
 export const loginUser = async (payload: LoginPayload): Promise<LoginResponse> => {
   const response = await api.post('/authenticate', payload);
+  return response.data;
+};
+
+export const getUserProfile = async (): Promise<UserResponse> => {
+  const response = await api.get('/user/profile');
   return response.data;
 };

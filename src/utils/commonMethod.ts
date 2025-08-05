@@ -86,12 +86,19 @@ export const getChartDataFromCompliance = (complianceData: ComplianceItem[]) => 
 export const getDateOptions = () => {
   const today = new Date();
   return [
-    { label: 'Today', value: format(today, 'yyyy-MM-dd') },
-    { label: 'Yesterday', value: format(subDays(today, 1), 'yyyy-MM-dd') },
-    { label: 'Last 3 Days', value: format(subDays(today, 2), 'yyyy-MM-dd') },
-    { label: 'Last 4 Days', value: format(subDays(today, 3), 'yyyy-MM-dd') },
-    { label: 'Last 5 Days', value: format(subDays(today, 4), 'yyyy-MM-dd') },
-    { label: 'Last 6 Days', value: format(subDays(today, 5), 'yyyy-MM-dd') },
-    { label: 'Last 7 Days', value: format(subDays(today, 6), 'yyyy-MM-dd') },
+    { label: 'Today', value: 'Today' },
+    { label: 'Yesterday', value: 'Yesterday' },
+    { label: 'Last 3 Days', value: '3' },
+    { label: 'Last 4 Days', value: '4' },
+    { label: 'Last 5 Days', value: '5' },
+    { label: 'Last 6 Days', value: '6' },
+    { label: 'Last 7 Days', value: '7' },
+    // { label: 'Today', value: format(today, 'yyyy-MM-dd') },
+    // { label: 'Yesterday', value: format(subDays(today, 1), 'yyyy-MM-dd') },
+    // { label: 'Last 3 Days', value: format(subDays(today, 2), 'yyyy-MM-dd') },
+    // { label: 'Last 4 Days', value: format(subDays(today, 3), 'yyyy-MM-dd') },
+    // { label: 'Last 5 Days', value: format(subDays(today, 4), 'yyyy-MM-dd') },
+    // { label: 'Last 6 Days', value: format(subDays(today, 5), 'yyyy-MM-dd') },
+    // { label: 'Last 7 Days', value: format(subDays(today, 6), 'yyyy-MM-dd') },
   ];
 };
