@@ -43,8 +43,8 @@ export default function HomePage() {
     alertsData,
     alertsLoading,
     alertsError,
-    refetchCompliance,
-    refetchAlerts,
+    // refetchCompliance,
+    // refetchAlerts,
     // refetchAll,
   } = useDashboardData(requestBody, true); // or false if you want manual trigger
 
