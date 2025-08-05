@@ -24,6 +24,7 @@ import {
   getChartDataFromCompliance,
   getDateOptions
 } from '@/utils/commonMethod';
+import Spinner from "@/components/ui/Spinner";
 
 export default function HomePage() {
   const dateOptions = getDateOptions();
@@ -48,7 +49,7 @@ export default function HomePage() {
   } = useDashboardData(requestBody, true); // or false if you want manual trigger
 
   const alertsDatas = alertsData as AlertsData;
-  console.log('alertsDatas', alertsDatas);
+  // console.log('alertsDatas', alertsDatas);
 
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
@@ -56,27 +57,6 @@ export default function HomePage() {
   ];
 
   const chartData = getChartDataFromCompliance(complianceData);
-  // const chartData = {
-  //   labels: ['29-07-2025', '30-07-2025', '01-08-2025', '02-08-2025', '03-08-2025'],
-  //   datasets: [
-  //     {
-  //       label: 'Compliant',
-  //       backgroundColor: '#007bff',
-  //       borderColor: '#007bff',
-  //       data: [1000, 2000, 3000, 2500, 2700, 2500, 3000],
-  //       // barPercentage: 1.0,
-  //       // categoryPercentage: 0.8
-  //     },
-  //     {
-  //       label: 'Non-Compliant',
-  //       backgroundColor: '#6c757d',
-  //       borderColor: '#6c757d',
-  //       data: [700, 1700, 2700, 2000, 1800, 1500, 2000],
-  //       // barPercentage: 1.0,
-  //       // categoryPercentage: 0.8
-  //     }
-  //   ]
-  // };
 
   const chartOptions = {
     ...defaultBarChartOptions,
@@ -112,11 +92,6 @@ export default function HomePage() {
       date: selectedGroup,
     }));
   }, [selectedGroup]);
-
-  const handleFetchData = () => {
-    refetchCompliance();
-    refetchAlerts();
-  };
 
   return (
       <ContentWrapper>
@@ -211,7 +186,13 @@ export default function HomePage() {
                             </tr>
                           </thead>
                           <tbody>
-                            {Object.entries(alertsDatas || {}).filter(([_, alerts]) => alerts && alerts.length > 0).length === 0 ? (
+                            {alertsLoading ? (
+                              <tr>
+                                <td colSpan={4} className="text-center py-4">
+                                  <Spinner text="Loading alerts..." />
+                                </td>
+                              </tr>
+                            ) : Object.entries(alertsDatas || {}).filter(([_, alerts]) => alerts && alerts.length > 0).length === 0 ? (
                               <tr>
                                 <td colSpan={4} className="text-center text-muted">No data available</td>
                               </tr>
@@ -250,21 +231,12 @@ export default function HomePage() {
                   <Card>
                     <CardHeader title="Compliant vs. Non-Compliant Systems" actionText="" actionHref="javascript:void(0);" />
                     <CardBody>
-                      {/* <div className="d-flex">
-                        <p className="d-flex flex-column">
-                          <span className="text-bold text-lg">$18,230.00</span>
-                          <span>Sales Over Time</span>
-                        </p>
-                        <p className="ml-auto d-flex flex-column text-right">
-                          <span className="text-success">
-                            <i className="fas fa-arrow-up"></i> 33.1%
-                          </span>
-                          <span className="text-muted">Since last month</span>
-                        </p>
-                      </div> */}
-
                       <div className="position-relative mb-4">
-                        {chartData.datasets.every(ds => ds.data.length === 0 || ds.data.every(d => d === 0)) ? (
+                        {complianceLoading ? (
+                          <div className="text-center py-5">
+                            <Spinner text="Loading compliant vs. non-compliant systems..." />
+                          </div>
+                        ) : chartData.datasets.every(ds => ds.data.length === 0 || ds.data.every(d => d === 0)) ? (
                           <div className="text-center text-muted py-5">
                             <i className="fas fa-info-circle mr-2" />
                             No data available
