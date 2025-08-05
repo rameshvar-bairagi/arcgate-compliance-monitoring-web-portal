@@ -1,4 +1,3 @@
-import { useAppDispatch } from '@/hooks/useRedux';
 import { fetchDashboardAlerts, fetchDashboardCompliance } from '@/services/dashboardService';
 import { ComplianceRequestBody } from '@/types/dashboard';
 import { useQuery } from '@tanstack/react-query';
@@ -22,8 +21,9 @@ export const useDashboardData = (body: ComplianceRequestBody, enabled: boolean =
     error: alertsError,
     refetch: refetchAlerts, // custom alias
   } = useQuery({
-    queryKey: ['dashboard', 'alerts'],
+    queryKey: ['alerts', body] as [string, ComplianceRequestBody],
     queryFn: fetchDashboardAlerts,
+    enabled,
   });
 
   // const refetchAll = async () => {
