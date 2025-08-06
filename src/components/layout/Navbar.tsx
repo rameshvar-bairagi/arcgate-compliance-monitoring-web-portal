@@ -14,7 +14,6 @@ import Nav from '../ui/Nav';
 import { useMutation } from '@tanstack/react-query';
 import { logoutUser } from '@/services/auth';
 import { AxiosError } from 'axios';
-import { toast } from 'react-toastify';
 
 export default function Navbar() {
 
@@ -40,17 +39,18 @@ export default function Navbar() {
     const mutation = useMutation({
         mutationFn: logoutUser,
         onSuccess: async (data) => {
-            // console.log('logout data', data);
+            console.log('logout data', data);
+            const message = data || 'You have been logged out.';
+            localStorage.setItem('logoutSuccess', message);
             dispatch(logout());
-            toast.success(data);
             router.push('/login');
         },
         onError: (error: AxiosError<{ message: string }>) => {
             console.log('logout error',error)
+            const message = error?.response?.data?.message || 'Login failed';
+            // const message = 'Logout failed';
+            localStorage.setItem('logoutError', message);
             dispatch(logout());
-            // const message = error?.response?.data?.message || 'Login failed';
-            const message = 'Logout failed';
-            toast.error(message);
         },
     });
 

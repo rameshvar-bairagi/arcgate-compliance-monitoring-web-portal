@@ -5,7 +5,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Image from 'next/image';
 import { useMutation } from '@tanstack/react-query';
 
@@ -39,6 +40,17 @@ export default function LoginPage() {
     const remembered = localStorage.getItem('rememberMe') === 'true';
     const savedUsername = localStorage.getItem('username') || '';
 
+    const logoutSuccess = localStorage.getItem('logoutSuccess');
+    const logoutError = localStorage.getItem('logoutError');
+    if (logoutSuccess) {
+      toast.success(logoutSuccess);
+      localStorage.removeItem('logoutSuccess');
+    }
+    if (logoutError) {
+      toast.error(logoutError);
+      localStorage.removeItem('logoutError');
+    }
+
     if (remembered && savedUsername) {
       setRememberMe(true);
       setValue('username', savedUsername);
@@ -58,8 +70,8 @@ export default function LoginPage() {
       router.push('/');
     },
     onError: (error: AxiosError<{ message: string }>) => {
-      console.log('login error',error)
-      // const message = error?.response?.data?.message || 'Login failed';
+      console.log('login error', error)
+      // const message = error?.response?.data?.error || 'Login failed';
       const message = 'Login failed';
       toast.error(message);
     },
@@ -80,6 +92,7 @@ export default function LoginPage() {
 
   return (
     <div className="login-box">
+      <ToastContainer />
       <div className="login-logo text-center">
         <Image
           src="/logo-icon.png"
@@ -130,7 +143,7 @@ export default function LoginPage() {
               <div className="col-4">
                 <Button type="submit" className="btn btn-primary btn-block d-flex align-items-center justify-content-center gap-2" disabled={mutation.isPending}>
                   {mutation.isPending && (
-                    <span className="spinner-border spinner-border-sm text-light" role="status" aria-hidden="true"></span>
+                    <i className="fas fa-spinner fa-spin text-primary mr-2" />
                   )}
                   {mutation.isPending ? 'Signing in...' : 'Sign In'}
                 </Button>

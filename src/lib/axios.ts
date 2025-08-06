@@ -27,11 +27,6 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     const status = error?.response?.status;
-    if (status === 403 || status === 401) {
-      store.dispatch(logout());
-      toast.error('Session expired. Please log in again.');
-      return Promise.reject(error);
-    }
     if (status === 401 &&
       !originalRequest._retry &&
       typeof window !== 'undefined'
@@ -49,6 +44,7 @@ api.interceptors.response.use(
       } catch (err) {
         store.dispatch(logout());
         // window.location.href = '/login';
+        toast.error('Session expired. Please log in again.');
         return Promise.reject(err);
       }
     }

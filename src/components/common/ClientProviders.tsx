@@ -11,7 +11,7 @@ import AdminScripts from './AdminScripts';
 import PreloaderManager from './PreloaderManager';
 import AuthGuard from './AuthGuard';
 import { useInitializeAuth } from '@/hooks/useInitializeAuth';
-import ErrorRenderer from '@/components/ErrorPages/ErrorRenderer';
+import { ErrorDisplay } from '@/components/ErrorPages/ErrorDisplay';
 
 
 const queryClient = new QueryClient();
@@ -23,7 +23,7 @@ function ProvidersWrapper({ children }: { children: ReactNode }) {
     return null; // or show a spinner if needed
   }
 
-  if (error) return <ErrorRenderer error={error} />;
+  if (error && error?.response?.status) return <ErrorDisplay errorCode={error?.response?.status} />;
 
   return (
     <>
