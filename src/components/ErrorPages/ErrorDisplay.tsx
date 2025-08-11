@@ -1,9 +1,12 @@
+'use client';
+
 // components/ErrorPages/ErrorDisplay.tsx
 import ContentWrapper from '../ui/ContentWrapper';
 import ContentHeader from '../ui/ContentHeader';
 import Section from '../ui/Section';
 import Heading from '../ui/Heading';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 interface ErrorDisplayProps {
   errorCode: number;
@@ -55,12 +58,15 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({ errorCode }) => {
     message: 'An unexpected error occurred.',
   };
 
-  // Auto-redirect on 401, 403
-  if (errorCode === 401 || errorCode === 403) {
-    setTimeout(() => {
-      router.push('/login');
-    }, 2000); // Redirect after 2 seconds
-  }
+  useEffect(() => {
+    if (errorCode === 401 || errorCode === 403) {
+      setTimeout(() => {
+        // router.push('/login');
+        // if (!router?.push) return null;
+        Promise.resolve().then(() => router.replace('/login'));
+      }, 2000); // Redirect after 2 seconds
+    }
+  }, [errorCode, router]);
 
   return (
     <ContentWrapper>

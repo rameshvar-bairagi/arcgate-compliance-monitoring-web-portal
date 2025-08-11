@@ -37,19 +37,24 @@ export default function LoginPage() {
   });
 
   useEffect(() => {
-    const remembered = localStorage.getItem('rememberMe') === 'true';
-    const savedUsername = localStorage.getItem('username') || '';
-
     const logoutSuccess = localStorage.getItem('logoutSuccess');
     const logoutError = localStorage.getItem('logoutError');
+    // console.log(logoutSuccess,'logoutSuccess');
     if (logoutSuccess) {
       toast.success(logoutSuccess);
-      localStorage.removeItem('logoutSuccess');
+      setTimeout(() => {
+        localStorage.removeItem('logoutSuccess');
+      }, 100);
     }
     if (logoutError) {
       toast.error(logoutError);
-      localStorage.removeItem('logoutError');
+      setTimeout(() => {
+        localStorage.removeItem('logoutError');
+      }, 100);
     }
+
+    const remembered = localStorage.getItem('rememberMe') === 'true';
+    const savedUsername = localStorage.getItem('username') || '';
 
     if (remembered && savedUsername) {
       setRememberMe(true);
@@ -66,15 +71,14 @@ export default function LoginPage() {
       // fetch profile and store in Redux
       const user = await getUserProfile();
       dispatch(setUserProfile(user));
-
-      router.push('/');
+      Promise.resolve().then(() => router.push('/'));
+      // router.push('/');
     },
-    onError: (error: AxiosError<{ message: string }>) => {
-      console.log('login error', error)
-      // const message = error?.response?.data?.error || 'Login failed';
-      const message = 'Login failed';
+    onError: (error: AxiosError<{ message?: string; error?: string }>) => {
+      // console.log('login error', error)
+      const message = error?.response?.data?.message || error?.response?.data?.error || 'Login failed';
       toast.error(message);
-    },
+    }
   });
 
   const onSubmit = (data: LoginFormData) => {

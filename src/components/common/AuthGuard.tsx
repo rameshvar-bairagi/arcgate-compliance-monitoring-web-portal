@@ -15,13 +15,14 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!isAuthenticated && !isLoginPage) {
-      router.push('/login');
+      // router.push('/login');
+      Promise.resolve().then(() => router.replace('/login'));
     }
   }, [isAuthenticated, isLoginPage, router]);
 
-  if (!isAuthenticated && !isLoginPage) {
-    return null;
-  }
+  // if (!isAuthenticated && !isLoginPage) {
+  //   return null;
+  // }
 
   return isAuthenticated && !isLoginPage ? (
     <AdminLayout>{children}</AdminLayout>

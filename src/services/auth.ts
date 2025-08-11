@@ -12,8 +12,8 @@ type LoginResponse = {
 
 export const refreshToken = async (): Promise<string | null> => {
   try {
-    const res = await api.post('/refresh-token', {});
-    return res.data.token; // assuming response has: { token: "..." }
+    const res = await api.post('/refresh-token');
+    return res.data.accessToken; // assuming response has: { token: "..." }
   } catch (err) {
     console.error('Token refresh failed', err);
     return null;

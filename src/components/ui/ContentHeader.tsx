@@ -27,7 +27,7 @@ const ContentHeader: React.FC<ContentHeaderProps> = ({
   return (
     <div className="content-header">
       <div className="container-fluid">
-        <div className="row mb-2">
+        <div className="row">
           <div className="col-12 col-sm-6 col-md-8 col-lg-8 col-xl-8">
             <Heading level={1} variant="primary" className={'m-0'}>{title}</Heading>
           </div>
