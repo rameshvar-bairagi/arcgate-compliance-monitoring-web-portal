@@ -62,3 +62,22 @@ a {
 .login-logo span{
   font-size: 1.2rem;
 }
+
+.dt-search{
+  display: inline-block;
+  float: inline-end;
+}
+
+.dt-buttons, .dt-search {
+  margin: 0.5rem;
+}
+.dt-paging{
+  display: inline-block;
+  float: inline-end;
+  margin: .2rem !important;
+}
+.dt-info{
+  display: inline-block;
+  float: inline-start;
+  margin: .5rem;
+}

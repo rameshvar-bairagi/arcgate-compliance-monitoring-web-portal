@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAppDispatch } from '@/hooks/useRedux';
-import { login, logout } from '@/store/slices/authSlice';
-import { refreshToken } from '@/services/auth';
+import { login, logout, setUserProfile } from '@/store/slices/authSlice';
+import { getUserProfile, refreshToken } from '@/services/auth';
 import { AxiosError } from 'axios';
 
 export const useInitializeAuth = () => {
@@ -14,10 +14,13 @@ export const useInitializeAuth = () => {
       setLoading(true);
       try {
         // const token = await refreshToken();
+        // console.log(token,'tokentokentokentokentoken');
         const token = localStorage.getItem('token');
         if (token) {
           localStorage.setItem('token', token);
           dispatch(login({ token }));
+          const user = await getUserProfile();
+          dispatch(setUserProfile(user));
         } else {
           dispatch(logout());
         }

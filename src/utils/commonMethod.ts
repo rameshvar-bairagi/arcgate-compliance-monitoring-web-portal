@@ -36,12 +36,14 @@ export const getComplianceTotals = (data?: ComplianceItem[]) => {
   return safeData.reduce(
     (acc, item) => {
       acc.totalWorkStations += item.totalWorkStations || 0;
+      // acc.activeWorkStations += item.activeWorkStations || 0;
       acc.complianceCount += item.complianceCount || 0;
       acc.nonComplianceCount += item.nonComplianceCount || 0;
       return acc;
     },
     {
       totalWorkStations: 0,
+      activeWorkStations: 0,
       complianceCount: 0,
       nonComplianceCount: 0,
     }
@@ -106,3 +108,7 @@ export const getDateOptions = () => {
     // { label: 'Last 7 Days', value: format(subDays(today, 6), 'yyyy-MM-dd') },
   ];
 };
+
+export const capitalize = (str?: string) => {
+  return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+}

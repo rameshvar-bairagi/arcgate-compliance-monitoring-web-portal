@@ -14,6 +14,7 @@ import Nav from '../ui/Nav';
 import { useMutation } from '@tanstack/react-query';
 import { logoutUser } from '@/services/auth';
 import { AxiosError } from 'axios';
+import { capitalize } from '@/utils/commonMethod';
 
 export default function Navbar() {
 
@@ -23,7 +24,7 @@ export default function Navbar() {
     const router = useRouter();
 
     const userProfile = useAppSelector((state) => state.auth.userProfile);
-    console.log(userProfile, 'userProfile');
+    // if (process.env.NODE_ENV === 'development') console.error('userProfile', userProfile);
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -39,14 +40,15 @@ export default function Navbar() {
     const mutation = useMutation({
         mutationFn: logoutUser,
         onSuccess: async (data) => {
-            console.log('logout data', data);
+            // if (process.env.NODE_ENV === 'development') console.error('logout data', data);
             const message = data || 'You have been logged out.';
             localStorage.setItem('logoutSuccess', message);
             dispatch(logout());
-            router.push('/login');
+            // router.push('/login');
+            Promise.resolve().then(() => router.replace('/login'));
         },
         onError: (error: AxiosError<{ message: string }>) => {
-            console.log('logout error',error)
+            // if (process.env.NODE_ENV === 'development') console.error('logout error',error);
             const message = error?.response?.data?.message || 'Login failed';
             // const message = 'Logout failed';
             localStorage.setItem('logoutError', message);
@@ -124,7 +126,11 @@ export default function Navbar() {
 
                     {dropdownOpen && (
                         <div className="dropdown-menu dropdown-menu-lg dropdown-menu-right show" style={{ position: 'absolute', right: 0 }}>
-                        <span className="dropdown-item-text"><i className="fas fa-user mr-2"></i> {userProfile?.username}</span>
+                        <span className="dropdown-item-text">
+                            <i className="fas fa-user mr-2"></i>
+                            <strong>{capitalize(userProfile?.username ?? '')} </strong>
+                            <small className="text-muted">{userProfile?.email}</small>
+                        </span>
                         <div className="dropdown-divider" />
                             <Button onClick={handleLogout} className="dropdown-item">
                                 <i className="fas fa-sign-out-alt mr-2"></i> Logout

@@ -112,7 +112,7 @@ export default function HomePage() {
                   Call Dashboard and Alert API
                 </button>
               </Col> */}
-              <Col className="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+              <Col className="col-12 col-sm-3 col-md-3 col-lg-3 col-xl-3">
                 {/* <SmallBox
                   value={500}
                   label="Workstations"
@@ -123,13 +123,29 @@ export default function HomePage() {
                 <InfoBox
                   iconClass="fas fa-building"
                   bgColorClass="bg-info"
-                  label="Workstations"
+                  label="Total Workstations"
                   value={getComplianceTotals(complianceData)?.totalWorkStations || 0}
                   // unit="%"
                 />
               </Col>
+              <Col className="col-12 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+                {/* <SmallBox
+                  value={500}
+                  label="Workstations"
+                  iconClass="fas fa-building"
+                  bgColorClass="bg-info"
+                  link="/"
+                /> */}
+                <InfoBox
+                  iconClass="fas fa-network-wired"
+                  bgColorClass="bg-info"
+                  label="Active Workstation"
+                  value={getComplianceTotals(complianceData)?.activeWorkStations || 0}
+                  // unit="%"
+                />
+              </Col>
 
-              <Col className="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+              <Col className="col-12 col-sm-3 col-md-3 col-lg-3 col-xl-3">
                 {/* <SmallBox
                   value={2500}
                   label="Compliant Systems"
@@ -146,7 +162,7 @@ export default function HomePage() {
                 />
               </Col>
 
-              <Col className="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+              <Col className="col-12 col-sm-3 col-md-3 col-lg-3 col-xl-3">
                 {/* <SmallBox
                   value={700}
                   label="Non-Compliant Systems"
@@ -168,7 +184,7 @@ export default function HomePage() {
               <Col className="col-lg-7">
                   <Card>
                     <CardHeader 
-                      title="Recent Non-Compliant Systems" 
+                      title="Alerts Non-Compliant Systems" 
                       transparentBorder={true}
                       showTools={false}
                       actionText="" 
@@ -179,7 +195,7 @@ export default function HomePage() {
                         <table className="table table-head-fixed text-wrap">
                           <thead>
                             <tr>
-                              <th>Date time</th>
+                              {/* <th>Date time</th> */}
                               <th>System name</th>
                               <th>Metrics name</th>
                               <th>Issue</th>
@@ -188,13 +204,13 @@ export default function HomePage() {
                           <tbody>
                             {alertsLoading ? (
                               <tr>
-                                <td colSpan={4} className="text-center py-4">
+                                <td colSpan={3} className="text-center py-4">
                                   <Spinner text="Loading alerts..." />
                                 </td>
                               </tr>
                             ) : Object.entries(alertsDatas || {}).filter(([_, alerts]) => alerts && alerts.length > 0).length === 0 ? (
                               <tr>
-                                <td colSpan={4} className="text-center text-muted">No data available</td>
+                                <td colSpan={3} className="text-center text-muted">No data available</td>
                               </tr>
                             ) : (
                               Object.entries(alertsDatas || {}).map(([systemKey, alerts], index) => {
@@ -204,9 +220,9 @@ export default function HomePage() {
 
                                 return (
                                   <tr key={`${systemKey}-${index}`}>
-                                    <td style={{ whiteSpace: 'nowrap' }}>
+                                    {/* <td style={{ whiteSpace: 'nowrap' }}>
                                       {formatDateTime(systemDate)}
-                                    </td>
+                                    </td> */}
                                     <td>{systemKey}</td>
                                     <td>
                                       {alerts.map((alert, i) => (

@@ -7,11 +7,12 @@ export const fetchDashboardAlerts = async (
 ) => {
   const [, body] = context.queryKey;
   const requestBody = {
-    date: body.date,
+    // date: body.date,
+    date: ``,
   };
 
   const res = await api.post('/alert', requestBody);
-  console.log('fetchDashboardAlerts', res.data)
+  // if (process.env.NODE_ENV === 'development') console.error('fetchDashboardAlerts', res.data);
   return res.data;
 };
 
@@ -20,6 +21,6 @@ export const fetchDashboardCompliance = async (
 ) => {
   const [, body] = context.queryKey;
   const res = await api.post('/dashboard', body);
-  console.log('fetchDashboardCompliance', res.data);
+  // if (process.env.NODE_ENV === 'development') console.error('fetchDashboardCompliance', res.data);
   return res.data;
 };
