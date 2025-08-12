@@ -35,10 +35,13 @@ export const getComplianceTotals = (data?: ComplianceItem[]) => {
 
   return safeData.reduce(
     (acc, item) => {
+      const compliance = item.complianceCount || 0;
+      const nonCompliance = item.nonComplianceCount || 0;
+
       acc.totalWorkStations += item.totalWorkStations || 0;
-      // acc.activeWorkStations += item.activeWorkStations || 0;
-      acc.complianceCount += item.complianceCount || 0;
-      acc.nonComplianceCount += item.nonComplianceCount || 0;
+      acc.activeWorkStations += compliance + nonCompliance;
+      acc.complianceCount += compliance;
+      acc.nonComplianceCount += nonCompliance;
       return acc;
     },
     {
@@ -107,6 +110,17 @@ export const getDateOptions = () => {
     // { label: 'Last 6 Days', value: format(subDays(today, 5), 'yyyy-MM-dd') },
     // { label: 'Last 7 Days', value: format(subDays(today, 6), 'yyyy-MM-dd') },
   ];
+};
+
+export interface Option {
+  label: string;
+  value: string;
+}
+export const getIpOptions = (ips: string[]): Option[] => {
+  return ips.map((ip) => ({
+    label: ip,
+    value: ip,
+  }));
 };
 
 export const capitalize = (str?: string) => {

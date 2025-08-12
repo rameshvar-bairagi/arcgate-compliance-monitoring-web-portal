@@ -48,7 +48,7 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (err) {
         store.dispatch(logout());
-        // window.location.href = '/login';
+        window.location.href = '/login';
         toast.error('Session expired. Please log in again.');
         redirectToLogin?.();
         return Promise.reject(err);
