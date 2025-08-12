@@ -4,6 +4,8 @@ export type SystemsRequestBody = {
   complianceRule: string;
   clientGroup: string;
   metricList: string[] | number[] | null;
+  page:number;
+  size:number;
   // metricList: ["clamscan_antivirus","luksEncryption","cron_script"];
   // metricList:[3,6,25];
 };

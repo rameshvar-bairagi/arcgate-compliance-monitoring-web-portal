@@ -13,12 +13,6 @@ const api = axios.create({
   },
 });
 
-let redirectToLogin: (() => void) | null = null;
-
-export const setRedirectToLogin = (callback: () => void) => {
-  redirectToLogin = callback;
-};
-
 api.interceptors.request.use((config) => {
   const token = store.getState().auth.token;
   if (token) {
@@ -48,9 +42,8 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (err) {
         store.dispatch(logout());
-        // window.location.href = '/login';
+        window.location.href = '/login';
         toast.error('Session expired. Please log in again.');
-        redirectToLogin?.();
         return Promise.reject(err);
       }
     }

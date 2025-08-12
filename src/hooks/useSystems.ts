@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchSystems } from '@/services/systemsService';
+import { fetchSystems, fetchSystemNameList } from '@/services/systemsService';
 import { transformApiToSystemsList } from '@/utils/systems';
 import type { SystemsRequestBody, SystemsListData } from '@/types/systems';
 import { AxiosError } from 'axios';

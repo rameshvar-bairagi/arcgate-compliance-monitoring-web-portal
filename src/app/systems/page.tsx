@@ -6,17 +6,21 @@ import CardHeader from '@/components/ui/CardHeader';
 import Col from '@/components/ui/Col';
 import ContentHeader from '@/components/ui/ContentHeader';
 import ContentWrapper from '@/components/ui/ContentWrapper';
+import CustomSelect from '@/components/ui/CustomSelect';
 import DynamicTable from '@/components/ui/Datatable/DynamicTable';
 import Row from '@/components/ui/Row';
 import Section from '@/components/ui/Section';
 import { useSystems } from "@/hooks/useSystems";
+import { useSystemNameList } from "@/hooks/useSystemNameList";
 import type { SystemsRequestBody, SystemsListData } from "@/types/systems";
-import { getDateOptions } from '@/utils/commonMethod';
+import { getDateOptions, getIpOptions } from '@/utils/commonMethod';
 import { useState } from 'react';
 
 export default function SystemsPage() {
   const dateOptions = getDateOptions();
   const [selectedDate, setSelectedDate] = useState(dateOptions[0].value); // default to Today
+  // const [selectedDate, setSelectedDate] = useState('');
+  const [selectedSystemName, setSelectedSystemName] = useState('');
   
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
@@ -25,10 +29,13 @@ export default function SystemsPage() {
 
   const requestBody: SystemsRequestBody = {
     date: selectedDate,
-    systemName: "",
+    systemName: selectedSystemName || "",
     complianceRule: "",
     clientGroup: "",
-    metricList: null // or an array like ["clamscan_antivirus", "luksEncryption"]
+    // metricList: null // or an array like ["clamscan_antivirus", "luksEncryption"]
+    metricList:[1,2,3,6],
+    page:0,
+    size:10
   };
 
   // Call the hook
@@ -38,6 +45,14 @@ export default function SystemsPage() {
     systemsError, 
     // refetchSystems 
   } = useSystems(requestBody);
+
+  const { 
+    systemNameList, 
+    systemNameListLoading, 
+    systemNameListError 
+  } = useSystemNameList();
+
+  const systemNameOptions = getIpOptions(systemNameList ?? []);
 
   // Now data is SystemsListData | undefined
   const systems: SystemsListData | undefined = systemsData;
@@ -77,6 +92,48 @@ export default function SystemsPage() {
                   actionHref="javascript:void(0);" 
                 /> */}
                 <CardBody className="p-0">
+                  <Row className='p-2'>
+                    <Col className="col-md-3 mt-2 mb-2">
+                      <div className="form-group mb-0">
+                        <CustomSelect
+                          options={dateOptions}
+                          selected={selectedDate}
+                          onChange={(val) => setSelectedDate(val)}
+                          placeholder={"Select Date"}
+                        />
+                      </div>
+                    </Col>
+                    {/* <Col className="col-md-3 mt-2 mb-2">
+                      <div className="form-group mb-0">
+                        <CustomSelect
+                          options={systemNameOptions}
+                          selected={selectedSystemName}
+                          onChange={(val) => setSelectedSystemName(val)}
+                          placeholder={"System Name"}
+                        />
+                      </div>
+                    </Col>
+                    <Col className="col-md-3 mt-2 mb-2">
+                      <div className="form-group mb-0">
+                        <CustomSelect
+                          options={dateOptions}
+                          selected={selectedDate}
+                          onChange={(val) => setSelectedDate(val)}
+                          placeholder={"Select Date"}
+                        />
+                      </div>
+                    </Col> */}
+                    {/* <Col className="col-md-3 mt-2 mb-2">
+                      <div className="form-group mb-0">
+                        <CustomSelect
+                          options={dateOptions}
+                          selected={selectedDate}
+                          onChange={(val) => setSelectedDate(val)}
+                          placeholder={"Select Date"}
+                        />
+                      </div>
+                    </Col> */}
+                  </Row>
                   <DynamicTable
                     tableId="example1"
                     className="table table-bordered table-striped"

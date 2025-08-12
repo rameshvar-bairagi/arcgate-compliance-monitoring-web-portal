@@ -28,10 +28,10 @@ import Spinner from "@/components/ui/Spinner";
 
 export default function HomePage() {
   const dateOptions = getDateOptions();
-  const [selectedGroup, setSelectedGroup] = useState(dateOptions[0].value); // default to Today
+  const [selectedDate, setSelectedDate] = useState(dateOptions[0].value); // default to Today
 
   const [requestBody, setRequestBody] = useState<ComplianceRequestBody>({
-    date: selectedGroup,
+    date: selectedDate,
     complianceRule: '',
     clientGroup: '',
   });
@@ -89,9 +89,9 @@ export default function HomePage() {
   useEffect(() => {
     setRequestBody(prev => ({
       ...prev,
-      date: selectedGroup,
+      date: selectedDate,
     }));
-  }, [selectedGroup]);
+  }, [selectedDate]);
 
   return (
       <ContentWrapper>
@@ -99,8 +99,8 @@ export default function HomePage() {
           title="Dashboard"
           showSelect={true}
           options={dateOptions}
-          selected={selectedGroup}
-          onChange={(val) => setSelectedGroup(val)}
+          selected={selectedDate}
+          onChange={(val) => setSelectedDate(val)}
           placeholder="Select Date"
           breadcrumbItems={breadcrumbItems} 
         />
@@ -184,7 +184,8 @@ export default function HomePage() {
               <Col className="col-lg-7">
                   <Card>
                     <CardHeader 
-                      title="Alerts Non-Compliant Systems" 
+                      // title="Recent Alerts Non-Compliant Systems"
+                      title="Recent Alerts" 
                       transparentBorder={true}
                       showTools={false}
                       actionText="" 

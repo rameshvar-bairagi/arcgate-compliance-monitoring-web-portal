@@ -1,7 +1,6 @@
-// components/CustomSelect.tsx
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-// import 'bootstrap/dist/css/select2'; // select2.min.css
-import 'select2/dist/css/select2.min.css';
+import { useEffect, useRef } from 'react';
 
 interface CustomSelectProps {
   label?: string;
@@ -11,13 +10,43 @@ interface CustomSelectProps {
   placeholder?: string;
 }
 
-const CustomSelect = ({
+export default function CustomSelect({
   label,
   options,
   selected,
   onChange,
   placeholder = 'Select an option',
-}: CustomSelectProps) => {
+}: CustomSelectProps) {
+  const selectRef = useRef<HTMLSelectElement>(null);
+
+  // useEffect(() => {
+  //   if (selectRef.current) {
+  //     const $select = initSelect2(selectRef.current, { placeholder, allowClear: true });
+
+  //     $select.on('change', (e) => {
+  //       const value = (e.target as HTMLSelectElement).value;
+  //       onChange?.(value);
+  //     });
+  //   }
+
+  //   return () => {
+  //     if (selectRef.current) {
+  //       ($(selectRef.current) as any).select2('destroy');
+  //     }
+  //   };
+  // }, [placeholder, onChange]);
+
+  useEffect(() => {
+    const $ = (window as any).jQuery;
+    if ($ && $.fn.select2 && selectRef.current) {
+      $(selectRef.current).select2({
+        placeholder: 'Search...',
+          // tags: true,
+          allowClear: true,
+          width: '100%',
+      });
+    }
+  }, []);
 
   return (
     <>
@@ -27,16 +56,15 @@ const CustomSelect = ({
         style={{ width: '100%' }}
         value={selected || ''}
         onChange={(e) => onChange?.(e.target.value)}
+        ref={selectRef}
       >
         <option value="" disabled>{placeholder}</option>
         {options?.map((opt) => (
-            <option key={opt.value} value={opt.value}>
+          <option key={opt.value} value={opt.value}>
             {opt.label}
-            </option>
+          </option>
         ))}
       </select>
     </>
   );
-};
-
-export default CustomSelect;
+}

@@ -38,7 +38,7 @@ export const DataTableWrapper: React.FC<Props> = ({ id }) => {
         autoWidth: false,
         // buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
         buttons: ['csv', 'excel', 'pdf', 'print'],
-        dom: 'Bfrtip',
+        dom: 'Bfrtip',  // Brtip if remove default search then remove 'f' in Bfrtip
       });
 
       initialized.current = true;
