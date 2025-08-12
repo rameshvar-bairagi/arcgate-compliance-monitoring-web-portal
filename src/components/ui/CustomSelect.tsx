@@ -5,9 +5,10 @@ import { useEffect, useRef } from 'react';
 interface CustomSelectProps {
   label?: string;
   options?: { label: string; value: string }[];
-  selected?: string;
-  onChange?: (value: string) => void;
+  selected?: string | string[]; // support single or multiple
+  onChange?: (value: string | string[]) => void;
   placeholder?: string;
+  multiple?: boolean;
 }
 
 export default function CustomSelect({
@@ -16,6 +17,7 @@ export default function CustomSelect({
   selected,
   onChange,
   placeholder = 'Select an option',
+  multiple = false,
 }: CustomSelectProps) {
   const selectRef = useRef<HTMLSelectElement>(null);
 
@@ -34,8 +36,13 @@ export default function CustomSelect({
 
       // Bind change event
       $select.on('change', (e: any) => {
-        const value = (e.target as HTMLSelectElement).value;
-        onChange?.(value);
+        if (multiple) {
+          const values = $select.val() as string[]; // array for multiple
+          onChange?.(values);
+        } else {
+          const value = (e.target as HTMLSelectElement).value;
+          onChange?.(value);
+        }
       });
 
       // Cleanup on unmount
@@ -44,7 +51,7 @@ export default function CustomSelect({
         $select.select2('destroy'); // destroy select2
       };
     }
-  }, [placeholder, onChange]);
+  }, [placeholder, onChange, multiple]);
 
   return (
     <>
@@ -52,11 +59,22 @@ export default function CustomSelect({
       <select
         className="form-control select2"
         style={{ width: '100%' }}
-        value={selected || ''}
-        onChange={(e) => onChange?.(e.target.value)}
+        value={selected || (multiple ? [] : '')}
+        onChange={(e) =>
+          multiple
+            ? onChange?.(
+                Array.from(e.target.selectedOptions).map((opt) => opt.value)
+              )
+            : onChange?.(e.target.value)
+        }
         ref={selectRef}
+        multiple={multiple}
       >
-        <option value="" disabled>{placeholder}</option>
+        {!multiple && (
+          <option value="" disabled>
+            {placeholder}
+          </option>
+        )}
         {options?.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}

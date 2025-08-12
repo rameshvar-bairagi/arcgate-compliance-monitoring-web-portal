@@ -12,15 +12,24 @@ import Row from '@/components/ui/Row';
 import Section from '@/components/ui/Section';
 import { useSystems } from "@/hooks/useSystems";
 import { useSystemNameList } from "@/hooks/useSystemNameList";
+import { useMetricsNameList } from "@/hooks/useMetricsNameList";
 import type { SystemsRequestBody, SystemsListData } from "@/types/systems";
 import { getDateOptions, getIpOptions } from '@/utils/commonMethod';
 import { useState } from 'react';
 
 export default function SystemsPage() {
   const dateOptions = getDateOptions();
-  const [selectedDate, setSelectedDate] = useState(dateOptions[0].value); // default to Today
+  const [selectedDate, setSelectedDate] = useState<string | string[]>(dateOptions[0].value); // default to Today
   // const [selectedDate, setSelectedDate] = useState('');
-  const [selectedSystemName, setSelectedSystemName] = useState('');
+  const [selectedSystemName, setSelectedSystemName] = useState<string | string[]>('');
+  const [selectedMetrics, setSelectedMetrics] = useState<string | string[]>('');
+
+  // const metricsOptions = [
+  //   { label: 'Apple', value: 'apple' },
+  //   { label: 'Banana', value: 'banana' },
+  //   { label: 'Mango', value: 'mango' },
+  //   { label: 'Orange', value: 'orange' },
+  // ];
   
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
@@ -28,12 +37,16 @@ export default function SystemsPage() {
   ];
 
   const requestBody: SystemsRequestBody = {
-    date: selectedDate,
-    systemName: selectedSystemName || "",
+    date: Array.isArray(selectedDate) ? selectedDate[0] : selectedDate || "",
+    systemName: Array.isArray(selectedSystemName) ? selectedSystemName[0] : selectedSystemName || "",
     complianceRule: "",
     clientGroup: "",
     // metricList: null // or an array like ["clamscan_antivirus", "luksEncryption"]
-    metricList:[1,2,3,6],
+    metricList: selectedMetrics === null
+      ? null
+      : Array.isArray(selectedMetrics)
+      ? selectedMetrics
+      : [selectedMetrics],
     page:0,
     size:10
   };
@@ -51,8 +64,15 @@ export default function SystemsPage() {
     systemNameListLoading, 
     systemNameListError 
   } = useSystemNameList();
-
   const systemNameOptions = getIpOptions(systemNameList ?? []);
+
+  const { 
+    metricsNameList, 
+    metricsNameListLoading, 
+    metricsNameListError 
+  } = useMetricsNameList();
+  const metricsOptions = getIpOptions(metricsNameList ?? []);
+
   // Now data is SystemsListData | undefined
   const systems: SystemsListData | undefined = systemsData;
   console.log(systems,'systems list');
@@ -112,16 +132,17 @@ export default function SystemsPage() {
                         />
                       </div>
                     </Col>
-                    {/* <Col className="col-md-3 mt-2 mb-2">
+                    <Col className="col-md-3 mt-2 mb-2">
                       <div className="form-group mb-0">
                         <CustomSelect
-                          options={dateOptions}
-                          selected={selectedDate}
-                          onChange={(val) => setSelectedDate(val)}
-                          placeholder={"Select Date"}
+                          options={metricsOptions}
+                          selected={selectedMetrics}
+                          onChange={(val) => setSelectedMetrics(val)}
+                          placeholder={"Select Metrics"}
+                          multiple={true}
                         />
                       </div>
-                    </Col> */}
+                    </Col>
                     {/* <Col className="col-md-3 mt-2 mb-2">
                       <div className="form-group mb-0">
                         <CustomSelect

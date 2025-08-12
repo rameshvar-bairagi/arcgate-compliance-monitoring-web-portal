@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import api from '@/lib/axios';
 import type { SystemsApiResponse } from '@/types/systems';
 import type { SystemsRequestBody } from '@/types/systems';
@@ -8,9 +9,14 @@ export const fetchSystems = async (body: SystemsRequestBody): Promise<SystemsApi
   return res.data;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const fetchSystemNameList = async (): Promise<any | null> => {
   const res = await api.get('/systemNameList'); // adjust endpoint
   // if (process.env.NODE_ENV === 'development') console.error('fetchSystemNameList', res.data);
+  return res.data;
+};
+
+export const fetchMetricsNameList = async (): Promise<any | null> => {
+  const res = await api.get('/metricsList'); // adjust endpoint
+  // if (process.env.NODE_ENV === 'development') console.error('fetchMetricsNameList', res.data);
   return res.data;
 };
