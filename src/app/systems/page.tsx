@@ -53,7 +53,6 @@ export default function SystemsPage() {
   } = useSystemNameList();
 
   const systemNameOptions = getIpOptions(systemNameList ?? []);
-
   // Now data is SystemsListData | undefined
   const systems: SystemsListData | undefined = systemsData;
   console.log(systems,'systems list');
