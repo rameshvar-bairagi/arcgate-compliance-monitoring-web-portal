@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "dev:lan": "dotenv -e .env.lan -- next dev -H 192.168.238 -p 3000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -47,6 +48,7 @@
     "@types/react-dom": "^19",
     "@types/react-toastify": "^4.1.0",
     "@types/select2": "^4.0.63",
+    "dotenv-cli": "^10.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.4.3",
     "husky": "^9.1.7",

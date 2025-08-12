@@ -19,34 +19,32 @@ export default function CustomSelect({
 }: CustomSelectProps) {
   const selectRef = useRef<HTMLSelectElement>(null);
 
-  // useEffect(() => {
-  //   if (selectRef.current) {
-  //     const $select = initSelect2(selectRef.current, { placeholder, allowClear: true });
-
-  //     $select.on('change', (e) => {
-  //       const value = (e.target as HTMLSelectElement).value;
-  //       onChange?.(value);
-  //     });
-  //   }
-
-  //   return () => {
-  //     if (selectRef.current) {
-  //       ($(selectRef.current) as any).select2('destroy');
-  //     }
-  //   };
-  // }, [placeholder, onChange]);
-
   useEffect(() => {
     const $ = (window as any).jQuery;
     if ($ && $.fn.select2 && selectRef.current) {
-      $(selectRef.current).select2({
-        placeholder: 'Search...',
-          // tags: true,
-          allowClear: true,
-          width: '100%',
+      const $select = $(selectRef.current);
+      
+      // Initialize Select2
+      $select.select2({
+        placeholder,
+        // allowClear: true,
+        // tags: true,
+        width: '100%',
       });
+
+      // Bind change event
+      $select.on('change', (e: any) => {
+        const value = (e.target as HTMLSelectElement).value;
+        onChange?.(value);
+      });
+
+      // Cleanup on unmount
+      return () => {
+        $select.off('change'); // remove event listener
+        $select.select2('destroy'); // destroy select2
+      };
     }
-  }, []);
+  }, [placeholder, onChange]);
 
   return (
     <>

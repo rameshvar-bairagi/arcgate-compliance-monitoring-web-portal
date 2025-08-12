@@ -91,7 +91,7 @@ export default function SystemsPage() {
                   actionHref="javascript:void(0);" 
                 /> */}
                 <CardBody className="p-0">
-                  <Row className='p-2'>
+                  <Row className='p-2 end'>
                     <Col className="col-md-3 mt-2 mb-2">
                       <div className="form-group mb-0">
                         <CustomSelect
@@ -102,7 +102,7 @@ export default function SystemsPage() {
                         />
                       </div>
                     </Col>
-                    {/* <Col className="col-md-3 mt-2 mb-2">
+                    <Col className="col-md-3 mt-2 mb-2">
                       <div className="form-group mb-0">
                         <CustomSelect
                           options={systemNameOptions}
@@ -112,7 +112,7 @@ export default function SystemsPage() {
                         />
                       </div>
                     </Col>
-                    <Col className="col-md-3 mt-2 mb-2">
+                    {/* <Col className="col-md-3 mt-2 mb-2">
                       <div className="form-group mb-0">
                         <CustomSelect
                           options={dateOptions}
