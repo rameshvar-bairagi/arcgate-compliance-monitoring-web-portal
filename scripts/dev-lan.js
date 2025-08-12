@@ -21,8 +21,8 @@ console.log(`🌐 Detected LAN IP: ${ip}`);
 
 // Create .env.lan
 const envContent = `
-NEXT_PUBLIC_WEB_URL=http://${ip}:3000
-NEXT_PUBLIC_API_BASE_URL=http://${ip}:8080
+NEXT_PUBLIC_WEB_URL=http://${ip}:3001
+NEXT_PUBLIC_API_BASE_URL=http://${ip}:8080/metrics
 `.trim();
 
 writeFileSync(".env.lan", envContent);
@@ -31,7 +31,7 @@ console.log("✅ .env.lan updated:\n", envContent);
 // Run Next.js dev server
 const devProcess = spawn(
   "dotenv",
-  ["-e", ".env.lan", "--", "next", "dev", "-H", ip, "-p", "3000"],
+  ["-e", ".env.lan", "--", "next", "dev", "-H", ip, "-p", "3001"],
   { stdio: "inherit" }
 );
 
