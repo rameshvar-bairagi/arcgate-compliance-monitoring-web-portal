@@ -37,12 +37,27 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-Run in LAN mode (auto-detects your IP)
-Install the required package:
-npm install --save-dev dotenv-cli
+LAN Development Setup
+When you want to run the app on your local network (LAN) so other devices (mobile, tablet, other PCs) can access it, you need a .env.lan file with the correct LAN IP.
 
-Start the LAN development server:
-npm run dev:lan
+Find Your LAN IP Address
+On Windows:
+    Open Command Prompt and run:
+        ipconfig
+
+On Mac/Linux:
+    ifconfig
+       or
+    ip addr show
+
+Create .env.lan in the project root
+    API base URL for LAN access
+        
+        NEXT_PUBLIC_API_BASE_URL=http://192.168.238:8080/metrics
+        NEXT_PUBLIC_HOST=http://192.168.238
+
+Run the project in LAN mode:
+    npm run dev:lan
 
 Access from your machine or any device in the same network:
 http://192.168.238:3000 (Replace 192.168.238 with your detected LAN IP if different)
