@@ -25,14 +25,15 @@ import {
   getDateOptions
 } from '@/utils/commonMethod';
 import Spinner from "@/components/ui/Spinner";
-import Button from "@/components/ui/Button";
 import Modal from '@/components/modal/Modal';
 import IpList from '@/components/IpList/IpList';
+import CompliantTable from "@/components/CompliantTable/CompliantTable";
 
 export default function HomePage() {
   const dateOptions = getDateOptions();
   const [selectedDate, setSelectedDate] = useState(dateOptions[0].value); // default to Today
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isActiveWorkstationModalOpen, setIsActiveWorkstationModalOpen] = useState(false);
+  const [isCompliantSystemsModalOpen, setIsCompliantSystemsModalOpen] = useState(false);
   // console.log(isModalOpen, 'isModalOpen')
 
   const [requestBody, setRequestBody] = useState<ComplianceRequestBody>({
@@ -60,8 +61,6 @@ export default function HomePage() {
     { label: 'Home', href: '/' },
     { label: 'Dashboard', active: true },
   ];
-
-  console.log(complianceData?.ipList,'complianceData');
 
   const chartData = getChartDataFromCompliance(complianceData);
 
@@ -149,7 +148,7 @@ export default function HomePage() {
                   label="Active Workstation"
                   value={getComplianceTotals(complianceData)?.activeWorkStations || 0}
                   // unit="%"
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={() => setIsActiveWorkstationModalOpen(true)}
                 />
               </Col>
 
@@ -167,6 +166,7 @@ export default function HomePage() {
                   label="Compliant Systems"
                   value={getComplianceTotals(complianceData)?.complianceCount || 0}
                   // unit="%"
+                  onClick={() => setIsCompliantSystemsModalOpen(true)}
                 />
               </Col>
 
@@ -291,67 +291,28 @@ export default function HomePage() {
           </div>
         </Section>
 
-        {/* Modal */}
-          <Modal
-            title="Active Workstation"
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            size="xl"
-            // size="sm" | "lg" | "xl"
-            // onSave={() => {
-            //   alert('Changes saved!');
-            //   setIsModalOpen(false);
-            // }}
-          >
-            <IpList data={complianceData} />
-          </Modal>
+        <Modal
+          title="Active Workstation"
+          isOpen={isActiveWorkstationModalOpen}
+          onClose={() => setIsActiveWorkstationModalOpen(false)}
+          size="xl"
+          // size="sm" | "lg" | "xl"
+          // onSave={() => {
+          //   alert('Changes saved!');
+          //   setIsModalOpen(false);
+          // }}
+        >
+          <IpList data={complianceData} />
+        </Modal>
 
-
-
-          {/* <Modal show={true} onHide={() => setIsModalOpen(false)}>
-            <Modal.Header closeButton>
-              <Modal.Title>Title</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>Hello world!</Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={() => setIsModalOpen(false)}>
-                Close
-              </Button>
-            </Modal.Footer>
-          </Modal> */}
-        
-        {/* {isModalOpen && (
-          // <div className="modal fade show d-block" style={{ background: 'rgba(0,0,0,0.5)' }}>
-          //   <div className="modal-dialog">
-          //     <div className="modal-content">
-          //       <div className="modal-header">
-          //         <h5 className="modal-title">Performance Details</h5>
-          //         <button
-          //           type="button"
-          //           className="btn-close"
-          //           onClick={() => setIsModalOpen(false)}
-          //         ></button>
-          //       </div>
-          //       <div className="modal-body">
-          //         <p>Here are more details about performance...</p>
-          //       </div>
-          //       <div className="modal-footer">
-          //         <button
-          //           type="button"
-          //           className="btn btn-secondary"
-          //           onClick={() => setIsModalOpen(false)}
-          //         >
-          //           Close
-          //         </button>
-          //         <button type="button" className="btn btn-primary">
-          //           Save changes
-          //         </button>
-          //       </div>
-          //     </div>
-          //   </div>
-          // </div>
-        )} */}
-
+        <Modal
+          title="Compliant Systems"
+          isOpen={isCompliantSystemsModalOpen}
+          onClose={() => setIsCompliantSystemsModalOpen(false)}
+          size="xl"
+        >
+          <CompliantTable data={complianceData} />
+        </Modal>
       </ContentWrapper>
   );
 }
