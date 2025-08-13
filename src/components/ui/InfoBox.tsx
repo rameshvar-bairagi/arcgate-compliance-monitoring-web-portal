@@ -8,6 +8,7 @@ interface InfoBoxProps {
   label: string;
   value: string | number;
   unit?: string; // e.g. "%"
+  onClick?: () => void;
 }
 
 const InfoBox: React.FC<InfoBoxProps> = ({
@@ -16,9 +17,14 @@ const InfoBox: React.FC<InfoBoxProps> = ({
   label,
   value,
   unit,
+  onClick,
 }) => {
   return (
-    <div className="info-box">
+    <div 
+      className="info-box"
+      style={{ cursor: 'pointer' }}
+      onClick={onClick}
+    >
       <span className={`info-box-icon ${bgColorClass} elevation-1`}>
         <i className={iconClass}></i>
       </span>

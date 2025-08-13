@@ -35,7 +35,9 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hook-form": "^7.61.1",
+    "react-modal": "^3.16.3",
     "react-redux": "^9.2.0",
+    "react-select": "^5.10.2",
     "select2": "^4.1.0-rc.0",
     "zod": "^3.22.4"
   },

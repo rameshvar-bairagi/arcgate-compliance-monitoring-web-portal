@@ -16,13 +16,20 @@ import { useMetricsNameList } from "@/hooks/useMetricsNameList";
 import type { SystemsRequestBody, SystemsListData } from "@/types/systems";
 import { getDateOptions, getIpOptions, getMetricsOptions } from '@/utils/commonMethod';
 import { useState } from 'react';
+import Select, { MultiValue } from "react-select";
+
+interface Option {
+  value: string;
+  label: string;
+}
 
 export default function SystemsPage() {
   const dateOptions = getDateOptions();
   const [selectedDate, setSelectedDate] = useState<string | string[]>(dateOptions[0].value); // default to Today
   // const [selectedDate, setSelectedDate] = useState('');
   const [selectedSystemName, setSelectedSystemName] = useState<string | string[]>('');
-  const [selectedMetrics, setSelectedMetrics] = useState<string | string[] | null>(null);
+  // const [selectedMetrics, setSelectedMetrics] = useState<string | string[] | null>(null);
+  const [selectedMetrics, setSelectedMetrics] = useState<MultiValue<Option>>([]);
 
   // const metricsOptions = [
   //   { label: 'Apple', value: 'apple' },
@@ -41,12 +48,9 @@ export default function SystemsPage() {
     systemName: Array.isArray(selectedSystemName) ? selectedSystemName[0] : selectedSystemName || "",
     complianceRule: "",
     clientGroup: "",
-    // metricList: null // or an array like ["clamscan_antivirus", "luksEncryption"]
-    metricList: selectedMetrics === null
-      ? null
-      : Array.isArray(selectedMetrics)
-      ? selectedMetrics
-      : [selectedMetrics],
+    metricList: !selectedMetrics?.length
+    ? null
+    : selectedMetrics.map((m) => m.value),
     page:0,
     size:10
   };
@@ -72,7 +76,7 @@ export default function SystemsPage() {
     metricsNameListError 
   } = useMetricsNameList();
   const metricsOptions = getMetricsOptions(metricsNameList ?? []);
-  console.log(metricsNameList, 'metricsOptions')
+  console.log(metricsOptions, 'metricsOptions')
 
   // Now data is SystemsListData | undefined
   const systems: SystemsListData | undefined = systemsData;
@@ -119,7 +123,7 @@ export default function SystemsPage() {
                           options={dateOptions}
                           selected={selectedDate}
                           onChange={(val) => setSelectedDate(val)}
-                          placeholder={"Select Date"}
+                          placeholder={"Select date..."}
                         />
                       </div>
                     </Col>
@@ -129,19 +133,28 @@ export default function SystemsPage() {
                           options={systemNameOptions}
                           selected={selectedSystemName}
                           onChange={(val) => setSelectedSystemName(val)}
-                          placeholder={"System Name"}
+                          placeholder={"Select system..."}
                         />
                       </div>
                     </Col>
                     <Col className="col-md-3 mt-2 mb-2">
                       <div className="form-group mb-0">
-                        <CustomSelect
+                        <Select
                           options={metricsOptions}
-                          selected={selectedMetrics}
-                          onChange={(val) => setSelectedMetrics(val)}
-                          placeholder={"Select Metrics"}
-                          multiple={true}
+                          isMulti
+                          value={selectedMetrics}
+                          onChange={(newValue) => setSelectedMetrics(newValue)}
+                          placeholder="Select metrics..."
+                          isClearable
+                          // styles={{
+                          //   control: (base) => ({
+                          //     ...base,
+                          //     borderColor: "#ccc",
+                          //     padding: "2px",
+                          //   }),
+                          // }}
                         />
+                        {/* <pre>{JSON.stringify(selectedMetrics, null, 2)}</pre> */}
                       </div>
                     </Col>
                     {/* <Col className="col-md-3 mt-2 mb-2">
