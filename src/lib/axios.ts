@@ -13,12 +13,6 @@ const api = axios.create({
   },
 });
 
-let redirectToLogin: (() => void) | null = null;
-
-export const setRedirectToLogin = (callback: () => void) => {
-  redirectToLogin = callback;
-};
-
 api.interceptors.request.use((config) => {
   const token = store.getState().auth.token;
   if (token) {
@@ -27,19 +21,53 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// api.interceptors.response.use(
+//   (res) => res,
+//   async (error) => {
+//     const originalRequest = error.config;
+//     const status = error?.response?.status;
+//     if (status === 401 &&
+//       !originalRequest._retry &&
+//       typeof window !== 'undefined'
+//     ) {
+//       originalRequest._retry = true;
+//       try {
+//         const token = await refreshToken() || ''; // Use from auth.ts
+//         // if (!token) console.log('Failed to refresh token');
+//         if (!token) throw new Error('Failed to refresh token');
+
+//         store.dispatch(login({ token }));
+
+//         originalRequest.headers.Authorization = `Bearer ${token}`;
+//         return api(originalRequest);
+//       } catch (err) {
+//         store.dispatch(logout());
+//         // window.location.href = '/login';
+//         toast.error('Session expired. Please log in again.');
+//         return Promise.reject(err);
+//       }
+//     }
+
+//     return Promise.reject(error);
+//   }
+// );
+
 api.interceptors.response.use(
   (res) => res,
   async (error) => {
     const originalRequest = error.config;
     const status = error?.response?.status;
-    if (status === 401 &&
+    
+    // Don't try refresh token on login request (authenticate endpoint)
+    if (
+      status === 401 &&
       !originalRequest._retry &&
+      !originalRequest.url?.includes('/authenticate') &&
       typeof window !== 'undefined'
     ) {
       originalRequest._retry = true;
       try {
-        const token = await refreshToken() || ''; // Use from auth.ts
-        // if (!token) console.log('Failed to refresh token');
+        const token = await refreshToken();
         if (!token) throw new Error('Failed to refresh token');
 
         store.dispatch(login({ token }));
@@ -48,15 +76,13 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (err) {
         store.dispatch(logout());
-        window.location.href = '/login';
         toast.error('Session expired. Please log in again.');
-        redirectToLogin?.();
         return Promise.reject(err);
       }
     }
-
     return Promise.reject(error);
   }
 );
+
 
 export default api;

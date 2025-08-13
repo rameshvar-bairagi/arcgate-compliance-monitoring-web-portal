@@ -25,6 +25,13 @@ function ProvidersWrapper({ children }: { children: ReactNode }) {
 
   if (error && error?.response?.status) return <ErrorDisplay errorCode={error?.response?.status} />;
 
+  const isDev = process.env.NODE_ENV === 'development';
+  const isLocalhost = typeof window !== 'undefined' && (
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1' ||
+    window.location.hostname === '::1'
+  );
+
   return (
     <>
       <BodyThemeManager />
@@ -32,7 +39,7 @@ function ProvidersWrapper({ children }: { children: ReactNode }) {
       {loading && <PreloaderManager />}
       <AuthGuard>{children}</AuthGuard>
       {/* Show devtools only in development */}
-      {process.env.NODE_ENV === 'development' && (
+      {isDev && isLocalhost && (
         <ReactQueryDevtools initialIsOpen={false} position="bottom" />
       )}
     </>
