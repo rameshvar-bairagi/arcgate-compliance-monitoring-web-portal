@@ -36,7 +36,7 @@ export default function Sidebar() {
               </Link>
             </Li>
             <Li className="nav-item">
-              <Link href="/systems" className="nav-link">
+              <Link href="/systems" className="nav-link disabled">
                 <i className="nav-icon fas fa-cogs" />
                 <p>Systems</p>
               </Link>

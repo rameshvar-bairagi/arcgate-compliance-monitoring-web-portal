@@ -27,13 +27,14 @@ import {
 import Spinner from "@/components/ui/Spinner";
 import Modal from '@/components/modal/Modal';
 import IpList from '@/components/IpList/IpList';
-import CompliantTable from "@/components/CompliantTable/CompliantTable";
+import CompliantTableGeneric from "@/components/CompliantTableGeneric/CompliantTableGeneric";
 
 export default function HomePage() {
   const dateOptions = getDateOptions();
   const [selectedDate, setSelectedDate] = useState(dateOptions[0].value); // default to Today
   const [isActiveWorkstationModalOpen, setIsActiveWorkstationModalOpen] = useState(false);
   const [isCompliantSystemsModalOpen, setIsCompliantSystemsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<'compliant' | 'non-compliant' | null>(null);
   // console.log(isModalOpen, 'isModalOpen')
 
   const [requestBody, setRequestBody] = useState<ComplianceRequestBody>({
@@ -166,7 +167,7 @@ export default function HomePage() {
                   label="Compliant Systems"
                   value={getComplianceTotals(complianceData)?.complianceCount || 0}
                   // unit="%"
-                  onClick={() => setIsCompliantSystemsModalOpen(true)}
+                  onClick={() => setModalType('compliant')}
                 />
               </Col>
 
@@ -184,6 +185,7 @@ export default function HomePage() {
                   label="Non-Compliant Systems"
                   value={getComplianceTotals(complianceData)?.nonComplianceCount || 0}
                   // unit="%"
+                  onClick={() => setModalType('non-compliant')}
                 />
               </Col>
             </Row>
@@ -306,12 +308,12 @@ export default function HomePage() {
         </Modal>
 
         <Modal
-          title="Compliant Systems"
-          isOpen={isCompliantSystemsModalOpen}
-          onClose={() => setIsCompliantSystemsModalOpen(false)}
+          title={modalType === 'compliant' ? "Compliant Systems" : "Non-Compliant Systems"}
+          isOpen={modalType !== null}
+          onClose={() => setModalType(null)}
           size="xl"
         >
-          <CompliantTable data={complianceData} />
+          <CompliantTableGeneric data={complianceData} type={modalType === 'compliant' ? "compliant" : "non-compliant"} />
         </Modal>
       </ContentWrapper>
   );
