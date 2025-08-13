@@ -297,7 +297,7 @@ export default function HomePage() {
           title="Active Workstation"
           isOpen={isActiveWorkstationModalOpen}
           onClose={() => setIsActiveWorkstationModalOpen(false)}
-          size="xl"
+          size="sm"
           // size="sm" | "lg" | "xl"
           // onSave={() => {
           //   alert('Changes saved!');
