@@ -61,10 +61,10 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({ errorCode }) => {
   useEffect(() => {
     if (errorCode === 401 || errorCode === 403) {
       setTimeout(() => {
-        // router.push('/login');
-        // if (!router?.push) return null;
-        Promise.resolve().then(() => router.replace('/login'));
-      }, 2000); // Redirect after 2 seconds
+        router.push('/login');
+        if (!router?.push) return null;
+        // Promise.resolve().then(() => router.replace('/login'));
+      }, 1000); // Redirect after 2 seconds
     }
   }, [errorCode, router]);
 

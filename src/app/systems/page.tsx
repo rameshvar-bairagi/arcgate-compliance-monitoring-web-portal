@@ -14,7 +14,7 @@ import { useSystems } from "@/hooks/useSystems";
 import { useSystemNameList } from "@/hooks/useSystemNameList";
 import { useMetricsNameList } from "@/hooks/useMetricsNameList";
 import type { SystemsRequestBody, SystemsListData } from "@/types/systems";
-import { getDateOptions, getIpOptions } from '@/utils/commonMethod';
+import { getDateOptions, getIpOptions, getMetricsOptions } from '@/utils/commonMethod';
 import { useState } from 'react';
 
 export default function SystemsPage() {
@@ -22,7 +22,7 @@ export default function SystemsPage() {
   const [selectedDate, setSelectedDate] = useState<string | string[]>(dateOptions[0].value); // default to Today
   // const [selectedDate, setSelectedDate] = useState('');
   const [selectedSystemName, setSelectedSystemName] = useState<string | string[]>('');
-  const [selectedMetrics, setSelectedMetrics] = useState<string | string[]>('');
+  const [selectedMetrics, setSelectedMetrics] = useState<string | string[] | null>(null);
 
   // const metricsOptions = [
   //   { label: 'Apple', value: 'apple' },
@@ -71,7 +71,8 @@ export default function SystemsPage() {
     metricsNameListLoading, 
     metricsNameListError 
   } = useMetricsNameList();
-  const metricsOptions = getIpOptions(metricsNameList ?? []);
+  const metricsOptions = getMetricsOptions(metricsNameList ?? []);
+  console.log(metricsNameList, 'metricsOptions')
 
   // Now data is SystemsListData | undefined
   const systems: SystemsListData | undefined = systemsData;
@@ -111,7 +112,7 @@ export default function SystemsPage() {
                   actionHref="javascript:void(0);" 
                 /> */}
                 <CardBody className="p-0">
-                  <Row className='p-2 end'>
+                  <Row className='p-2 d-flex justify-content-end'>
                     <Col className="col-md-3 mt-2 mb-2">
                       <div className="form-group mb-0">
                         <CustomSelect

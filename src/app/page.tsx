@@ -211,7 +211,7 @@ export default function HomePage() {
                               </tr>
                             ) : Object.entries(alertsDatas || {}).filter(([_, alerts]) => alerts && alerts.length > 0).length === 0 ? (
                               <tr>
-                                <td colSpan={3} className="text-center text-muted">No data available</td>
+                                <td colSpan={3} className="text-center text-muted">No Alerts Generated</td>
                               </tr>
                             ) : (
                               Object.entries(alertsDatas || {}).map(([systemKey, alerts], index) => {
@@ -227,7 +227,7 @@ export default function HomePage() {
                                     <td>{systemKey}</td>
                                     <td>
                                       {alerts.map((alert, i) => (
-                                        <span key={i} className={getBadgeClass(alert.level)}>
+                                        <span key={i} className={getBadgeClass(`${alert.level}metric`)}>
                                           {alert.metricsName}
                                         </span>
                                       ))}

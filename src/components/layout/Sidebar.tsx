@@ -42,25 +42,25 @@ export default function Sidebar() {
               </Link>
             </Li>
             <Li className="nav-item">
-              <Link href="/" className="nav-link">
+              <Link href="#" className="nav-link disabled">
                 <i className="nav-icon fas fa-bars" />
                 <p>Rules</p>
               </Link>
             </Li>
             <Li className="nav-item">
-              <Link href="/" className="nav-link">
+              <Link href="#" className="nav-link disabled">
                 <i className="nav-icon fas fa-users" />
                 <p>Groups</p>
               </Link>
             </Li>
             <Li className="nav-item">
-              <Link href="/" className="nav-link">
+              <Link href="#" className="nav-link disabled">
                 <i className="nav-icon fas fa-bell" />
                 <p>Alerts</p>
               </Link>
             </Li>
             <Li className="nav-item">
-              <Link href="/" className="nav-link">
+              <Link href="#" className="nav-link disabled">
                 <i className="nav-icon fas fa-file" />
                 <p>Reports</p>
               </Link>
@@ -70,7 +70,7 @@ export default function Sidebar() {
       </div>
 
       <div className="sidebar-custom">
-        <Link href="/" className="btn btn-link d-flex align-items-left">
+        <Link href="#" className="btn btn-link d-flex align-items-left disabled">
           <i className="fas fa-cog"></i>
           {/* <p className="hide-on-collapse"> Settings</p> */}
         </Link>

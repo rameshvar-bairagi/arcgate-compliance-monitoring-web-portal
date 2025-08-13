@@ -28,7 +28,7 @@ export const useInitializeAuth = () => {
       }  catch (err: any) {
         const axiosErr = err as AxiosError;
         const status = axiosErr?.response?.status;
-        if ([401, 402, 403, 404, 500, 501, 502, 503, 504].includes(status ?? 0)) {
+        if ([402, 404, 500, 501, 502, 503, 504].includes(status ?? 0)) { // 401, 403
           setError(axiosErr);
         }
         dispatch(logout());

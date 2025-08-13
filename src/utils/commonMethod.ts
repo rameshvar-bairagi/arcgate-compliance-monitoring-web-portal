@@ -19,7 +19,7 @@ export const getBadgeClass = (level: string = ''): string => {
     case 'l3':
       return 'badge badge-danger m-1';
     default:
-      return 'badge badge-info m-1';
+      return 'badge badge-light m-1';
   }
 };
 
@@ -121,6 +121,18 @@ export const getIpOptions = (ips: string[]): Option[] => {
     label: ip,
     value: ip,
   }));
+};
+
+type MetricInput =
+  | string
+  | { metricsName: string; metricsDbName: string; id: number };
+
+export const getMetricsOptions = (metrics: MetricInput[]): Option[] => {
+  return metrics.map((m, idx) =>
+    typeof m === "string"
+      ? { label: m, value: m }
+      : { label: m.metricsName, value: m.metricsDbName }
+  );
 };
 
 export const capitalize = (str?: string) => {

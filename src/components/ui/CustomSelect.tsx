@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react';
 interface CustomSelectProps {
   label?: string;
   options?: { label: string; value: string }[];
-  selected?: string | string[]; // support single or multiple
+  selected?: string | string[] | null; // support single or multiple
   onChange?: (value: string | string[]) => void;
   placeholder?: string;
   multiple?: boolean;
@@ -75,8 +75,8 @@ export default function CustomSelect({
             {placeholder}
           </option>
         )}
-        {options?.map((opt) => (
-          <option key={opt.value} value={opt.value}>
+        {options?.map((opt, index) => (
+          <option key={`${opt.value}-${index}`} value={opt.value}>
             {opt.label}
           </option>
         ))}
