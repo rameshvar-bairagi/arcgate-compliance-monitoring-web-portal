@@ -37,10 +37,9 @@ const Modal: React.FC<ModalProps> = ({
             <h4 className="modal-title">{title}</h4>
             <Button
               type="button"
-              className="close"
+              className="btn btn-default"
               onClick={onClose}
               aria-label="Close"
-              variant="primary"
             >
               <span aria-hidden="true">&times;</span>
             </Button>
@@ -53,13 +52,13 @@ const Modal: React.FC<ModalProps> = ({
 
           {/* Footer stays fixed */}
           <div className="modal-footer justify-content-between">
-            <button type="button" className="btn btn-default" onClick={onClose}>
+            <Button type="button" className="btn btn-default" onClick={onClose}>
               Close
-            </button>
+            </Button>
             {onSave && (
-              <button type="button" className="btn btn-primary" onClick={onSave}>
+              <Button type="button" className="btn btn-primary" onClick={onSave}>
                 Save changes
-              </button>
+              </Button>
             )}
           </div>
 
