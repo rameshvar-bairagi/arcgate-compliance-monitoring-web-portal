@@ -98,3 +98,11 @@ a {
 .select2-container--default .select2-selection--single .select2-selection__arrow {
   height: inherit !important;
 }
+
+.top-48 {
+  top: 48px !important;
+}
+
+.max-h-calc {
+  max-height: calc(100vh - 96px);
+}

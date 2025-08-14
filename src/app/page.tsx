@@ -297,8 +297,8 @@ export default function HomePage() {
           title="Active Workstation"
           isOpen={isActiveWorkstationModalOpen}
           onClose={() => setIsActiveWorkstationModalOpen(false)}
-          size="sm"
-          // size="sm" | "lg" | "xl"
+          size="md"
+          // size="md" | "sm" | "lg" | "xl"
           // onSave={() => {
           //   alert('Changes saved!');
           //   setIsModalOpen(false);

@@ -9,7 +9,7 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave?: () => void;
-  size?: 'sm' | 'lg' | 'xl';
+  size?: 'sm' | "md" | 'lg' | 'xl';
 }
 
 const Modal: React.FC<ModalProps> = ({
