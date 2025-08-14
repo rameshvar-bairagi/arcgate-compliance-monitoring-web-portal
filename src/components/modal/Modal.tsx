@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Button from "@/components/ui/Button";
+import Heading from '../ui/Heading';
 
 interface ModalProps {
   title: string;
@@ -34,7 +35,7 @@ const Modal: React.FC<ModalProps> = ({
           
           {/* Header stays fixed */}
           <div className="modal-header">
-            <h4 className="modal-title">{title}</h4>
+            <Heading level={4} className="modal-title">{title}</Heading>
             <Button
               type="button"
               className="btn btn-default"

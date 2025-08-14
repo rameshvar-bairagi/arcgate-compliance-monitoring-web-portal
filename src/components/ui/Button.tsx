@@ -5,7 +5,7 @@ import { ButtonHTMLAttributes } from 'react';
 import classNames from 'classnames';
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: 'primary' | 'secondary' | 'danger';
+  variant?: 'primary' | 'secondary' | 'danger' | 'default';
   size?: 'sm' | 'md' | 'lg';
 };
 
