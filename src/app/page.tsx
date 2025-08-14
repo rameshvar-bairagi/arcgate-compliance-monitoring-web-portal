@@ -29,16 +29,20 @@ import Modal from '@/components/modal/Modal';
 import IpList from '@/components/IpList/IpList';
 import CompliantTableGeneric from "@/components/CompliantTableGeneric/CompliantTableGeneric";
 
+interface Option {
+  value: string;
+  label: string;
+}
+
 export default function HomePage() {
   const dateOptions = getDateOptions();
-  const [selectedDate, setSelectedDate] = useState(dateOptions[0].value); // default to Today
+  const [selectedDate, setSelectedDate] = useState<Option | null>(dateOptions[0]); // default to Today
   const [isActiveWorkstationModalOpen, setIsActiveWorkstationModalOpen] = useState(false);
-  const [isCompliantSystemsModalOpen, setIsCompliantSystemsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<'compliant' | 'non-compliant' | null>(null);
   // console.log(isModalOpen, 'isModalOpen')
 
   const [requestBody, setRequestBody] = useState<ComplianceRequestBody>({
-    date: selectedDate,
+    date: selectedDate?.value || '',
     complianceRule: '',
     clientGroup: '',
   });
@@ -96,7 +100,7 @@ export default function HomePage() {
   useEffect(() => {
     setRequestBody(prev => ({
       ...prev,
-      date: selectedDate,
+      date: selectedDate?.value || '',
     }));
   }, [selectedDate]);
 
@@ -107,7 +111,7 @@ export default function HomePage() {
           showSelect={true}
           options={dateOptions}
           selected={selectedDate}
-          onChange={(val) => setSelectedDate(val)}
+          onChange={(option) => setSelectedDate(option)}
           placeholder="Select Date"
           breadcrumbItems={breadcrumbItems} 
         />

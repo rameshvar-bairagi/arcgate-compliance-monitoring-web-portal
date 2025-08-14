@@ -6,7 +6,6 @@ import CardHeader from '@/components/ui/CardHeader';
 import Col from '@/components/ui/Col';
 import ContentHeader from '@/components/ui/ContentHeader';
 import ContentWrapper from '@/components/ui/ContentWrapper';
-import CustomSelect from '@/components/ui/CustomSelect';
 import DynamicTable from '@/components/ui/Datatable/DynamicTable';
 import Row from '@/components/ui/Row';
 import Section from '@/components/ui/Section';
@@ -25,27 +24,18 @@ interface Option {
 
 export default function SystemsPage() {
   const dateOptions = getDateOptions();
-  const [selectedDate, setSelectedDate] = useState<string | string[]>(dateOptions[0].value); // default to Today
-  // const [selectedDate, setSelectedDate] = useState('');
-  const [selectedSystemName, setSelectedSystemName] = useState<string | string[]>('');
-  // const [selectedMetrics, setSelectedMetrics] = useState<string | string[] | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Option>(dateOptions[0]); // default to first option
+  const [selectedSystemName, setSelectedSystemName] = useState<Option | null>(null);
   const [selectedMetrics, setSelectedMetrics] = useState<MultiValue<Option>>([]);
 
-  // const metricsOptions = [
-  //   { label: 'Apple', value: 'apple' },
-  //   { label: 'Banana', value: 'banana' },
-  //   { label: 'Mango', value: 'mango' },
-  //   { label: 'Orange', value: 'orange' },
-  // ];
-  
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
     { label: 'Systems', active: true },
   ];
 
   const requestBody: SystemsRequestBody = {
-    date: Array.isArray(selectedDate) ? selectedDate[0] : selectedDate || "",
-    systemName: Array.isArray(selectedSystemName) ? selectedSystemName[0] : selectedSystemName || "",
+    date: selectedDate?.value || "",
+    systemName: selectedSystemName?.value || "",
     complianceRule: "",
     clientGroup: "",
     metricList: !selectedMetrics?.length
@@ -68,7 +58,7 @@ export default function SystemsPage() {
     systemNameListLoading, 
     systemNameListError 
   } = useSystemNameList();
-  const systemNameOptions = getIpOptions(systemNameList ?? []);
+  const systemNameOptions: Option[] = getIpOptions(systemNameList ?? []);
 
   const { 
     metricsNameList, 
@@ -76,11 +66,11 @@ export default function SystemsPage() {
     metricsNameListError 
   } = useMetricsNameList();
   const metricsOptions = getMetricsOptions(metricsNameList ?? []);
-  console.log(metricsOptions, 'metricsOptions')
+  // console.log(metricsOptions, 'metricsOptions')
 
   // Now data is SystemsListData | undefined
   const systems: SystemsListData | undefined = systemsData;
-  console.log(systems,'systems list');
+  // console.log(systems,'systems list');
 
   const columns = [
     'System Name/Id',
@@ -119,21 +109,25 @@ export default function SystemsPage() {
                   <Row className='p-2 d-flex justify-content-end'>
                     <Col className="col-md-3 mt-2 mb-2">
                       <div className="form-group mb-0">
-                        <CustomSelect
+                        <Select
                           options={dateOptions}
-                          selected={selectedDate}
-                          onChange={(val) => setSelectedDate(val)}
+                          value={selectedDate}
+                          onChange={(newValue) => {
+                            if (newValue) setSelectedDate(newValue);
+                          }}
                           placeholder={"Select date..."}
+                          isClearable={false}
                         />
                       </div>
                     </Col>
                     <Col className="col-md-3 mt-2 mb-2">
                       <div className="form-group mb-0">
-                        <CustomSelect
+                        <Select
                           options={systemNameOptions}
-                          selected={selectedSystemName}
-                          onChange={(val) => setSelectedSystemName(val)}
+                          value={selectedSystemName}
+                          onChange={(newValue) => setSelectedSystemName(newValue)}
                           placeholder={"Select system..."}
+                          isClearable
                         />
                       </div>
                     </Col>
@@ -159,11 +153,14 @@ export default function SystemsPage() {
                     </Col>
                     {/* <Col className="col-md-3 mt-2 mb-2">
                       <div className="form-group mb-0">
-                        <CustomSelect
+                        <Select
                           options={dateOptions}
-                          selected={selectedDate}
-                          onChange={(val) => setSelectedDate(val)}
-                          placeholder={"Select Date"}
+                          value={selectedDate}
+                          onChange={(newValue) => {
+                            if (newValue) setSelectedDate(newValue);
+                          }}
+                          placeholder={"Select date..."}
+                          isClearable={false}
                         />
                       </div>
                     </Col> */}

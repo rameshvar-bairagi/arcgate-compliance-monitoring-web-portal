@@ -3,15 +3,19 @@
 import React from 'react';
 import Breadcrumb, { BreadcrumbItem } from '@/components/ui/Breadcrumb';
 import Heading from '@/components/ui/Heading';
-import CustomSelect from '@/components/ui/CustomSelect';
+import Select, { MultiValue } from "react-select";
+interface Option {
+  value: string;
+  label: string;
+}
 
 interface ContentHeaderProps {
   title: string;
   breadcrumbItems?: BreadcrumbItem[];
   showSelect?: boolean;
-  options?: { label: string; value: string }[];
-  selected?: string;
-  onChange?: (value: string) => void;
+  options?: Option[];
+  selected?: Option | null;
+  onChange?: (value: Option | null) => void;
   placeholder?: string;
 }
 
@@ -20,7 +24,7 @@ const ContentHeader: React.FC<ContentHeaderProps> = ({
   breadcrumbItems,
   showSelect = false,
   options = [],
-  selected,
+  selected = null,
   onChange,
   placeholder,
 }) => {
@@ -34,11 +38,12 @@ const ContentHeader: React.FC<ContentHeaderProps> = ({
           <div className="col-12 col-sm-3 col-md-2 col-lg-2 col-xl-2"></div>
           <div className="col-12 col-sm-3 col-md-2 col-lg-2 col-xl-2">
             {showSelect ? (
-              <CustomSelect
+              <Select
                 options={options}
-                selected={selected}
+                value={selected}
                 onChange={onChange}
                 placeholder={placeholder}
+                isClearable={false}
               />
             ) : (
               breadcrumbItems && (
