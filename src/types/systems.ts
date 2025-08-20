@@ -10,25 +10,32 @@ export type SystemsRequestBody = {
   // metricList:[3,6,25];
 };
 
-export type SystemDayData = {
-  ip: string;
-  systemDate: string;
-  complianceServices?: string[] | null;
-  nonComplianceServices?: string[] | null;
-};
-
-export type SystemsApiResponse = {
-  [ip: string]: {
-    [date: string]: SystemDayData;
+export type ApiResponse = {
+  pageNumber: number;
+  pageSize: number;
+  totalElements: number;
+  totalPages: number;
+  data: {
+    [ip: string]: {
+      [date: string]: {
+        ip: string;
+        systemDate: string;
+        complianceServices: string[];
+        nonComplianceServices: string[];
+      };
+    };
   };
 };
 
-export type SystemsItem = {
+export type TableRow = {
   ip: string;
   systemDate: string;
   complianceServices: string[];
   nonComplianceServices: string[];
-  complianceStatus: boolean; // true if nonComplianceServices is empty/null
+  complianceStatus: boolean;
 };
-
-export type SystemsListData = Record<string, SystemsItem[]>;
+export interface SystemsListData {
+  content: TableRow[];
+  totalElements: number;
+  totalPages: number;
+}

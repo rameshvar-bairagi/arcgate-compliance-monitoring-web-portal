@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import api from '@/lib/axios';
-import type { SystemsApiResponse } from '@/types/systems';
+import type { ApiResponse } from '@/types/systems';
 import type { SystemsRequestBody } from '@/types/systems';
 
-export const fetchSystems = async (body: SystemsRequestBody): Promise<SystemsApiResponse> => {
+export const fetchSystems = async (body: SystemsRequestBody): Promise<ApiResponse> => {
   const res = await api.post('/system', body); // adjust endpoint
   // if (process.env.NODE_ENV === 'development') console.error('fetchSystems', res.data);
   return res.data;

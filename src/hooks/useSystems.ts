@@ -1,32 +1,33 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchSystems, fetchSystemNameList } from '@/services/systemsService';
-import { transformApiToSystemsList } from '@/utils/systems';
+import { fetchSystems } from '@/services/systemsService';
+import { transformApiResponse } from '@/utils/systems';
 import type { SystemsRequestBody, SystemsListData } from '@/types/systems';
 import { AxiosError } from 'axios';
 
 export const useSystems = (requestBody: SystemsRequestBody, enabled: boolean = true) => {
-  const {
-    data: systemsData,
-    isLoading: systemsLoading,
-    error: systemsError,
-    refetch: refetchSystems, // custom alias
-  } = useQuery<SystemsListData>({
+  const { data, isLoading, error, refetch } = useQuery<SystemsListData>({
     queryKey: ['systems', requestBody],
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // queryKey: [
+    //   'systems',
+    //   // requestBody.date,
+    //   // requestBody.systemName || null,
+    //   // requestBody.metricList?.join(',') || null
+    // ],
     queryFn: async () => {
       const apiData = await fetchSystems(requestBody);
-      return transformApiToSystemsList(apiData);
+      return transformApiResponse(apiData);
     },
     enabled,
-    staleTime: 1000 * 60,
+    // keepPreviousData: true, // smooth pagination / filtering
+    staleTime: 1000 * 60, // 1 min
     retry: false, // Don't retry on error
   });
 
   return {
-    systemsData,
-    systemsLoading,
-    systemsError: systemsError as AxiosError | null,
-    refetchSystems, // manually refetch alerts only
+    systemsData: data,
+    systemsLoading: isLoading,
+    systemsError: error ?? null,
+    refetchSystems: refetch, // manually refetch alerts only
     // refetchAll, // call both in parallel
   };
 };

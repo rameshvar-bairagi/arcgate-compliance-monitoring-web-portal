@@ -6,16 +6,17 @@ import CardHeader from '@/components/ui/CardHeader';
 import Col from '@/components/ui/Col';
 import ContentHeader from '@/components/ui/ContentHeader';
 import ContentWrapper from '@/components/ui/ContentWrapper';
-import DynamicTable from '@/components/ui/Datatable/DynamicTable';
+// import DynamicTable from '@/components/ui/Datatable/DynamicTable';
 import Row from '@/components/ui/Row';
 import Section from '@/components/ui/Section';
 import { useSystems } from "@/hooks/useSystems";
 import { useSystemNameList } from "@/hooks/useSystemNameList";
 import { useMetricsNameList } from "@/hooks/useMetricsNameList";
-import type { SystemsRequestBody, SystemsListData } from "@/types/systems";
+import type { SystemsRequestBody } from "@/types/systems";
 import { getDateOptions, getIpOptions, getMetricsOptions } from '@/utils/commonMethod';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Select, { MultiValue } from "react-select";
+import { CommonDataTable } from '@/components/ui/Datatable/CommonDataTable';
 
 interface Option {
   value: string;
@@ -24,7 +25,7 @@ interface Option {
 
 export default function SystemsPage() {
   const dateOptions = getDateOptions();
-  const [selectedDate, setSelectedDate] = useState<Option>(dateOptions[0]); // default to first option
+  // const [selectedDate, setSelectedDate] = useState<Option>(dateOptions[0]); // default to first option
   const [selectedSystemName, setSelectedSystemName] = useState<Option | null>(null);
   const [selectedMetrics, setSelectedMetrics] = useState<MultiValue<Option>>([]);
 
@@ -33,25 +34,36 @@ export default function SystemsPage() {
     { label: 'Systems', active: true },
   ];
 
-  const requestBody: SystemsRequestBody = {
-    date: selectedDate?.value || "",
-    systemName: selectedSystemName?.value || "",
+  const [filters, setFilters] = useState({
+    date: dateOptions[0].value,
+    systemName: "",
     complianceRule: "",
     clientGroup: "",
-    metricList: !selectedMetrics?.length
-    ? null
-    : selectedMetrics.map((m) => m.value),
-    page:0,
-    size:10
-  };
+    metricList: null as string[] | null,
+    page: 0,
+    size: 10
+  });
+
+  const requestBody = useMemo<SystemsRequestBody>(() => ({
+    date: filters.date,
+    systemName: filters.systemName,
+    complianceRule: "",
+    clientGroup: "",
+    metricList: filters.metricList,
+    page: filters.page,
+    size: filters.size,
+  }), [filters]);
+
+  console.log(filters, 'filtersfiltersfilters');
 
   // Call the hook
   const { 
     systemsData, 
     systemsLoading, 
     systemsError, 
-    // refetchSystems 
-  } = useSystems(requestBody);
+    refetchSystems 
+  } = useSystems(requestBody, true);
+  // console.log(systemsData?.content,'systems list');
 
   const { 
     systemNameList, 
@@ -66,28 +78,21 @@ export default function SystemsPage() {
     metricsNameListError 
   } = useMetricsNameList();
   const metricsOptions = getMetricsOptions(metricsNameList ?? []);
-  // console.log(metricsOptions, 'metricsOptions')
+  console.log(metricsNameList, 'metricsOptions')
 
-  // Now data is SystemsListData | undefined
-  const systems: SystemsListData | undefined = systemsData;
-  // console.log(systems,'systems list');
-
-  const columns = [
-    'System Name/Id',
-    'Compliance Status',
-    'Metrics',
-    // 'Client Group',
-    // 'Security Policy Applied',
-    'System Date',
-  ];
-
-  const data = [
-    ['Trident', 'Yes', 'Win 95+', '4'],
-    ['Trident', 'No', 'Win 95+', '5'],
-    ['Trident', 'No', 'Win 98+', '6'],
-    ['Gecko', 'No', 'Win 98+ / OSX.2+', '1.7'],
-    ['Gecko', 'No', 'Win 98+ / OSX.2+', '1.7']
-  ];
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      // Only update filters if something actually changed
+      setFilters(prev =>
+        prev.page !== detail.page || prev.size !== detail.size
+          ? { ...prev, page: detail.page, size: detail.size }
+          : prev
+      );
+    };
+    window.addEventListener("tablePaginationChange", handler);
+    return () => window.removeEventListener("tablePaginationChange", handler);
+  }, []);
 
   return (
     <ContentWrapper>
@@ -111,10 +116,15 @@ export default function SystemsPage() {
                       <div className="form-group mb-0">
                         <Select
                           options={dateOptions}
-                          value={selectedDate}
-                          onChange={(newValue) => {
-                            if (newValue) setSelectedDate(newValue);
-                          }}
+                          // value={selectedDate}
+                          value={dateOptions.find((opt) => opt.value === filters.date) || null}
+                          onChange={(newValue) =>
+                            setFilters((prev) => ({
+                              ...prev,
+                              date: newValue?.value || "",
+                              page: 0, // reset pagination
+                            }))
+                          }
                           placeholder={"Select date..."}
                           isClearable={false}
                         />
@@ -125,7 +135,15 @@ export default function SystemsPage() {
                         <Select
                           options={systemNameOptions}
                           value={selectedSystemName}
-                          onChange={(newValue) => setSelectedSystemName(newValue)}
+                          // onChange={(newValue) => setSelectedSystemName(newValue)}
+                          onChange={(newValue) => {
+                            setSelectedSystemName(newValue);
+                            setFilters((prev) => ({
+                              ...prev,
+                              systemName: newValue?.value || "",
+                              page: 0,
+                            }));
+                          }}
                           placeholder={"Select system..."}
                           isClearable
                         />
@@ -137,7 +155,15 @@ export default function SystemsPage() {
                           options={metricsOptions}
                           isMulti
                           value={selectedMetrics}
-                          onChange={(newValue) => setSelectedMetrics(newValue)}
+                          // onChange={(newValue) => setSelectedMetrics(newValue)}
+                          onChange={(newValue) => {
+                            setSelectedMetrics(newValue);
+                            setFilters((prev) => ({
+                              ...prev,
+                              metricList: newValue?.map(v => v.value) || null,
+                              page: 0,
+                            }));
+                          }}
                           placeholder="Select metrics..."
                           isClearable
                           // styles={{
@@ -165,12 +191,34 @@ export default function SystemsPage() {
                       </div>
                     </Col> */}
                   </Row>
-                  <DynamicTable
-                    tableId="example1"
-                    className="table table-bordered table-striped"
-                    columns={columns}
-                    data={data}
-                    showFooter={true}
+                  <CommonDataTable 
+                    id={"systemsTable"} 
+                    onViewClick={(id) => {
+                      console.log("Clicked row with id:", id);
+                      // maybe open modal, navigate, etc.
+                    }}
+                    columns={[
+                      { data: "ip", title: "IP Address" },
+                      { data: "complianceStatus", title: "Compliance Status" },
+                      { data: "complianceServices", title: "Compliance Services" },
+                      { data: "nonComplianceServices", title: "Non-Compliance Services" },
+                      { data: "systemDate", title: "System Date" },
+                    ]}
+                    data={systemsData?.content ?? []}
+                    page={filters.page}
+                    size={filters.size}
+                    totalElements={systemsData?.totalElements ?? 0}
+                    onPageChange={(newPage) =>
+                      setFilters((prev) => ({
+                        ...prev,
+                        page: newPage,
+                      }))
+                    }
+                    searching={false}
+                    order={4}
+                    columnDefs={[{ orderable: false, targets: [0, 1, 2, 3] }]}
+                    exportButtons={[]}
+                    domLayout={"Brtip"}
                   />
                 </CardBody>
               </Card>

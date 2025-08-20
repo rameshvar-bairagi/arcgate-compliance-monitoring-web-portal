@@ -125,13 +125,13 @@ export const getIpOptions = (ips: string[]): Option[] => {
 
 type MetricInput =
   | string
-  | { metricsName: string; metricsDbName: string; id: number };
+  | { metricsName: string; metricsDbName: string; id: string };
 
 export const getMetricsOptions = (metrics: MetricInput[]): Option[] => {
   return metrics.map((m, idx) =>
     typeof m === "string"
       ? { label: m, value: m }
-      : { label: m.metricsName, value: m.metricsDbName }
+      : { label: m.metricsName, value: m.id }
   );
 };
 
