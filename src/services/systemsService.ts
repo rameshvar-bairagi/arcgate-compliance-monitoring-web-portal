@@ -20,3 +20,15 @@ export const fetchMetricsNameList = async (): Promise<any | null> => {
   // if (process.env.NODE_ENV === 'development') console.error('fetchMetricsNameList', res.data);
   return res.data;
 };
+
+export const fetchComplianceRulesList = async (): Promise<any | null> => {
+  const res = await api.get('/compliance-rules'); // adjust endpoint
+  // if (process.env.NODE_ENV === 'development') console.error('fetchMetricsNameList', res.data);
+  return res.data;
+};
+
+export const fetchClientGroupList = async (): Promise<any | null> => {
+  const res = await api.get('/client-groups'); // adjust endpoint
+  // if (process.env.NODE_ENV === 'development') console.error('fetchMetricsNameList', res.data);
+  return res.data;
+};

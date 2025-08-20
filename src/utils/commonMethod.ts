@@ -114,7 +114,7 @@ export const getDateOptions = () => {
 
 export interface Option {
   label: string;
-  value: string;
+  value: string | number;
 }
 export const getIpOptions = (ips: string[]): Option[] => {
   return ips.map((ip) => ({
@@ -137,4 +137,32 @@ export const getMetricsOptions = (metrics: MetricInput[]): Option[] => {
 
 export const capitalize = (str?: string) => {
   return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+}
+
+interface Rule {
+  id: number;
+  name: string;
+  description: string;
+  andRule: string;
+  orRule: string;
+}
+
+export const getRulesOptions = (rules: Rule[]): Option[] => {
+  return rules.map(rule => ({
+    label: rule.name,  // show rule name
+    value: rule.id     // use id as value
+  }));
+}
+
+
+interface ClientGroup {
+  id: number;
+  name: string;
+  complianceRuleId: string | number;
+}
+export const getClientGroupOptions = (clientGroup: ClientGroup[]): Option[] => {
+  return clientGroup.map(group => ({
+    label: group.name,  // show group name
+    value: group.id     // use id as value
+  }));
 }

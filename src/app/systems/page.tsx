@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import Card from '@/components/ui/Card';
 import CardBody from '@/components/ui/CardBody';
-import CardHeader from '@/components/ui/CardHeader';
+// import CardHeader from '@/components/ui/CardHeader';
 import Col from '@/components/ui/Col';
 import ContentHeader from '@/components/ui/ContentHeader';
 import ContentWrapper from '@/components/ui/ContentWrapper';
@@ -10,23 +11,29 @@ import ContentWrapper from '@/components/ui/ContentWrapper';
 import Row from '@/components/ui/Row';
 import Section from '@/components/ui/Section';
 import { useSystems } from "@/hooks/useSystems";
-import { useSystemNameList } from "@/hooks/useSystemNameList";
-import { useMetricsNameList } from "@/hooks/useMetricsNameList";
+import { useMetricsNameList, useSystemNameList, useComplianceRulesList, useClientGroupList } from "@/hooks/useOptionList";
 import type { SystemsRequestBody } from "@/types/systems";
-import { getDateOptions, getIpOptions, getMetricsOptions } from '@/utils/commonMethod';
+import { getClientGroupOptions, getDateOptions, getIpOptions, getMetricsOptions, getRulesOptions, Option } from '@/utils/commonMethod';
 import { useEffect, useMemo, useState } from 'react';
 import Select, { MultiValue } from "react-select";
 import { CommonDataTable } from '@/components/ui/Datatable/CommonDataTable';
 
-interface Option {
-  value: string;
-  label: string;
-}
+type Filters = {
+  date: string;
+  systemName: any;
+  complianceRule: any;
+  clientGroup: any;
+  metricList: any[] | null;
+  page: number;
+  size: number;
+};
 
 export default function SystemsPage() {
   const dateOptions = getDateOptions();
   // const [selectedDate, setSelectedDate] = useState<Option>(dateOptions[0]); // default to first option
   const [selectedSystemName, setSelectedSystemName] = useState<Option | null>(null);
+  const [selectedComplianceRule, setSelectedComplianceRule] = useState<Option | null>(null);
+  const [selectedClientGroup, setSelectedClientGroup] = useState<Option | null>(null);
   const [selectedMetrics, setSelectedMetrics] = useState<MultiValue<Option>>([]);
 
   const breadcrumbItems = [
@@ -34,21 +41,21 @@ export default function SystemsPage() {
     { label: 'Systems', active: true },
   ];
 
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<Filters>({
     date: dateOptions[0].value,
     systemName: "",
     complianceRule: "",
     clientGroup: "",
     metricList: null as string[] | null,
-    page: 0,
+    page: 1,
     size: 10
   });
 
   const requestBody = useMemo<SystemsRequestBody>(() => ({
     date: filters.date,
     systemName: filters.systemName,
-    complianceRule: "",
-    clientGroup: "",
+    complianceRule: filters.complianceRule,
+    clientGroup: filters.clientGroup,
     metricList: filters.metricList,
     page: filters.page,
     size: filters.size,
@@ -66,19 +73,35 @@ export default function SystemsPage() {
   // console.log(systemsData?.content,'systems list');
 
   const { 
-    systemNameList, 
-    systemNameListLoading, 
-    systemNameListError 
+    list: systemNameList,
+    loading: systemNameListLoading,
+    error: systemNameListError
   } = useSystemNameList();
   const systemNameOptions: Option[] = getIpOptions(systemNameList ?? []);
 
   const { 
-    metricsNameList, 
-    metricsNameListLoading, 
-    metricsNameListError 
+    list: metricsNameList,
+    loading: metricsNameListLoading,
+    error: metricsNameListError
   } = useMetricsNameList();
   const metricsOptions = getMetricsOptions(metricsNameList ?? []);
-  console.log(metricsNameList, 'metricsOptions')
+  // console.log(metricsNameList, 'metricsOptions')
+
+  const { 
+    list: complianceRulesList,
+    loading: complianceRulesListLoading,
+    error: complianceRulesListError
+  } = useComplianceRulesList();
+  const complianceRuleOptions = getRulesOptions(complianceRulesList ?? []);
+  // console.log(complianceRulesList, 'complianceRulesList')
+
+  const { 
+    list: clientGroupList,
+    loading: clientGroupListLoading,
+    error: clientGroupListError
+  } = useClientGroupList();
+  const clientGroupOptions = getClientGroupOptions(clientGroupList ?? []);
+  console.log(clientGroupList, 'clientGroupList')
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -116,13 +139,12 @@ export default function SystemsPage() {
                       <div className="form-group mb-0">
                         <Select
                           options={dateOptions}
-                          // value={selectedDate}
                           value={dateOptions.find((opt) => opt.value === filters.date) || null}
                           onChange={(newValue) =>
                             setFilters((prev) => ({
                               ...prev,
                               date: newValue?.value || "",
-                              page: 0, // reset pagination
+                              page: 1, // reset pagination
                             }))
                           }
                           placeholder={"Select date..."}
@@ -135,13 +157,12 @@ export default function SystemsPage() {
                         <Select
                           options={systemNameOptions}
                           value={selectedSystemName}
-                          // onChange={(newValue) => setSelectedSystemName(newValue)}
                           onChange={(newValue) => {
                             setSelectedSystemName(newValue);
                             setFilters((prev) => ({
                               ...prev,
                               systemName: newValue?.value || "",
-                              page: 0,
+                              page: 1,
                             }));
                           }}
                           placeholder={"Select system..."}
@@ -150,6 +171,42 @@ export default function SystemsPage() {
                       </div>
                     </Col>
                     <Col className="col-md-3 mt-2 mb-2">
+                      <div className="form-group mb-0">
+                        <Select
+                          options={complianceRuleOptions}
+                          value={selectedComplianceRule}
+                          onChange={(newValue) => {
+                            setSelectedComplianceRule(newValue);
+                            setFilters((prev) => ({
+                              ...prev,
+                              complianceRule: newValue?.value || "",
+                              page: 1,
+                            }));
+                          }}
+                          placeholder={"Select compliance rule..."}
+                          isClearable={true}
+                        />
+                      </div>
+                    </Col>
+                    <Col className="col-md-3 mt-2 mb-2">
+                      <div className="form-group mb-0">
+                        <Select
+                          options={clientGroupOptions}
+                          value={selectedClientGroup}
+                          onChange={(newValue) => {
+                            setSelectedClientGroup(newValue);
+                            setFilters((prev) => ({
+                              ...prev,
+                              clientGroup: newValue?.value || "",
+                              page: 1,
+                            }));
+                          }}
+                          placeholder={"Select client group..."}
+                          isClearable={true}
+                        />
+                      </div>
+                    </Col>
+                    <Col className="col-md-6 mt-2 mb-2">
                       <div className="form-group mb-0">
                         <Select
                           options={metricsOptions}
@@ -161,7 +218,7 @@ export default function SystemsPage() {
                             setFilters((prev) => ({
                               ...prev,
                               metricList: newValue?.map(v => v.value) || null,
-                              page: 0,
+                              page: 1,
                             }));
                           }}
                           placeholder="Select metrics..."
@@ -177,19 +234,6 @@ export default function SystemsPage() {
                         {/* <pre>{JSON.stringify(selectedMetrics, null, 2)}</pre> */}
                       </div>
                     </Col>
-                    {/* <Col className="col-md-3 mt-2 mb-2">
-                      <div className="form-group mb-0">
-                        <Select
-                          options={dateOptions}
-                          value={selectedDate}
-                          onChange={(newValue) => {
-                            if (newValue) setSelectedDate(newValue);
-                          }}
-                          placeholder={"Select date..."}
-                          isClearable={false}
-                        />
-                      </div>
-                    </Col> */}
                   </Row>
                   <CommonDataTable 
                     id={"systemsTable"} 
@@ -218,7 +262,6 @@ export default function SystemsPage() {
                     order={4}
                     columnDefs={[{ orderable: false, targets: [0, 1, 2, 3] }]}
                     exportButtons={[]}
-                    domLayout={"Brtip"}
                   />
                 </CardBody>
               </Card>

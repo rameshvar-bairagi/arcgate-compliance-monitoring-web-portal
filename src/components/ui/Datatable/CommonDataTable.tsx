@@ -45,7 +45,7 @@ interface CommonDataTableProps {
   order?: number;
   columnDefs?: any[];
   exportButtons?: string[];
-  domLayout?: string;
+  // domLayout?: string;
 }
 
 export const CommonDataTable: React.FC<CommonDataTableProps> = ({
@@ -61,7 +61,7 @@ export const CommonDataTable: React.FC<CommonDataTableProps> = ({
   order = 0, // this is which column default desc order. pass prop 0, 1, 2, 3, 4 etc
   columnDefs = [{ orderable: false, targets: "_all" }], // default and specific disable { orderable: false, targets: [0, 2] }, 
   exportButtons = ["csv", "excel", "pdf", "print"], // {["csv", "excel", "pdf", "print"]}
-  domLayout = "Bfrtip", // Bfrtip, Brtip
+  // domLayout = "Bfrtip", // Bfrtip, Brtip
 }) => {
   const initialized = useRef(false);
 
@@ -69,17 +69,18 @@ export const CommonDataTable: React.FC<CommonDataTableProps> = ({
   useEffect(() => {
     if (!initialized.current) {
       $(`#${id}`).DataTable({
+        rowId: "_rowId",
         paging: false,   // disable DataTables UI paging
         info: false,     // optional: hides "Showing 1 of N"
         responsive: true,
-        lengthChange: true,
-        autoWidth: true,
+        lengthChange: false,
+        autoWidth: false,
         processing: true,
         searching: searching,
         order: [[order, "desc"]],  // sort by column index (0-based)
         columnDefs: columnDefs,
         buttons: exportButtons,
-        dom: domLayout,
+        // dom: domLayout,
         columns: columns.map((col) => ({
           data: col.data,
           render: (value: any) => {

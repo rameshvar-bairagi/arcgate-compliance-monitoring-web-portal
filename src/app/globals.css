@@ -106,3 +106,7 @@ a {
 .max-h-calc {
   max-height: calc(100vh - 96px);
 }
+
+div.dt-container > div.row {
+  margin-bottom: 0rem;
+}

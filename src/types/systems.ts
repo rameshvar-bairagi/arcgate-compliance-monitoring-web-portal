@@ -16,19 +16,18 @@ export type ApiResponse = {
   totalElements: number;
   totalPages: number;
   data: {
-    [ip: string]: {
-      [date: string]: {
-        ip: string;
-        systemDate: string;
-        complianceServices: string[];
-        nonComplianceServices: string[];
-      };
-    };
+    [date: string]: {
+      ip: string;
+      systemDate: string;
+      complianceServices: string[];
+      nonComplianceServices: string[];
+    }; // each date has an array of TableRow
   };
 };
 
 export type TableRow = {
   ip: string;
+  _rowId: string;
   systemDate: string;
   complianceServices: string[];
   nonComplianceServices: string[];
