@@ -73,7 +73,7 @@ export const CustomPagination: React.FC<PaginationProps> = ({
               </li>
             ) : (
               <li
-                key={p}
+                key={idx}
                 className={`paginate_button page-item ${p === page ? "active" : ""}`}
               >
                 <a href="#" className="page-link" onClick={() => onPageChange(p)}>
