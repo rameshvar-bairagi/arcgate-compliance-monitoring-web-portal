@@ -39,6 +39,13 @@ export const postComplianceRules = async (body: PostRulesRequestBody): Promise<a
   return res.data;
 };
 
+export const deleteComplianceRule = async (id: number | string): Promise<any | null> => {
+  const res = await api.delete(`/compliance-rules`, {
+    params: { id },
+  });
+  return res.data;
+};
+
 export const fetchClientGroupList = async (): Promise<any | null> => {
   const res = await api.get('/client-groups'); // adjust endpoint
   // if (process.env.NODE_ENV === 'development') console.error('fetchMetricsNameList', res.data);

@@ -44,7 +44,7 @@ interface ClientDataTableProps {
   order?: number;
   columnDefs?: any[];
   exportButtons?: string[];
-  // domLayout?: string;
+  domLayout?: string;
 }
 
 export const ClientDataTable: React.FC<ClientDataTableProps> = ({
@@ -58,7 +58,7 @@ export const ClientDataTable: React.FC<ClientDataTableProps> = ({
   order = 0, // this is which column default desc order. pass prop 0, 1, 2, 3, 4 etc
   columnDefs = [{ orderable: false, targets: "_all" }], // default and specific disable { orderable: false, targets: [0, 2] }, 
   exportButtons = ["csv", "excel", "pdf", "print"], // {["csv", "excel", "pdf", "print"]}
-  // domLayout = "Bfrtip", // Bfrtip, Brtip
+  domLayout = "Bfrtip", // Bfrtip, Brtip
 }) => {
   const initialized = useRef(false);
 
@@ -71,10 +71,10 @@ export const ClientDataTable: React.FC<ClientDataTableProps> = ({
         info: true,     // optional: hides "Showing 1 of N"
         responsive: true,
         lengthChange: true,
-        lengthMenu: [10, 25, 50, 100],
+        lengthMenu: [[-1, 10, 25, 50, 100], ["All", 10, 25, 50, 100]],
+        pageLength: -1, // default to "All"
         autoWidth: false,
         processing: true,
-        pageLength: 10,
         searching: searching,
         order: [[order, "desc"]],  // sort by column index (0-based)
         columnDefs: columnDefs,
