@@ -13,8 +13,7 @@ import { useRouter } from "next/navigation";
 import { ClientDataTable } from '@/components/ui/Datatable/ClientDataTable';
 import Button from '@/components/ui/Button';
 import { deleteComplianceRule } from '@/services/allApiService';
-import { toast } from "react-toastify";
-import { useQueryClient } from '@tanstack/react-query';
+import { openConfirmToast } from "@/components/ui/Toast/confirmToast";
 
 export default function RulesPage() {
     const router = useRouter();
@@ -37,65 +36,20 @@ export default function RulesPage() {
     } = useAllComplianceRulesList();
     console.log(complianceRulesList, 'complianceRulesList');
 
-    const queryClient = useQueryClient();
     const handleDeleteRule = async (id: number | string) => {
-        toast(
-            <div className="p-3 rounded">
-                <h5 className="font-bold text-lg text-warning m-0">⚠ Confirm Delete</h5>
-
-                <p className="text-sm text-muted mb-2">
-                Are you sure you want to delete this rule? This action cannot be undone.
-                </p>
-
-                {/* Buttons */}
-                <div className="d-flex justify-content-end gap-2 mt-3">
-                <button
-                    className="m-2 btn btn-sm btn-danger"
-                    onClick={async () => {
-                    try {
-                        await deleteComplianceRule(id);
-                        toast.dismiss();
-                        toast.success("Rule deleted successfully!");
-                        queryClient.invalidateQueries({ queryKey: ["allComplianceRulesList"] });
-                        // router.refresh();
-                    } catch (err: any) {
-                        toast.dismiss();
-                        toast.error(`Failed to delete rule: ${err?.message || "Unknown error"}`);
-                    }
-                    }}
-                >
-                    Delete
-                </button>
-                <button
-                    className="m-2 btn btn-sm btn-secondary"
-                    onClick={() => {
-                        toast.dismiss();
-                        toast.info("Delete cancelled");
-                    }}
-                >
-                    Cancel
-                </button>
-                </div>
-            </div>,
-            {
-                type: "warning", // "info", "warning", "error", "success"
-                autoClose: false,
-                closeOnClick: false,
-                draggable: false,
-                closeButton: true,
-                position: "top-center", // center it
-                style: {
-                    width: "400px",
-                    maxWidth: "90%",
-                    border: "2px solid #f0ad4e",
-                    borderRadius: "12px",
-                    padding: "16px",
-                    boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
-                    marginTop: "30vh",
-                },
-            }
-        );
-    };
+        openConfirmToast({
+            id,
+            deleteFn: deleteComplianceRule,
+            title: "⚠ Confirm Rule Delete!",
+            subtitle: "Are you sure you want to delete this compliance rule?",
+            queryKeys: "allComplianceRulesList",
+            successMessage: "Rule deleted successfully!",
+            failedMessage: "Failed to delete rule!",
+            cancelMessage: "Delete cancelled!",
+            confirmBtnLabel: "Delete",
+            cancelBtnLabel: "Cancel",
+        });
+    }
 
     return (
         <ContentWrapper>
