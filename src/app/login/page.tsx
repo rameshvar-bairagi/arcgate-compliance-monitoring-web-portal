@@ -96,7 +96,7 @@ export default function LoginPage() {
 
   return (
     <div className="login-box">
-      <ToastContainer />
+      <ToastContainer position="top-right" autoClose={3000} />
       <div className="login-logo text-center">
         <Image
           src="/logo-icon.png"

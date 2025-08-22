@@ -57,7 +57,7 @@ export default function RootLayout({
       </head>
       <body>
           <ClientProviders>
-            <ToastContainer />
+            <ToastContainer position="top-right" autoClose={3000} />
             <ClientLayoutWrapper>
               {children}
             </ClientLayoutWrapper>

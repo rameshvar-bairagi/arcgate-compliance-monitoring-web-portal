@@ -13,8 +13,6 @@ import "datatables.net-buttons/js/buttons.colVis.min";
 import jszip from "jszip";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
-import { TableRow } from "@/types/systems";
-import { CustomPagination } from "../Pagination/CustomPagination";
 
 declare global {
   interface Window {
@@ -28,19 +26,20 @@ declare global {
 window.JSZip = jszip;
 
 interface ColumnConfig {
-  data: string;   // field in row
+  data: string | null;   // field in row
   title: string;  // display heading
+  orderable?: boolean;
+  render?: (data: any, type: any, row: any) => string;
+  className?: string;
 }
 
-interface CommonDataTableProps {
+interface ClientDataTableProps {
   id: string;
   columns: ColumnConfig[];
-  data: TableRow[]; // strongly type it
+  data: any[]; // strongly type it
   onViewClick?: (id: string) => void;
-  page: number;
-  size: number;
-  totalElements: number;
-  onPageChange: (newPage: number) => void;
+  onEditClick?: (id: string) => void;
+  onDeleteClick?: (id: string) => void;
   searching?: boolean;
   order?: number;
   columnDefs?: any[];
@@ -48,15 +47,13 @@ interface CommonDataTableProps {
   // domLayout?: string;
 }
 
-export const CommonDataTable: React.FC<CommonDataTableProps> = ({
+export const ClientDataTable: React.FC<ClientDataTableProps> = ({
   id,
   columns,
   data,
   onViewClick,
-  page,
-  size,
-  totalElements,
-  onPageChange,
+  onEditClick,
+  onDeleteClick,
   searching = true,
   order = 0, // this is which column default desc order. pass prop 0, 1, 2, 3, 4 etc
   columnDefs = [{ orderable: false, targets: "_all" }], // default and specific disable { orderable: false, targets: [0, 2] }, 
@@ -70,51 +67,42 @@ export const CommonDataTable: React.FC<CommonDataTableProps> = ({
     if (!initialized.current) {
       $(`#${id}`).DataTable({
         rowId: "_rowId",
-        paging: false,   // disable DataTables UI paging
-        info: false,     // optional: hides "Showing 1 of N"
+        paging: true,   // disable DataTables UI paging
+        info: true,     // optional: hides "Showing 1 of N"
         responsive: true,
-        lengthChange: false,
+        lengthChange: true,
+        lengthMenu: [10, 25, 50, 100],
         autoWidth: false,
         processing: true,
+        pageLength: 10,
         searching: searching,
         order: [[order, "desc"]],  // sort by column index (0-based)
         columnDefs: columnDefs,
         buttons: exportButtons,
         // dom: domLayout,
         columns: columns.map((col) => ({
-          data: col.data,
-          render: (value: any) => {
-              if (value == null) return "";
+            ...col,
+            render: col.render
+                ? (data: any, type: any, row: any) => col.render!(data, type, row) // use custom render if provided
+                : (value: any) => {
+                    if (value == null) return "";
 
-              // Handle IP column as clickable link
-              if (col.data.toLowerCase() === "ip") {
-                // return `<a href="http://${value}" target="_blank" rel="noopener noreferrer">${value}</a>`;
-                return `<a href="#" class="text-primary view-link" data-id="${value}">${value}</a>`;
-              }
+                    if (Array.isArray(value)) {
+                        return value
+                        .map(
+                        (v) =>
+                            `<span class="badge badge-light m-1">
+                            ${String(v).charAt(0).toUpperCase() + String(v).slice(1).toLowerCase()}
+                            </span>`
+                        )
+                        .join(" ");
+                    }
 
-              if (typeof value === "boolean") return value ? "<span class='text-success'>Compliant</span>" : "<span class='text-danger'>Non-Compliant</span>";
-
-              // Arrays joined with commas
-              // if (Array.isArray(value)) {
-              //   return value.map((v) => String(v).charAt(0).toUpperCase() + String(v).slice(1).toLowerCase()).join(", ");
-              // }
-              if (Array.isArray(value)) {
-                return value
-                  .map(
-                    (v) =>
-                      `<span class="badge badge-light m-1">
-                        ${String(v).charAt(0).toUpperCase() + String(v).slice(1).toLowerCase()}
-                      </span>`
-                  )
-                  .join(" ");
-              }
-
-              // Capitalize string values
-              if (typeof value === "string") {
-                return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
-              }
-              return value ?? "";
-            },
+                    if (typeof value === "string") {
+                        return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+                    }
+                    return value ?? "";
+                },
         })),
       });
 
@@ -133,15 +121,32 @@ export const CommonDataTable: React.FC<CommonDataTableProps> = ({
   }, [data, id, columns]);
   
   useEffect(() => {
-    if (initialized.current && onViewClick) {
+    if (initialized.current) {
       $(`#${id}`).off("click", ".view-link"); // avoid duplicates
+      $(`#${id}`).off("click", ".edit-link");
+      $(`#${id}`).off("click", ".delete-link");
+
       $(`#${id}`).on("click", ".view-link", function (e) {
         e.preventDefault();
         const viewId = $(this).data("id");
-        onViewClick(String(viewId));
+        if (onViewClick) onViewClick(String(viewId));
+      });
+
+      // Handle Edit
+      $(`#${id}`).on("click", ".edit-link", function (e) {
+        e.preventDefault();
+        const editId = $(this).data("id");
+        if (onEditClick) onEditClick(String(editId));
+      });
+
+      // Handle Delete
+      $(`#${id}`).on("click", ".delete-link", function (e) {
+        e.preventDefault();
+        const deleteId = $(this).data("id");
+        if (onDeleteClick) onDeleteClick(String(deleteId));
       });
     }
-  }, [id, onViewClick]);
+  }, [id, onViewClick, onEditClick, onDeleteClick]);
 
   console.log(data, 'data table');
   // console.log(columns, 'columns table');
@@ -158,18 +163,6 @@ export const CommonDataTable: React.FC<CommonDataTableProps> = ({
         </tr>
       </thead>
       <tbody />
-      <tfoot>
-        <tr>
-          <td colSpan={columns.length}>
-            <CustomPagination
-              page={page}
-              size={size}
-              totalElements={totalElements ?? 0}
-              onPageChange={onPageChange}
-            />
-          </td>
-        </tr>
-      </tfoot>
     </table>
   );
 };

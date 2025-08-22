@@ -112,10 +112,11 @@ export const getDateOptions = () => {
   ];
 };
 
-export interface Option {
+export interface Option<Value extends string | number = string | number> {
   label: string;
-  value: string | number;
+  value: Value;
 }
+
 export const getIpOptions = (ips: string[]): Option[] => {
   return ips.map((ip) => ({
     label: ip,

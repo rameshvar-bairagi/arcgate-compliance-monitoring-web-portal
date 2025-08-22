@@ -54,14 +54,14 @@ export const CustomPagination: React.FC<PaginationProps> = ({
           {/* First */}
           <li className={`paginate_button page-item ${page === 1 ? "disabled" : ""}`}>
             <a href="#" className="page-link" onClick={() => onPageChange(1)}>
-              First
+              «
             </a>
           </li>
 
           {/* Previous */}
           <li className={`paginate_button page-item ${page === 1 ? "disabled" : ""}`}>
             <a href="#" className="page-link" onClick={() => onPageChange(page - 1)}>
-              Previous
+              ‹
             </a>
           </li>
 
@@ -86,14 +86,14 @@ export const CustomPagination: React.FC<PaginationProps> = ({
           {/* Next */}
           <li className={`paginate_button page-item ${page >= totalPages ? "disabled" : ""}`}>
             <a href="#" className="page-link" onClick={() => onPageChange(page + 1)}>
-              Next
+              ›
             </a>
           </li>
 
           {/* Last */}
           <li className={`paginate_button page-item ${page >= totalPages ? "disabled" : ""}`}>
             <a href="#" className="page-link" onClick={() => onPageChange(totalPages)}>
-              Last
+              »
             </a>
           </li>
         </ul>

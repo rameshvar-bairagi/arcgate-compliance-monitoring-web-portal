@@ -42,7 +42,7 @@ export default function Sidebar() {
               </Link>
             </Li>
             <Li className="nav-item">
-              <Link href="#" className="nav-link disabled">
+              <Link href="/rules" className="nav-link">
                 <i className="nav-icon fas fa-bars" />
                 <p>Rules</p>
               </Link>

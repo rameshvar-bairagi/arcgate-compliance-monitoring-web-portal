@@ -110,3 +110,17 @@ a {
 div.dt-container > div.row {
   margin-bottom: 0rem;
 }
+
+.dt-length {
+  margin-left: .5rem;
+}
+
+/* make react-select look like AdminLTE invalid input */
+.react-select-container.is-invalid .react-select__control {
+  border-color: #dc3545 !important;  /* Bootstrap/ AdminLTE danger red */
+  box-shadow: none !important;
+}
+
+.react-select-container.is-invalid .react-select__control:hover {
+  border-color: #dc3545 !important;
+}

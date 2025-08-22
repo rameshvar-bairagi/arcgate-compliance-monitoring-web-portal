@@ -17,6 +17,7 @@ interface ContentHeaderProps {
   selected?: Option | null;
   onChange?: (value: Option | null) => void;
   placeholder?: string;
+  containerClassName?: string;
 }
 
 const ContentHeader: React.FC<ContentHeaderProps> = ({ 
@@ -27,16 +28,17 @@ const ContentHeader: React.FC<ContentHeaderProps> = ({
   selected = null,
   onChange,
   placeholder,
+  containerClassName = "container-fluid",
 }) => {
   return (
     <div className="content-header">
-      <div className="container-fluid">
+      <div className={containerClassName}>
         <div className="row">
-          <div className="col-12 col-sm-6 col-md-8 col-lg-8 col-xl-8">
+          <div className="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
             <Heading level={1} variant="primary" className={'m-0'}>{title}</Heading>
           </div>
-          <div className="col-12 col-sm-3 col-md-2 col-lg-2 col-xl-2"></div>
-          <div className="col-12 col-sm-3 col-md-2 col-lg-2 col-xl-2">
+          <div className="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4"></div>
+          <div className="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4">
             {showSelect ? (
               <Select
                 options={options}

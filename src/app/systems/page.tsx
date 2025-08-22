@@ -11,12 +11,12 @@ import ContentWrapper from '@/components/ui/ContentWrapper';
 import Row from '@/components/ui/Row';
 import Section from '@/components/ui/Section';
 import { useSystems } from "@/hooks/useSystems";
-import { useMetricsNameList, useSystemNameList, useComplianceRulesList, useClientGroupList } from "@/hooks/useOptionList";
+import { useMetricsNameList, useSystemNameList, useAllComplianceRulesList, useClientGroupList } from "@/hooks/useOptionList";
 import type { SystemsRequestBody } from "@/types/systems";
 import { getClientGroupOptions, getDateOptions, getIpOptions, getMetricsOptions, getRulesOptions, Option } from '@/utils/commonMethod';
 import { useEffect, useMemo, useState } from 'react';
 import Select, { MultiValue } from "react-select";
-import { CommonDataTable } from '@/components/ui/Datatable/CommonDataTable';
+import { ServerDataTable } from '@/components/ui/Datatable/ServerDataTable';
 
 type Filters = {
   date: string;
@@ -88,12 +88,12 @@ export default function SystemsPage() {
   // console.log(metricsNameList, 'metricsOptions')
 
   const { 
-    list: complianceRulesList,
+    list: allComplianceRulesList,
     loading: complianceRulesListLoading,
     error: complianceRulesListError
-  } = useComplianceRulesList();
-  const complianceRuleOptions = getRulesOptions(complianceRulesList ?? []);
-  // console.log(complianceRulesList, 'complianceRulesList')
+  } = useAllComplianceRulesList();
+  const allComplianceRuleOptions = getRulesOptions(allComplianceRulesList ?? []);
+  console.log(allComplianceRulesList, 'allComplianceRulesList')
 
   const { 
     list: clientGroupList,
@@ -173,7 +173,7 @@ export default function SystemsPage() {
                     <Col className="col-md-3 mt-2 mb-2">
                       <div className="form-group mb-0">
                         <Select
-                          options={complianceRuleOptions}
+                          options={allComplianceRuleOptions}
                           value={selectedComplianceRule}
                           onChange={(newValue) => {
                             setSelectedComplianceRule(newValue);
@@ -235,7 +235,7 @@ export default function SystemsPage() {
                       </div>
                     </Col>
                   </Row>
-                  <CommonDataTable 
+                  <ServerDataTable 
                     id={"systemsTable"} 
                     onViewClick={(id) => {
                       console.log("Clicked row with id:", id);

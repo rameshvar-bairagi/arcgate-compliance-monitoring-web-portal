@@ -10,7 +10,7 @@ export type SystemsRequestBody = {
   // metricList:[3,6,25];
 };
 
-export type ApiResponse = {
+export type SystemsApiResponse = {
   pageNumber: number;
   pageSize: number;
   totalElements: number;
