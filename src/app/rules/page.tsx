@@ -14,6 +14,7 @@ import { ClientDataTable } from '@/components/ui/Datatable/ClientDataTable';
 import Button from '@/components/ui/Button';
 import { deleteComplianceRule } from '@/services/allApiService';
 import { openConfirmToast } from "@/components/ui/Toast/confirmToast";
+import { useEffect } from 'react';
 
 export default function RulesPage() {
     const router = useRouter();
@@ -23,18 +24,12 @@ export default function RulesPage() {
         { label: 'Rules', active: true },
     ];
 
-    //   const { 
-    //     list: complianceRulesList,
-    //     loading: complianceRulesListLoading,
-    //     error: complianceRulesListError
-    //   } = useComplianceRulesList();
-
     const { 
         list: complianceRulesList,
         loading: complianceRulesListLoading,
         error: complianceRulesListError
     } = useAllComplianceRulesList();
-    console.log(complianceRulesList, 'complianceRulesList');
+    // console.log(complianceRulesList, 'complianceRulesList');
 
     const handleDeleteRule = async (id: number | string) => {
         openConfirmToast({
@@ -49,6 +44,12 @@ export default function RulesPage() {
             confirmBtnLabel: "Delete",
             cancelBtnLabel: "Cancel",
         });
+    }
+
+    const handleEditRule = async (id: number | string) => {
+        if (!id) return;
+        
+        router.push(`/rules/edit/${id}`);
     }
 
     return (
@@ -78,7 +79,7 @@ export default function RulesPage() {
                         console.log("Clicked row with id:", id);
                         // maybe open modal, navigate, etc.
                         }}
-                        onEditClick={(id) => console.log("Edit", id)}
+                        onEditClick={(id) => handleEditRule(id)}
                         onDeleteClick={(id) => handleDeleteRule(id)}
                         columns={[
                         { data: "name", title: "Rule Name" },

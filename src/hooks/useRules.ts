@@ -1,23 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMutation } from '@tanstack/react-query';
-import { postComplianceRules } from '@/services/allApiService';
+import { postComplianceRules, putComplianceRules } from '@/services/allApiService';
 import type { PostRulesRequestBody } from '@/types/rules';
 import { AxiosError } from 'axios';
 
 export const useRules = () => {
-  const mutation = useMutation<any, Error, PostRulesRequestBody>({
-    mutationFn: async (requestBody: PostRulesRequestBody) => {
-      const apiData = await postComplianceRules(requestBody);
-      return apiData;
+  const mutation = useMutation<any, Error, { requestBody: PostRulesRequestBody; isEdit?: boolean }>({
+    mutationFn: async ({ requestBody, isEdit }) => {
+      if (isEdit) {
+        // id must be inside requestBody
+        if (!requestBody.id) throw new Error("Missing ID for update");
+        return await putComplianceRules(requestBody); // API expects id inside body
+      } else {
+        return await postComplianceRules(requestBody);
+      }
     },
   });
 
   return {
-    postRule: mutation.mutate,          // call this on submit
-    postRuleAsync: mutation.mutateAsync, // if you want async/await
-    postRulesData: mutation.data,
-    postRulesLoading: mutation.isPending,
-    postRulesError: mutation.error ?? null,
+    saveRule: mutation.mutate,
+    saveRuleAsync: mutation.mutateAsync,
+    saveRuleData: mutation.data,
+    saveRuleLoading: mutation.isPending,
+    saveRuleError: mutation.error ?? null,
   };
 };
 

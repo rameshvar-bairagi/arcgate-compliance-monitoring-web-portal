@@ -39,8 +39,21 @@ export const postComplianceRules = async (body: PostRulesRequestBody): Promise<a
   return res.data;
 };
 
+export const putComplianceRules = async (body: PostRulesRequestBody): Promise<any | null> => {
+  const res = await api.put('/compliance-rules', body); // adjust endpoint
+  // if (process.env.NODE_ENV === 'development') console.error('fetchSystems', res.data);
+  return res.data;
+};
+
 export const deleteComplianceRule = async (id: number | string): Promise<any | null> => {
   const res = await api.delete(`/compliance-rules`, {
+    params: { id },
+  });
+  return res.data;
+};
+
+export const getComplianceRuleById = async (id: number | string): Promise<any | null> => {
+  const res = await api.get(`/compliance-rule`, {
     params: { id },
   });
   return res.data;

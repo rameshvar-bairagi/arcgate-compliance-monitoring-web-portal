@@ -124,3 +124,8 @@ div.dt-container > div.row {
 .react-select-container.is-invalid .react-select__control:hover {
   border-color: #dc3545 !important;
 }
+
+.dark-mode .form-group {
+  background-color: #343a40;
+  color: #fff;
+}
