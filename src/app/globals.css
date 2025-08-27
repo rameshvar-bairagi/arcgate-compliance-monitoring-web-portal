@@ -129,3 +129,23 @@ div.dt-container > div.row {
   background-color: #343a40;
   color: #fff;
 }
+
+.table.table-head-fixed thead tr:first-child th {
+    z-index: 0;
+}
+
+.select-filter {
+  min-width: 10rem;
+  max-width: 100%;
+}
+
+@media (min-width: 768px) {
+  .select-filter {
+    width: 12rem; /* tablet */
+  }
+}
+@media (min-width: 1200px) {
+  .select-filter {
+    width: 16rem; /* desktop */
+  }
+}

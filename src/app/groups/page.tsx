@@ -8,53 +8,69 @@ import ContentHeader from '@/components/ui/ContentHeader';
 import ContentWrapper from '@/components/ui/ContentWrapper';
 import Row from '@/components/ui/Row';
 import Section from '@/components/ui/Section';
-import { useAllComplianceRulesList } from "@/hooks/useOptionList";
+import { useClientGroupList } from "@/hooks/useOptionList";
 import { useRouter } from "next/navigation";
 import { ClientDataTable } from '@/components/ui/Datatable/ClientDataTable';
 import Button from '@/components/ui/Button';
-import { deleteComplianceRule } from '@/services/allApiService';
+import { deleteClientGroup } from '@/services/allApiService';
 import { openConfirmToast } from "@/components/ui/Toast/confirmToast";
-import { useEffect } from 'react';
 
 export default function RulesPage() {
     const router = useRouter();
     
     const breadcrumbItems = [
         { label: 'Home', href: '/' },
-        { label: 'Rules', active: true },
+        { label: 'Groups', active: true },
     ];
 
     const { 
-        list: complianceRulesList,
-        loading: complianceRulesListLoading,
-        error: complianceRulesListError
-    } = useAllComplianceRulesList();
-    // console.log(complianceRulesList, 'complianceRulesList');
+        list: clientGroupList,
+        loading: clientGroupListLoading,
+        error: clientGroupListError
+    } = useClientGroupList();
+    // console.log(clientGroupList, 'clientGroupList');
 
-    const handleDeleteRule = async (id: number | string) => {
+    const formattedData = (clientGroupList ?? []).map(group => {
+        const compliant: any[] = [];
+        const nonCompliant: any[] = [];
+
+        group.complianceRules?.forEach((rule: { compliantMetrics: any[]; nonCompliantMetrics: any[]; }) => {
+            rule.compliantMetrics?.forEach((m: any) => compliant.push(m));
+            rule.nonCompliantMetrics?.forEach((m: any) => nonCompliant.push(m));
+        });
+
+        return {
+            ...group,
+            compliantMetrics: compliant,
+            nonCompliantMetrics: nonCompliant
+        };
+    });
+    console.log(formattedData, 'formattedData');
+
+    const handleDeleteGroup = async (id: number | string) => {
         openConfirmToast({
             id,
-            deleteFn: deleteComplianceRule,
-            title: "⚠ Confirm Rule Delete!",
-            subtitle: "Are you sure you want to delete this compliance rule?",
-            queryKeys: "allComplianceRulesList",
-            successMessage: "Rule deleted successfully!",
-            failedMessage: "Failed to delete rule!",
+            deleteFn: deleteClientGroup,
+            title: "⚠ Confirm Client Group Delete!",
+            subtitle: "Are you sure you want to delete this client group?",
+            queryKeys: "clientGroupList",
+            successMessage: "client group deleted successfully!",
+            failedMessage: "Failed to delete client group!",
             cancelMessage: "Delete cancelled!",
             confirmBtnLabel: "Delete",
             cancelBtnLabel: "Cancel",
         });
     }
 
-    const handleEditRule = async (id: number | string) => {
+    const handleEditGroup = async (id: number | string) => {
         if (!id) return;
         
-        router.push(`/rules/edit/${id}`);
+        router.push(`/groups/edit/${id}`);
     }
 
     return (
         <ContentWrapper>
-        <ContentHeader title="Rules" breadcrumbItems={breadcrumbItems} containerHeaderClassName={"content-header pb-0"} />
+        <ContentHeader title="Groups" breadcrumbItems={breadcrumbItems} containerHeaderClassName={"content-header pb-0"} />
 
         <Section className={'content'}>
             <div className="container-fluid">
@@ -65,27 +81,28 @@ export default function RulesPage() {
                         <Button 
                             type="button" 
                             className="btn btn-sm btn-primary float-right"
-                            onClick={() => router.push("/rules/add")}
+                            onClick={() => router.push("/groups/add")}
                         >
-                            Add Rule
+                            Add Group
                         </Button>
                     </Col>
                 </Row>
                 <Card>
                     <CardBody className="p-0">
                     <ClientDataTable 
-                        id={"rulesTable"} 
+                        id={"groupTable"} 
                         onViewClick={(id) => {
-                        console.log("Clicked row with id:", id);
-                        // maybe open modal, navigate, etc.
+                            console.log("Clicked row with id:", id);
+                            // maybe open modal, navigate, etc.
                         }}
-                        onEditClick={(id) => handleEditRule(id)}
-                        onDeleteClick={(id) => handleDeleteRule(id)}
+                        onEditClick={(id) => handleEditGroup(id)}
+                        onDeleteClick={(id) => handleDeleteGroup(id)}
                         columns={[
-                        { data: "name", title: "Rule Name" },
-                        { data: "description", title: "Description" },
-                        { data: "andMetrics", title: "AND Rule" },
-                        { data: "orMetrics", title: "OR Rule" },
+                        { data: "name", title: "Client Groups" },
+                        { data: "systemIps", title: "Systems IP" },
+                        { data: "complianceRules", title: "Compliant Rules" },
+                        { data: "compliantMetrics", title: "Compliant Metrics" },
+                        { data: "nonCompliantMetrics", title: "Non-Compliant Metrics" },
                         {
                             data: null,
                             title: "Action",
@@ -101,10 +118,11 @@ export default function RulesPage() {
                             }
                         }
                         ]}
-                        data={complianceRulesList ?? []}
+                        // data={clientGroupList ?? []}
+                        data={formattedData ?? []}
                         searching={true}
-                        order={4}
-                        columnDefs={[{ orderable: false, targets: [4] }]}
+                        order={5}
+                        columnDefs={[{ orderable: false, targets: [5] }]}
                         exportButtons={["csv", "excel", "pdf", "print"]}
                     />
                     </CardBody>

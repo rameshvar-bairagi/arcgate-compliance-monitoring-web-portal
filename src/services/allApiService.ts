@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import api from '@/lib/axios';
+import { PostGroupsRequestBody } from '@/types/groups';
 import { PostRulesRequestBody } from '@/types/rules';
 import type { SystemsApiResponse, SystemsRequestBody } from '@/types/systems';
 
@@ -45,11 +46,11 @@ export const putComplianceRules = async (body: PostRulesRequestBody): Promise<an
   return res.data;
 };
 
-export const deleteComplianceRule = async (id: number | string): Promise<any | null> => {
+export const deleteComplianceRule = async (id: number | string): Promise<{ data: any; status: number; statusText: string } | null> => {
   const res = await api.delete(`/compliance-rules`, {
     params: { id },
   });
-  return res.data;
+  return { data: res.data, status: res.status, statusText: res.statusText };
 };
 
 export const getComplianceRuleById = async (id: number | string): Promise<any | null> => {
@@ -62,5 +63,32 @@ export const getComplianceRuleById = async (id: number | string): Promise<any | 
 export const fetchClientGroupList = async (): Promise<any | null> => {
   const res = await api.get('/client-groups'); // adjust endpoint
   // if (process.env.NODE_ENV === 'development') console.error('fetchMetricsNameList', res.data);
+  return res.data;
+};
+
+export const deleteClientGroup = async (id: number | string): Promise<{ data: any; status: number; statusText: string } | null> => {
+  const res = await api.delete(`/client-group`, {
+    params: { id },
+  });
+  return { data: res.data, status: res.status, statusText: res.statusText };
+};
+
+export const postClientGroups = async (body: PostGroupsRequestBody): Promise<any | null> => {
+  const res = await api.post('/client-group', body); // adjust endpoint
+  // if (process.env.NODE_ENV === 'development') console.error('fetchSystems', res.data);
+  return res.data;
+};
+
+export const putClientGroups = async (body: PostGroupsRequestBody): Promise<any | null> => {
+  if (!body?.id) throw new Error("ID is required for PUT request");
+
+  const res = await api.put(`/client-group/${body.id}`, body);
+  return res.data;
+};
+
+export const getClientRuleById = async (id: number | string): Promise<any | null> => {
+  const res = await api.get(`/client-group`, {
+    params: { id },
+  });
   return res.data;
 };

@@ -30,11 +30,16 @@ export function ConfirmToast(props: ConfirmToastProps) {
           className="m-2 btn btn-sm btn-danger"
           onClick={async () => {
             try {
-              await props.deleteFn(props.id);
-              toast.dismiss();
-              toast.success(props.successMessage);
-              if (props.queryKeys) {
-                queryClient.invalidateQueries({ queryKey: ["allComplianceRulesList"] });
+              const res = await props.deleteFn(props.id);
+              if (res?.status === 200 || res?.status === 204) {
+                toast.dismiss();
+                toast.success(props.successMessage);
+                if (props.queryKeys) {
+                  queryClient.invalidateQueries({ queryKey: [props.queryKeys] });
+                }
+              } else {
+                toast.dismiss();
+                toast.error(`${props.failedMessage}: ${res?.status} ${res?.statusText}`);
               }
             } catch (err: any) {
               toast.dismiss();

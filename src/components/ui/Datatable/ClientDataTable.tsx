@@ -90,8 +90,11 @@ export const ClientDataTable: React.FC<ClientDataTableProps> = ({
                     if (Array.isArray(value)) {
                       return value
                         .map((v) => {
-                          if (typeof v === "object" && v?.dbName) {
-                            return `<span class="badge badge-light m-1">${v.dbName}</span>`;
+                          if (typeof v === "object" && v?.metricsName) {
+                            return `<span class="badge badge-light m-1">${v.metricsName}</span>`;
+                          }
+                          if (typeof v === "object" && v?.name) {
+                            return `<span class="badge badge-light m-1">${v.name}</span>`;
                           }
                           return `<span class="badge badge-light m-1">${
                             String(v).charAt(0).toUpperCase() +

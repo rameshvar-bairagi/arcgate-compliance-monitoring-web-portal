@@ -17,26 +17,30 @@ import { defaultBarChartOptions } from '@/utils/chartConfig';
 import CardFooter from "@/components/ui/CardFooter";
 import { useDashboardData } from '@/hooks/useDashboardData';
 import { ComplianceRequestBody, AlertsData } from '@/types/dashboard';
-import { 
-  formatDateTime, 
+import {  
   getBadgeClass, 
   getComplianceTotals, 
   getChartDataFromCompliance,
-  getDateOptions
+  getDateOptions,
+  getClientGroupOptions,
+  getRulesOptions
 } from '@/utils/commonMethod';
 import Spinner from "@/components/ui/Spinner";
 import Modal from '@/components/modal/Modal';
 import IpList from '@/components/IpList/IpList';
 import CompliantTableGeneric from "@/components/CompliantTableGeneric/CompliantTableGeneric";
+import { Option } from '@/types/dashboard';
+import { useAllComplianceRulesList, useClientGroupList } from "@/hooks/useOptionList";
 
-interface Option {
-  value: string;
-  label: string;
-}
+// interface Option {
+//   value: string;
+//   label: string;
+// }
 
 export default function HomePage() {
   const dateOptions = getDateOptions();
-  const [selectedDate, setSelectedDate] = useState<Option | null>(dateOptions[0]); // default to Today
+  // const [selectedDate, setSelectedDate] = useState<Option | null>(dateOptions[0]); // default to Today
+  const [selectedDate, setSelectedDate] = useState<Option<string> | null>(dateOptions[0]);
   const [isActiveWorkstationModalOpen, setIsActiveWorkstationModalOpen] = useState(false);
   const [modalType, setModalType] = useState<'compliant' | 'non-compliant' | null>(null);
   // console.log(isModalOpen, 'isModalOpen')
@@ -61,6 +65,18 @@ export default function HomePage() {
 
   const alertsDatas = alertsData as AlertsData;
   // console.log('alertsDatas', alertsDatas);
+
+  const { 
+      list: clientGroupList,
+    } = useClientGroupList();
+    const clientGroupOptions = getClientGroupOptions(clientGroupList ?? []);
+    console.log(clientGroupList, 'clientGroupList')
+
+  const { 
+      list: allComplianceRulesList,
+    } = useAllComplianceRulesList();
+    const allComplianceRuleOptions = getRulesOptions(allComplianceRulesList ?? []);
+    console.log(allComplianceRulesList, 'allComplianceRulesList')
 
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
@@ -108,12 +124,66 @@ export default function HomePage() {
       <ContentWrapper>
         <ContentHeader 
           title="Dashboard"
-          showSelect={true}
-          options={dateOptions}
-          selected={selectedDate}
-          onChange={(option) => setSelectedDate(option)}
-          placeholder="Select Date"
-          breadcrumbItems={breadcrumbItems} 
+          breadcrumbItems={breadcrumbItems}
+          filters={[
+            {
+              options: dateOptions,
+              // selected: requestBody.date
+              //   ? { value: requestBody.date, label: requestBody.date }
+              //   : null,
+              selected: requestBody.date
+                ? dateOptions.find(opt => opt.value === requestBody.date) || null
+                : null,
+              onChange: (opt) => {
+                const single = opt as Option<string> | null;
+                setRequestBody(prev => ({
+                  ...prev,
+                  date: single?.value || "",
+                }));
+              },
+              placeholder: "Select Date",
+              isMulti: false,
+              isClearable: false,
+            },
+            {
+              options: allComplianceRuleOptions,
+              // selected: requestBody.complianceRule
+              //   ? { value: requestBody.complianceRule, label: requestBody.complianceRule }
+              //   : null,
+              selected: requestBody.complianceRule
+                ? allComplianceRuleOptions.find(opt => opt.value === requestBody.complianceRule) || null
+                : null,
+              onChange: (opt) => {
+                const single = opt as Option<string> | null;
+                setRequestBody(prev => ({
+                  ...prev,
+                  complianceRule: single?.value || "",
+                }));
+              },
+              placeholder: "Compliance Rule",
+              isMulti: false,
+              isClearable: true,
+            },
+            {
+              options: clientGroupOptions,
+              // selected: requestBody.clientGroup
+              //   ? { value: requestBody.clientGroup, label: requestBody.clientGroup }
+              //   : null,
+              selected: requestBody.clientGroup
+                ? clientGroupOptions.find(opt =>String( opt.value) === String(requestBody.clientGroup)) || null
+                : null,
+              onChange: (opt) => {
+                const single = opt as Option<string> | null;
+                setRequestBody(prev => ({
+                  ...prev,
+                  clientGroup: single?.value ? String(single?.value) : "",
+                }));
+              },
+              placeholder: "Client Group",
+              isMulti: false,
+              isClearable: true,
+            }
+          ]}
         />
         <Section className="content">
           <div className="container-fluid">
