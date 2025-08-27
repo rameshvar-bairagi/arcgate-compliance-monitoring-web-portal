@@ -11,10 +11,12 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 
-import { useMetricsNameList, useClientGroupList } from "@/hooks/useOptionList";
+// import { useMetricsNameList, useClientGroupList } from "@/hooks/useOptionList";
+import { useMetricsNameList } from "@/hooks/useOptionList";
 import { rulesSchema, RuleFormData } from '@/schemas/rulesSchema';
 import { useRouter } from 'next/navigation';
-import { getClientGroupOptions, getMetricsOptions, Option } from '@/utils/commonMethod';
+// import { getClientGroupOptions, getMetricsOptions, Option } from '@/utils/commonMethod';
+import { getMetricsOptions, Option } from '@/utils/commonMethod';
 import { FormCard } from '@/components/ui/Form/FormCard';
 import Select from "react-select";
 import { useRules } from "@/hooks/useRules";
@@ -60,8 +62,8 @@ export default function AddRulePage({ defaultValues, id }: RuleFormProps) {
       description: "",
       andRule: [],
       orRule: [],
-      allSystems: "",
-      clientGroupId: "",
+      // allSystems: "",
+      // clientGroupId: "",
       ...defaultValues,
     },
     mode: "all",       // <-- validate on submit
@@ -76,8 +78,8 @@ export default function AddRulePage({ defaultValues, id }: RuleFormProps) {
       description: data.description ?? "",
       andRule: data.andRule?.length ? data.andRule.join(",") : "",
       orRule: data.orRule?.length ? data.orRule.join(",") : "",
-      allSystems: data.allSystems === "ALL",
-      clientGroupId: data.allSystems === "ALL" ? -1 : data.clientGroupId || -1,
+      // allSystems: data.allSystems === "ALL",
+      // clientGroupId: data.allSystems === "ALL" ? -1 : data.clientGroupId || -1,
     };
 
     saveRule(
@@ -104,29 +106,28 @@ export default function AddRulePage({ defaultValues, id }: RuleFormProps) {
   const metricsOptions = getMetricsOptions(metricsNameList ?? []);
   console.log(metricsOptions, 'metricsOptions');
   
-  const { 
-    list: clientGroupList,
-    // loading: clientGroupListLoading,
-    // error: clientGroupListError
-  } = useClientGroupList();
-  const clientGroupOptions = getClientGroupOptions(clientGroupList ?? []);
+  // const { 
+  //   list: clientGroupList,
+  // } = useClientGroupList();
+  // const clientGroupOptions = getClientGroupOptions(clientGroupList ?? []);
 
-  const allSystemOptions: Option[] = [
-    { label: "All Systems", value: "ALL" },
-    { label: "Client Group", value: "CLIENT_GROUP" },
-  ];
+  // const allSystemOptions: Option[] = [
+  //   { label: "All Systems", value: "ALL" },
+  //   { label: "Client Group", value: "CLIENT_GROUP" },
+  // ];
 
   const orRuleValue = watch("orRule");
-  const allSystemsValue = watch("allSystems");
+  // const allSystemsValue = watch("allSystems");
 
   // Determine if AND Metrics error should show
   const showAndRuleError = !orRuleValue?.length && !!errors.andRule;
   
   // Determine if Client Group should show
-  const showClientGroup = allSystemsValue === "CLIENT_GROUP";
+  // const showClientGroup = allSystemsValue === "CLIENT_GROUP";
 
   useEffect(() => {
-    trigger(["andRule", "orRule", "allSystems", "clientGroupId", "name"]);
+    // trigger(["andRule", "orRule", "allSystems", "clientGroupId", "name"]);
+    trigger(["andRule", "orRule", "name"]);
   }, []); // run only once on mount
 
   useEffect(() => {
@@ -143,11 +144,12 @@ export default function AddRulePage({ defaultValues, id }: RuleFormProps) {
 
   // once rule + options are both available, reset form
   useEffect(() => {
-    if (!formInitialized && ruleData && clientGroupOptions.length > 0 && metricsOptions.length > 0) {
+    if (!formInitialized && ruleData && metricsOptions.length > 0) {
+    // if (!formInitialized && ruleData && clientGroupOptions.length > 0 && metricsOptions.length > 0) {
       console.log(ruleData,'ruleData');
-      const matchedClientGroup = clientGroupOptions.find(
-        (opt) => opt.label === ruleData.clientGroupName
-      );
+      // const matchedClientGroup = clientGroupOptions.find(
+      //   (opt) => opt.label === ruleData.clientGroupName
+      // );
 
       // Extract metric IDs for default values
     const andRuleValues =
@@ -161,14 +163,15 @@ export default function AddRulePage({ defaultValues, id }: RuleFormProps) {
         description: ruleData.description ?? "",
         andRule: andRuleValues,   // must match option.value
         orRule: orRuleValues,     // must match option.value
-        allSystems: ruleData.allSystems ? "ALL" : "CLIENT_GROUP",
-        clientGroupId: ruleData.allSystems ? "" : matchedClientGroup?.value ?? "",
+        // allSystems: ruleData.allSystems ? "ALL" : "CLIENT_GROUP",
+        // clientGroupId: ruleData.allSystems ? "" : matchedClientGroup?.value ?? "",
       };
 
       reset(mappedData, { keepDefaultValues: false });
       setFormInitialized(true);
     }
-  }, [ruleData, clientGroupOptions, metricsOptions, formInitialized]);
+  }, [ruleData, metricsOptions, formInitialized]);
+  // }, [ruleData, clientGroupOptions, metricsOptions, formInitialized]);
 
   return (
     <ContentWrapper>
@@ -293,7 +296,7 @@ export default function AddRulePage({ defaultValues, id }: RuleFormProps) {
                             </div>
                         </Col>
                     </Row>
-                    <Row>
+                    {/* <Row>
                         <Col className="col-sm-6">
                             <div className="form-group pl-4 pr-4">
                                 <label htmlFor="allSystems" className="block font-medium">Apply To</label>
@@ -348,7 +351,7 @@ export default function AddRulePage({ defaultValues, id }: RuleFormProps) {
                                 </div>
                             </Col>
                         )}
-                    </Row>
+                    </Row> */}
                 </FormCard>
             </Col>
           </Row>

@@ -86,7 +86,11 @@ export const ClientDataTable: React.FC<ClientDataTableProps> = ({
                 ? (data: any, type: any, row: any) => col.render!(data, type, row) // use custom render if provided
                 : (value: any) => {
                     if (value == null) return "";
-
+                    if (col.data === "systemIps") {
+                      if (!value || value.length === 0) {
+                        return `<span class="badge badge-light m-1">All Systems</span>`;
+                      }
+                    }
                     if (Array.isArray(value)) {
                       return value
                         .map((v) => {
