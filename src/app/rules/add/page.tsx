@@ -20,9 +20,10 @@ import { getMetricsOptions, Option } from '@/utils/commonMethod';
 import { FormCard } from '@/components/ui/Form/FormCard';
 import Select from "react-select";
 import { useRules } from "@/hooks/useRules";
-import { getComplianceRuleById } from '@/services/allApiService';
+import { getComplianceRuleById, CheckExistRules } from '@/services/allApiService';
 import { PostRulesRequestBody } from '@/types/rules';
 import { toast } from "react-toastify";
+import { useDebounce } from "use-debounce";
 
 interface RuleFormProps {
   defaultValues?: Partial<RuleFormData>;
@@ -39,6 +40,11 @@ export default function AddRulePage({ defaultValues, id }: RuleFormProps) {
   const [loadingRule, setLoadingRule] = useState(false);
   const [ruleData, setRuleData] = useState<any>(null);
   const [formInitialized, setFormInitialized] = useState(false);
+
+  const [ruleName, setRuleName] = useState("");
+  const [debouncedRuleName] = useDebounce(ruleName, 500); // wait 500ms
+  const [nameError, setNameError] = useState("");
+  const [checking, setChecking] = useState(false);
 
 
   const breadcrumbItems = [
@@ -104,7 +110,7 @@ export default function AddRulePage({ defaultValues, id }: RuleFormProps) {
     // error: metricsNameListError
   } = useMetricsNameList();
   const metricsOptions = getMetricsOptions(metricsNameList ?? []);
-  console.log(metricsOptions, 'metricsOptions');
+  // console.log(metricsOptions, 'metricsOptions');
   
   // const { 
   //   list: clientGroupList,
@@ -146,7 +152,7 @@ export default function AddRulePage({ defaultValues, id }: RuleFormProps) {
   useEffect(() => {
     if (!formInitialized && ruleData && metricsOptions.length > 0) {
     // if (!formInitialized && ruleData && clientGroupOptions.length > 0 && metricsOptions.length > 0) {
-      console.log(ruleData,'ruleData');
+      // console.log(ruleData,'ruleData');
       // const matchedClientGroup = clientGroupOptions.find(
       //   (opt) => opt.label === ruleData.clientGroupName
       // );
@@ -172,6 +178,27 @@ export default function AddRulePage({ defaultValues, id }: RuleFormProps) {
     }
   }, [ruleData, metricsOptions, formInitialized]);
   // }, [ruleData, clientGroupOptions, metricsOptions, formInitialized]);
+
+  useEffect(() => {
+    if (!debouncedRuleName) {
+      setNameError("");
+      return;
+    }
+
+    setChecking(true); // start checking
+
+    CheckExistRules(debouncedRuleName)
+      .then((res) => {
+        console.log(res, 'CheckExistRules');
+        if (res?.data) {
+          setNameError("Rule name already exists!");
+        } else {
+          setNameError("");
+        }
+      })
+      .catch(() => setNameError("Error checking rule name!"))
+      .finally(() => setChecking(false)); // done checking
+  }, [debouncedRuleName]);
 
   return (
     <ContentWrapper>
@@ -200,15 +227,24 @@ export default function AddRulePage({ defaultValues, id }: RuleFormProps) {
                     cancelLabel="Cancel"
                     formClassName="space-y-4"
                     cardClassName="card-secondary"
-                    submitDisabled={!isValid || saveRuleLoading} // <-- disable if form is invalid
+                    submitDisabled={!isValid || saveRuleLoading || !!nameError || checking} // disable if form is invalid
                 >
                     <Row>
                         <Col className="col-sm-6">
                             <div className="form-group pl-4 pr-4">
                                 <label htmlFor="name" className="block font-medium">Rule Name</label>
-                                <input {...register("name")} type="text" id="name" className={`form-control ${errors.name ? "is-invalid" : ""}`} placeholder="Rule name ..." />
-                                {errors.name && (
-                                    <span className="invalid-feedback">{errors.name.message}</span>
+                                <input 
+                                  {...register("name")}
+                                  type="text" 
+                                  id="name" 
+                                  onChange={(e) => setRuleName(e.target.value)}
+                                  className={`form-control ${errors.name || nameError ? "is-invalid" : ""}`} 
+                                  placeholder="Rule name ..." 
+                                />
+                                {(errors.name || nameError) && (
+                                  <span className="invalid-feedback">
+                                    {errors.name?.message || nameError}
+                                  </span>
                                 )}
                             </div>
                         </Col>

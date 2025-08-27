@@ -34,6 +34,13 @@ export const fetchAllComplianceRulesList = async (): Promise<any | null> => {
   return res.data;
 };
 
+export const CheckExistRules = async (name: number | string): Promise<{ data: any; status: number; statusText: string } | null> => {
+  const res = await api.get(`/compliance-rules/exists`, {
+    params: { name },
+  });
+  return { data: res.data, status: res.status, statusText: res.statusText };
+};
+
 export const postComplianceRules = async (body: PostRulesRequestBody): Promise<any | null> => {
   const res = await api.post('/compliance-rules', body); // adjust endpoint
   // if (process.env.NODE_ENV === 'development') console.error('fetchSystems', res.data);
@@ -69,6 +76,13 @@ export const fetchClientGroupList = async (): Promise<any | null> => {
 export const deleteClientGroup = async (id: number | string): Promise<{ data: any; status: number; statusText: string } | null> => {
   const res = await api.delete(`/client-group`, {
     params: { id },
+  });
+  return { data: res.data, status: res.status, statusText: res.statusText };
+};
+
+export const CheckExistGroups = async (name: number | string): Promise<{ data: any; status: number; statusText: string } | null> => {
+  const res = await api.get(`/client-group/exists`, {
+    params: { name },
   });
   return { data: res.data, status: res.status, statusText: res.statusText };
 };

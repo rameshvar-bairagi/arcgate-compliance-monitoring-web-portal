@@ -70,13 +70,13 @@ export default function HomePage() {
       list: clientGroupList,
     } = useClientGroupList();
     const clientGroupOptions = getClientGroupOptions(clientGroupList ?? []);
-    console.log(clientGroupList, 'clientGroupList')
+    // console.log(clientGroupList, 'clientGroupList')
 
   const { 
       list: allComplianceRulesList,
     } = useAllComplianceRulesList();
     const allComplianceRuleOptions = getRulesOptions(allComplianceRulesList ?? []);
-    console.log(allComplianceRulesList, 'allComplianceRulesList')
+    // console.log(allComplianceRulesList, 'allComplianceRulesList')
 
   const breadcrumbItems = [
     { label: 'Home', href: '/' },

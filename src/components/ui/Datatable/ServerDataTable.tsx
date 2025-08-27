@@ -143,7 +143,7 @@ export const ServerDataTable: React.FC<ServerDataTableProps> = ({
     }
   }, [id, onViewClick]);
 
-  console.log(data, 'data table');
+  // console.log(data, 'data table');
   // console.log(columns, 'columns table');
 
   // return null;

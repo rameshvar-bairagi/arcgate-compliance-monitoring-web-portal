@@ -21,9 +21,10 @@ import { getIpOptions, getRulesOptions, Option } from "@/utils/commonMethod";
 import { FormCard } from "@/components/ui/Form/FormCard";
 import Select from "react-select";
 import { useGroups } from "@/hooks/useGroups";
-import { getClientRuleById } from "@/services/allApiService";
+import { getClientRuleById, CheckExistGroups } from "@/services/allApiService";
 import { PostGroupsRequestBody } from "@/types/groups";
 import { toast } from "react-toastify";
+import { useDebounce } from "use-debounce";
 
 interface GroupFormProps {
   defaultValues?: Partial<GroupFormData>;
@@ -40,6 +41,11 @@ export default function AddGroupPage({ defaultValues, id }: GroupFormProps) {
   const [loadingGroup, setLoadingGroup] = useState(false);
   const [groupData, setGroupData] = useState<any>(null);
   const [formInitialized, setFormInitialized] = useState(false);
+
+  const [groupName, setGroupName] = useState("");
+  const [debouncedGroupName] = useDebounce(groupName, 500); // wait 500ms
+  const [nameError, setNameError] = useState("");
+  const [checking, setChecking] = useState(false);
 
   const breadcrumbItems = [
     { label: "Home", href: "/" },
@@ -147,7 +153,7 @@ export default function AddGroupPage({ defaultValues, id }: GroupFormProps) {
       allComplianceRuleOptions.length > 0 &&
       systemNameOptions.length > 0
     ) {
-      console.log(groupData, "groupData");
+      // console.log(groupData, "groupData");
       // Extract complianceRuleId (assuming single rule for now)
       const complianceRuleId = groupData.complianceRules?.[0]?.id;
 
@@ -169,6 +175,27 @@ export default function AddGroupPage({ defaultValues, id }: GroupFormProps) {
       setFormInitialized(true);
     }
   }, [groupData, allComplianceRuleOptions, systemNameOptions, formInitialized]);
+
+  useEffect(() => {
+      if (!debouncedGroupName) {
+        setNameError("");
+        return;
+      }
+  
+      setChecking(true); // start checking
+  
+      CheckExistGroups(debouncedGroupName)
+        .then((res) => {
+          console.log(res, 'CheckExistGroup');
+          if (res?.data) {
+            setNameError("Group name already exists!");
+          } else {
+            setNameError("");
+          }
+        })
+        .catch(() => setNameError("Error checking group name!"))
+        .finally(() => setChecking(false)); // done checking
+    }, [debouncedGroupName]);
 
   const allSystemsValue = watch("allSystems");
   const showClientGroup = allSystemsValue === "SYSTEM_IP";
@@ -208,7 +235,7 @@ export default function AddGroupPage({ defaultValues, id }: GroupFormProps) {
                 cancelLabel="Cancel"
                 formClassName="space-y-4"
                 cardClassName="card-secondary"
-                submitDisabled={!isValid || saveGroupLoading} // <-- disable if form is invalid
+                submitDisabled={!isValid || saveGroupLoading || !!nameError || checking} // <-- disable if form is invalid
               >
                 <Row>
                   <Col className="col-sm-6">
@@ -220,14 +247,13 @@ export default function AddGroupPage({ defaultValues, id }: GroupFormProps) {
                         {...register("name")}
                         type="text"
                         id="name"
-                        className={`form-control ${
-                          errors.name ? "is-invalid" : ""
-                        }`}
+                        onChange={(e) => setGroupName(e.target.value)}
+                        className={`form-control ${errors.name || nameError ? "is-invalid" : ""}`}
                         placeholder="Group name ..."
                       />
-                      {errors.name && (
+                      {(errors.name || nameError) && (
                         <span className="invalid-feedback">
-                          {errors.name.message}
+                          {errors.name?.message || nameError}
                         </span>
                       )}
                     </div>

@@ -7,7 +7,7 @@ export default function EditGroup() {
   const params = useParams();
   const id = Array.isArray(params.id) ? params.id[0] : params.id; // normalize
 
-  console.log('edit id', id);
+  // console.log('edit id', id);
 
   return <AddGroupPage id={id} />;
 }

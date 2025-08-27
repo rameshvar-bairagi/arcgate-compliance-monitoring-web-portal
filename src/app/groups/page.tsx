@@ -45,7 +45,7 @@ export default function RulesPage() {
             nonCompliantMetrics: nonCompliant
         };
     });
-    console.log(formattedData, 'formattedData');
+    // console.log(formattedData, 'formattedData');
 
     const handleDeleteGroup = async (id: number | string) => {
         openConfirmToast({
@@ -92,7 +92,7 @@ export default function RulesPage() {
                     <ClientDataTable 
                         id={"groupTable"} 
                         onViewClick={(id) => {
-                            console.log("Clicked row with id:", id);
+                            // console.log("Clicked row with id:", id);
                             // maybe open modal, navigate, etc.
                         }}
                         onEditClick={(id) => handleEditGroup(id)}

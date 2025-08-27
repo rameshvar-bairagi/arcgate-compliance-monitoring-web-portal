@@ -76,7 +76,7 @@ export default function RulesPage() {
                     <ClientDataTable 
                         id={"rulesTable"} 
                         onViewClick={(id) => {
-                        console.log("Clicked row with id:", id);
+                        // console.log("Clicked row with id:", id);
                         // maybe open modal, navigate, etc.
                         }}
                         onEditClick={(id) => handleEditRule(id)}

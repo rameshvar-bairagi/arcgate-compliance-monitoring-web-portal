@@ -158,7 +158,7 @@ export const ClientDataTable: React.FC<ClientDataTableProps> = ({
     }
   }, [id, onViewClick, onEditClick, onDeleteClick]);
 
-  console.log(data, 'data table');
+  // console.log(data, 'data table');
   // console.log(columns, 'columns table');
 
   // return null;

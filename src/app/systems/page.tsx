@@ -61,7 +61,7 @@ export default function SystemsPage() {
     size: filters.size,
   }), [filters]);
 
-  console.log(filters, 'filtersfiltersfilters');
+  // console.log(filters, 'filtersfiltersfilters');
 
   // Call the hook
   const { 
@@ -93,7 +93,7 @@ export default function SystemsPage() {
     error: complianceRulesListError
   } = useAllComplianceRulesList();
   const allComplianceRuleOptions = getRulesOptions(allComplianceRulesList ?? []);
-  console.log(allComplianceRulesList, 'allComplianceRulesList')
+  // console.log(allComplianceRulesList, 'allComplianceRulesList')
 
   const { 
     list: clientGroupList,
@@ -101,7 +101,7 @@ export default function SystemsPage() {
     error: clientGroupListError
   } = useClientGroupList();
   const clientGroupOptions = getClientGroupOptions(clientGroupList ?? []);
-  console.log(clientGroupList, 'clientGroupList')
+  // console.log(clientGroupList, 'clientGroupList')
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -238,7 +238,7 @@ export default function SystemsPage() {
                   <ServerDataTable 
                     id={"systemsTable"} 
                     onViewClick={(id) => {
-                      console.log("Clicked row with id:", id);
+                      // console.log("Clicked row with id:", id);
                       // maybe open modal, navigate, etc.
                     }}
                     columns={[
