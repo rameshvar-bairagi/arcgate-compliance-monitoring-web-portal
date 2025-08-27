@@ -42,8 +42,14 @@ export function ConfirmToast(props: ConfirmToastProps) {
                 toast.error(`${props.failedMessage}: ${res?.status} ${res?.statusText}`);
               }
             } catch (err: any) {
-              toast.dismiss();
-              toast.error(`${props.failedMessage}: ${err?.message || "Unknown error"}`);
+              // console.log(err,'errerrerrerr')
+              if (err.status === 409) {
+                toast.dismiss();
+                toast.error(`${props.failedMessage}: ${err.response.data || "Unknown error"}`);
+              } else {
+                toast.dismiss();
+                toast.error(`${props.failedMessage}: ${err?.message || "Unknown error"}`);
+              }
             }
           }}
         >
