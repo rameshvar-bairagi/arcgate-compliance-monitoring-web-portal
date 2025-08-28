@@ -147,6 +147,8 @@ export default function SystemsPage() {
                               page: 1, // reset pagination
                             }))
                           }
+                          classNamePrefix="react-select"
+                          className={`react-select-container`}
                           placeholder={"Select date..."}
                           isClearable={false}
                         />
@@ -165,6 +167,8 @@ export default function SystemsPage() {
                               page: 1,
                             }));
                           }}
+                          classNamePrefix="react-select"
+                          className={`react-select-container`}
                           placeholder={"Select system..."}
                           isClearable
                         />
@@ -183,6 +187,8 @@ export default function SystemsPage() {
                               page: 1,
                             }));
                           }}
+                          classNamePrefix="react-select"
+                          className={`react-select-container`}
                           placeholder={"Select compliance rule..."}
                           isClearable={true}
                         />
@@ -201,6 +207,8 @@ export default function SystemsPage() {
                               page: 1,
                             }));
                           }}
+                          classNamePrefix="react-select"
+                          className={`react-select-container`}
                           placeholder={"Select client group..."}
                           isClearable={true}
                         />
@@ -221,6 +229,8 @@ export default function SystemsPage() {
                               page: 1,
                             }));
                           }}
+                          classNamePrefix="react-select"
+                          className={`react-select-container`}
                           placeholder="Select metrics..."
                           isClearable
                           // styles={{

@@ -149,3 +149,22 @@ div.dt-container > div.row {
     width: 16rem; /* desktop */
   }
 }
+
+.dark-mode .react-select__control, .dark-mode .react-select__menu {
+  /* background: transparent; */
+  background-color: #343a40;
+  border: 1px solid #ced4da;
+}
+
+.dark-mode .react-select__single-value {
+  color: #fff;
+}
+
+/* .dark-mode .select2-results__option:hover {
+  background-color: #007bff;
+} */
+
+.react-select__option--is-focused {
+  background-color: #007bff !important;
+  color: #fff !important;
+}
