@@ -114,10 +114,10 @@ export const getDateOptions = () => {
 
 export const getReportTypeOption = () => {
   return [
-    { label: 'Overall Compliance Summary', value: 'overall_compliance_cummary' },
-    { label: 'SOC2 Compliance', value: 'soc2_compliance' },
-    { label: 'Client Group Compliance', value: 'client_group_compliance' },
-    { label: 'Alert History', value: 'Alert History' },
+    { label: 'Overall Compliance Summary', value: 'overallComplianceSummary' },
+    { label: 'SOC2 Compliance', value: 'soc2Compliance' },
+    { label: 'Client Group Compliance', value: 'clientGroupCompliance' },
+    { label: 'Alert History', value: 'alertHistory' },
   ];
 };
 
