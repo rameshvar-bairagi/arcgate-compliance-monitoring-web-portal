@@ -14,9 +14,12 @@ import { useSystems } from "@/hooks/useSystems";
 import { useMetricsNameList, useSystemNameList, useAllComplianceRulesList, useClientGroupList } from "@/hooks/useOptionList";
 import type { SystemsRequestBody } from "@/types/systems";
 import { getClientGroupOptions, getDateOptions, getIpOptions, getMetricsOptions, getRulesOptions, Option } from '@/utils/commonMethod';
-import { useEffect, useMemo, useState } from 'react';
+import { Key, useEffect, useMemo, useRef, useState } from 'react';
 import Select, { MultiValue } from "react-select";
 import { ServerDataTable } from '@/components/ui/Datatable/ServerDataTable';
+import { ColumnConfig } from '@/types/server-data-table';
+import { dtRenderer } from '@/components/ui/Datatable/DefaultRenderer';
+import { renderToStaticMarkup } from 'react-dom/server';
 
 type Filters = {
   date: string;
@@ -26,6 +29,8 @@ type Filters = {
   metricList: any[] | null;
   page: number;
   size: number;
+  sortBy?: string; // Add these
+  sortDirection?: 'asc' | 'desc';
 };
 
 export default function SystemsPage() {
@@ -48,7 +53,9 @@ export default function SystemsPage() {
     clientGroup: "",
     metricList: null as string[] | null,
     page: 1,
-    size: 10
+    size: 10,
+    sortBy: "", // Add sort fields
+    sortDirection: "desc" as 'asc' | 'desc',
   });
 
   const requestBody = useMemo<SystemsRequestBody>(() => ({
@@ -59,8 +66,9 @@ export default function SystemsPage() {
     metricList: filters.metricList,
     page: filters.page,
     size: filters.size,
+    sortBy: filters.sortBy ?? "",
+    sortDirection: filters.sortDirection ?? "",
   }), [filters]);
-
   // console.log(filters, 'filtersfiltersfilters');
 
   // Call the hook
@@ -70,7 +78,50 @@ export default function SystemsPage() {
     systemsError, 
     refetchSystems 
   } = useSystems(requestBody, true);
-  // console.log(systemsData?.content,'systems list');
+  // console.log(systemsData,'systems list');
+
+  const columns: ColumnConfig<any>[] = useMemo(() => ([
+    {
+      title: "IP Address",
+      data: "ip",
+      render: (data: any, type: any, row: any, meta: any) =>
+        // renderToStaticMarkup(dtRenderer(data, {field: "ip", row})),
+        dtRenderer(data, {field: "ip", row}),
+      orderable: true,
+    },
+    {
+      title: "Compliance Status",
+      data: "complianceStatus",
+      render: (data: any, type: any, row: any, meta: any) =>
+        // renderToStaticMarkup(dtRenderer(data, {field: "complianceStatus", row})),
+        dtRenderer(data, {field: "complianceStatus", row}),
+      orderable: true,
+    },
+    {
+      title: "Compliance Services",
+      data: "complianceServices",
+      render: (data: any, type: any, row: any, meta: any) =>
+        // renderToStaticMarkup(dtRenderer(data, {field: "complianceServices", row})),
+        dtRenderer(data, {field: "complianceServices", row}),
+      orderable: true,
+    },
+    {
+      title: "Non-Compliance Services",
+      data: "nonComplianceServices",
+      render: (data: any, type: any, row: any, meta: any) =>
+        // renderToStaticMarkup(dtRenderer(data, {field: "nonComplianceServices", row})),
+        dtRenderer(data, {field: "nonComplianceServices", row}),
+      orderable: true,
+    },
+    {
+      title: "System Date",
+      data: "systemDate",
+      render: (data: any, type: any, row: any, meta: any) =>
+        // renderToStaticMarkup(dtRenderer(data, {field: "systemDate", row})),
+        dtRenderer(data, {field: "systemDate", row}),
+      orderable: true,
+    },
+  ]), []);
 
   const { 
     list: systemNameList,
@@ -103,19 +154,45 @@ export default function SystemsPage() {
   const clientGroupOptions = getClientGroupOptions(clientGroupList ?? []);
   // console.log(clientGroupList, 'clientGroupList')
 
-  useEffect(() => {
-    const handler = (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      // Only update filters if something actually changed
-      setFilters(prev =>
-        prev.page !== detail.page || prev.size !== detail.size
-          ? { ...prev, page: detail.page, size: detail.size }
-          : prev
-      );
-    };
-    window.addEventListener("tablePaginationChange", handler);
-    return () => window.removeEventListener("tablePaginationChange", handler);
-  }, []);
+  // useEffect(() => {
+  //   console.log('filters changed:', filters);
+  // }, [filters]);
+
+  const updateFilters = (updates: Partial<Filters>, resetPage = true) => {
+    setFilters(prev => {
+      const newFilters = {
+        ...prev,
+        ...updates,
+        ...(resetPage ? { page: 1 } : {}),
+      };
+
+      // Prevent unnecessary state updates
+      if (JSON.stringify(prev) === JSON.stringify(newFilters)) return prev;
+      return newFilters;
+    });
+  };
+
+  const handleSort = (columnIndex: number, direction: 'asc' | 'desc') => {
+    const columnField = columns[columnIndex].data;
+
+    if (columnField) {
+      // If already sorted by the same column and direction, do nothing
+      if (
+        filters.sortBy === columnField &&
+        filters.sortDirection === direction
+      ) {
+        return;
+      }
+
+      // Update sort and reset to first page
+      updateFilters({
+        ...filters,
+        sortBy: columnField as string,
+        sortDirection: direction,
+        page: 1, // reset to first page only when sorting changes
+      });
+    }
+  };
 
   return (
     <ContentWrapper>
@@ -141,11 +218,9 @@ export default function SystemsPage() {
                           options={dateOptions}
                           value={dateOptions.find((opt) => opt.value === filters.date) || null}
                           onChange={(newValue) =>
-                            setFilters((prev) => ({
-                              ...prev,
+                            updateFilters({
                               date: newValue?.value || "",
-                              page: 1, // reset pagination
-                            }))
+                            })
                           }
                           classNamePrefix="react-select"
                           className={`react-select-container`}
@@ -161,11 +236,9 @@ export default function SystemsPage() {
                           value={selectedSystemName}
                           onChange={(newValue) => {
                             setSelectedSystemName(newValue);
-                            setFilters((prev) => ({
-                              ...prev,
+                            updateFilters({
                               systemName: newValue?.value || "",
-                              page: 1,
-                            }));
+                            })
                           }}
                           classNamePrefix="react-select"
                           className={`react-select-container`}
@@ -181,11 +254,9 @@ export default function SystemsPage() {
                           value={selectedComplianceRule}
                           onChange={(newValue) => {
                             setSelectedComplianceRule(newValue);
-                            setFilters((prev) => ({
-                              ...prev,
+                            updateFilters({
                               complianceRule: newValue?.value || "",
-                              page: 1,
-                            }));
+                            })
                           }}
                           classNamePrefix="react-select"
                           className={`react-select-container`}
@@ -201,11 +272,9 @@ export default function SystemsPage() {
                           value={selectedClientGroup}
                           onChange={(newValue) => {
                             setSelectedClientGroup(newValue);
-                            setFilters((prev) => ({
-                              ...prev,
+                            updateFilters({
                               clientGroup: newValue?.value || "",
-                              page: 1,
-                            }));
+                            })
                           }}
                           classNamePrefix="react-select"
                           className={`react-select-container`}
@@ -220,14 +289,11 @@ export default function SystemsPage() {
                           options={metricsOptions}
                           isMulti
                           value={selectedMetrics}
-                          // onChange={(newValue) => setSelectedMetrics(newValue)}
                           onChange={(newValue) => {
                             setSelectedMetrics(newValue);
-                            setFilters((prev) => ({
-                              ...prev,
+                            updateFilters({
                               metricList: newValue?.map(v => v.value) || null,
-                              page: 1,
-                            }));
+                            })
                           }}
                           classNamePrefix="react-select"
                           className={`react-select-container`}
@@ -241,37 +307,28 @@ export default function SystemsPage() {
                           //   }),
                           // }}
                         />
-                        {/* <pre>{JSON.stringify(selectedMetrics, null, 2)}</pre> */}
                       </div>
                     </Col>
                   </Row>
                   <ServerDataTable 
-                    id={"systemsTable"} 
-                    onViewClick={(id) => {
-                      // console.log("Clicked row with id:", id);
-                      // maybe open modal, navigate, etc.
-                    }}
-                    columns={[
-                      { data: "ip", title: "IP Address" },
-                      { data: "complianceStatus", title: "Compliance Status" },
-                      { data: "complianceServices", title: "Compliance Services" },
-                      { data: "nonComplianceServices", title: "Non-Compliance Services" },
-                      { data: "systemDate", title: "System Date" },
-                    ]}
-                    data={systemsData?.content ?? []}
+                    id={"systemsTable"}
+                    columns={columns}
+                    data={systemsData?.content}
                     page={filters.page}
                     size={filters.size}
-                    totalElements={systemsData?.totalElements ?? 0}
-                    onPageChange={(newPage) =>
-                      setFilters((prev) => ({
-                        ...prev,
-                        page: newPage,
-                      }))
-                    }
+                    totalElements={systemsData?.totalElements ?? 1}
+                    onPageChange={(newPage) => {
+                      if (newPage !== filters.page) {
+                        updateFilters({ page: newPage }, false);
+                      }
+                    }}
+                    onSort={handleSort} // Pass the sorting handler
                     searching={false}
-                    order={4}
-                    columnDefs={[{ orderable: false, targets: [0, 1, 2, 3] }]}
-                    exportButtons={[]}
+                    // order={4} //  Server handles initial sort, not client
+                    // columnDefs={[{ orderable: false, targets: [0, 1, 2, 3] }]} // Let individual columns control orderable
+                    columnDefs={[]} // Empty array to override defaults
+                    exportButtons={["csv", "excel", "pdf", "print"]}
+                    domLayout="Bfrtip"
                   />
                 </CardBody>
               </Card>

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useEffect, useRef } from "react";
+import { Key, useEffect, useRef } from "react";
 import $ from "jquery";
 import "datatables.net-bs4";
 import "datatables.net-responsive-bs4";
@@ -13,139 +13,128 @@ import "datatables.net-buttons/js/buttons.colVis.min";
 import jszip from "jszip";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
-import { TableRow } from "@/types/systems";
 import { CustomPagination } from "../Pagination/CustomPagination";
+import { ServerDataTableProps } from "@/types/server-data-table";
 
 declare global {
   interface Window {
     JSZip: typeof jszip;
-    __prevPage?: number;
-    __prevSize?: number;
   }
 }
 
 (pdfMake as any).vfs = (pdfFonts as any).vfs;
 window.JSZip = jszip;
 
-interface ColumnConfig {
-  data: string;   // field in row
-  title: string;  // display heading
-}
-
-interface ServerDataTableProps {
-  id: string;
-  columns: ColumnConfig[];
-  data: TableRow[]; // strongly type it
-  onViewClick?: (id: string) => void;
-  page: number;
-  size: number;
-  totalElements: number;
-  onPageChange: (newPage: number) => void;
-  searching?: boolean;
-  order?: number;
-  columnDefs?: any[];
-  exportButtons?: string[];
-  // domLayout?: string;
-}
 
 export const ServerDataTable: React.FC<ServerDataTableProps> = ({
   id,
   columns,
   data,
-  onViewClick,
   page,
   size,
   totalElements,
   onPageChange,
+  onSort,
   searching = true,
   order = 0, // this is which column default desc order. pass prop 0, 1, 2, 3, 4 etc
   columnDefs = [{ orderable: false, targets: "_all" }], // default and specific disable { orderable: false, targets: [0, 2] }, 
   exportButtons = ["csv", "excel", "pdf", "print"], // {["csv", "excel", "pdf", "print"]}
-  // domLayout = "Bfrtip", // Bfrtip, Brtip
+  domLayout = "Bfrtip", // Bfrtip, Brtip
 }) => {
+  // console.log(page, 'pagepagepagepagepage');
   const initialized = useRef(false);
+  const tableRef = useRef<any>(null);
+  // const tableRef = useRef<JQuery<HTMLElement>>(null);
 
   // Init DataTable
   useEffect(() => {
+    // console.log(columns,'columnscolumnscolumns');
+    // console.log(data,'datadatadatadata');
     if (!initialized.current) {
-      $(`#${id}`).DataTable({
-        rowId: "_rowId",
-        paging: false,   // disable DataTables UI paging
-        info: false,     // optional: hides "Showing 1 of N"
+      const table = $(`#${id}`).DataTable({
+        // rowId: "_rowId",
+        data: [], // Empty data to prevent client-side processing
+        columns: columns.map(col => ({
+          title: col.title,
+          data: col.data ?? null,
+          render: col.render,
+          defaultContent: col.defaultContent ?? "",
+          orderable: col.orderable ?? false,
+        })),
+        paging: false,
+        info: false,
         responsive: true,
         lengthChange: false,
         autoWidth: false,
         processing: true,
         searching: searching,
-        order: [[order, "desc"]],  // sort by column index (0-based)
+        ordering: !!onSort, // Enable ordering only if onSort callback is provided
+        // order: [[order, "desc"]],
         columnDefs: columnDefs,
         buttons: exportButtons,
-        // dom: domLayout,
-        columns: columns.map((col) => ({
-          data: col.data,
-          render: (value: any) => {
-              if (value == null) return "";
-
-              // Handle IP column as clickable link
-              if (col.data.toLowerCase() === "ip") {
-                // return `<a href="http://${value}" target="_blank" rel="noopener noreferrer">${value}</a>`;
-                return `<a href="#" class="text-primary view-link" data-id="${value}">${value}</a>`;
-              }
-
-              if (typeof value === "boolean") return value ? "<span class='text-success'>Compliant</span>" : "<span class='text-danger'>Non-Compliant</span>";
-
-              // Arrays joined with commas
-              // if (Array.isArray(value)) {
-              //   return value.map((v) => String(v).charAt(0).toUpperCase() + String(v).slice(1).toLowerCase()).join(", ");
-              // }
-              if (Array.isArray(value)) {
-                return value
-                  .map(
-                    (v) =>
-                      `<span class="badge badge-light m-1">
-                        ${String(v).charAt(0).toUpperCase() + String(v).slice(1).toLowerCase()}
-                      </span>`
-                  )
-                  .join(" ");
-              }
-
-              // Capitalize string values
-              if (typeof value === "string") {
-                return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
-              }
-              return value ?? "";
-            },
-        })),
+        dom: domLayout,
       });
 
+      tableRef.current = table;
       initialized.current = true;
     }
-  }, [id, columns, data]);
 
-  // Update rows when new data arrives
+    // // Cleanup on unmount
+    // return () => {
+    //   if (initialized.current && tableRef.current) {
+    //     tableRef.current.destroy(true);
+    //     initialized.current = false;
+    //   }
+    // };
+  }, [id, columns, searching, onSort, columnDefs, exportButtons, domLayout]);
+
+  // Only attach sort event listener once after DataTable is initialized
   useEffect(() => {
-    if (initialized.current) {
-      const table = $(`#${id}`).DataTable();
-      table.clear();
-      table.rows.add(data || []);
-      table.draw(false);
+    if (initialized.current && tableRef.current && onSort) {
+      const table = tableRef.current;
+
+      const handleSort = function (e: any, settings: any, details: any) {
+        const sortInfo = details?.[0];
+        if (sortInfo) {
+          const columnIndex = sortInfo.col;
+          const direction = sortInfo.dir === 'asc' ? 'asc' : 'desc';
+          onSort(columnIndex, direction);
+        }
+      };
+
+      table.on('order.dt', handleSort);
+
+      // Cleanup to prevent stacking multiple listeners
+      return () => {
+        table.off('order.dt', handleSort);
+      };
     }
-  }, [data, id, columns]);
-  
+  }, [onSort]);
+
+  // Update table when data changes
   useEffect(() => {
-    if (initialized.current && onViewClick) {
-      $(`#${id}`).off("click", ".view-link"); // avoid duplicates
-      $(`#${id}`).on("click", ".view-link", function (e) {
-        e.preventDefault();
-        const viewId = $(this).data("id");
-        onViewClick(String(viewId));
-      });
+    if (initialized.current && tableRef.current) {
+      tableRef.current.clear();
+      if (data && data.length > 0) {
+        tableRef.current.rows.add(data);
+        tableRef.current.draw(false);
+        tableRef.current.buttons().container().show();
+      } else {
+        tableRef.current.draw(false);
+        tableRef.current.buttons().container().hide();
+      }
+      // console.log("Rows added:", tableRef.current.rows().count());
     }
-  }, [id, onViewClick]);
+  }, [data]);
 
-  // console.log(data, 'data table');
-  // console.log(columns, 'columns table');
-
+  const renderCell = (col: any, row: any, rowIdx: number, colIdx: number) => {
+    if (typeof col.render === "function") {
+      const meta = { row: rowIdx, col: colIdx, settings: {} } as any;
+      return col.render(col.data ? row[col.data] : null, "display", row, meta);
+    }
+    if (col.data) return row[col.data];
+    return col.defaultContent ?? null;
+  };
   // return null;
 
   return (
@@ -157,18 +146,39 @@ export const ServerDataTable: React.FC<ServerDataTableProps> = ({
           ))}
         </tr>
       </thead>
-      <tbody />
+      <tbody></tbody>
+      {/* <tbody>
+        {data && data.length === 0 ? (
+          <tr>
+            <td colSpan={columns.length} className="text-center">
+              No records found
+            </td>
+          </tr>
+        ) : (
+          data.map((row: any, rowIdx: Key) => (
+            <tr key={rowIdx}>
+              {columns.map((col, colIdx) => (
+                <td key={colIdx}>
+                  {renderCell(col, row, rowIdx as number, colIdx)}
+                </td>
+              ))}
+            </tr>
+          ))
+        )}
+      </tbody> */}
       <tfoot>
-        <tr>
-          <td colSpan={columns.length}>
-            <CustomPagination
-              page={page}
-              size={size}
-              totalElements={totalElements ?? 0}
-              onPageChange={onPageChange}
-            />
-          </td>
-        </tr>
+        {data && data.length > 0 && (
+          <tr>
+            <td colSpan={columns.length}>
+              <CustomPagination
+                page={page}
+                size={size}
+                totalElements={totalElements ?? 0}
+                onPageChange={onPageChange}
+              />
+            </td>
+          </tr>
+        )}
       </tfoot>
     </table>
   );

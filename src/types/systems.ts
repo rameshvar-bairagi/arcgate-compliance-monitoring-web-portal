@@ -6,6 +6,8 @@ export type SystemsRequestBody = {
   metricList: string[] | number[] | null;
   page:number;
   size:number;
+  sortBy: string;
+  sortDirection: string;
   // metricList: ["clamscan_antivirus","luksEncryption","cron_script"];
   // metricList:[3,6,25];
 };
@@ -35,6 +37,7 @@ export type TableRow = {
 };
 export interface SystemsListData {
   content: TableRow[];
+  pageNumber: number,
   totalElements: number;
   totalPages: number;
 }

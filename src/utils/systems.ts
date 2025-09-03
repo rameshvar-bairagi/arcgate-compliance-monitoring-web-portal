@@ -12,6 +12,7 @@ export const transformApiResponse = (res: SystemsApiResponse): SystemsListData =
 
   return {
     content,
+    pageNumber: res.pageNumber,
     totalElements: res.totalElements,
     totalPages: res.totalPages
   };

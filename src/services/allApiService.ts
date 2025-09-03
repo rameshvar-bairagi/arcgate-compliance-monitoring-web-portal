@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import api from '@/lib/axios';
+import { AlertsApiResponse, AlertsRequestBody } from '@/types/alerts';
 import { PostGroupsRequestBody } from '@/types/groups';
 import { PostRulesRequestBody } from '@/types/rules';
 import type { SystemsApiResponse, SystemsRequestBody } from '@/types/systems';
@@ -103,6 +104,17 @@ export const putClientGroups = async (body: PostGroupsRequestBody): Promise<any 
 export const getClientRuleById = async (id: number | string): Promise<any | null> => {
   const res = await api.get(`/client-group`, {
     params: { id },
+  });
+  return res.data;
+};
+
+export const fetchAlerts = async (body: AlertsRequestBody): Promise<AlertsApiResponse> => {
+  const res = await api.get(`/alerts`, {
+    params: {
+      date: body?.date,
+      page: body?.page,
+      size: body?.size,
+    },
   });
   return res.data;
 };

@@ -92,7 +92,7 @@ export default function Sidebar() {
               </Link>
             </Li>
             <Li className="nav-item">
-              <Link href="#" className="nav-link disabled" onClick={handleLinkClick}>
+              <Link href="/alerts" className="nav-link" onClick={handleLinkClick}>
                 <i className="nav-icon fas fa-bell" />
                 <p>Alerts</p>
               </Link>

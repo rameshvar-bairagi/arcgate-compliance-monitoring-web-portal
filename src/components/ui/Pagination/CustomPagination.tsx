@@ -45,7 +45,7 @@ export const CustomPagination: React.FC<PaginationProps> = ({
     <div className="d-flex justify-content-between align-items-center p-2">
       {/* Left side - summary */}
       <div>
-        Page {page} of {totalPages}
+        Page {page === 0 ? 1 : page} of {totalPages}
       </div>
 
       {/* Right side - pagination */}
@@ -53,16 +53,16 @@ export const CustomPagination: React.FC<PaginationProps> = ({
         <ul className="pagination mb-0">
           {/* First */}
           <li className={`paginate_button page-item ${page === 1 ? "disabled" : ""}`}>
-            <a href="#" className="page-link" onClick={() => onPageChange(1)}>
+            <button className="page-link" onClick={() => onPageChange(1)}>
               «
-            </a>
+            </button>
           </li>
 
           {/* Previous */}
           <li className={`paginate_button page-item ${page === 1 ? "disabled" : ""}`}>
-            <a href="#" className="page-link" onClick={() => onPageChange(page - 1)}>
+            <button className="page-link" onClick={() => onPageChange(page - 1)}>
               ‹
-            </a>
+            </button>
           </li>
 
           {/* Page Numbers */}
@@ -76,25 +76,25 @@ export const CustomPagination: React.FC<PaginationProps> = ({
                 key={idx}
                 className={`paginate_button page-item ${p === page ? "active" : ""}`}
               >
-                <a href="#" className="page-link" onClick={() => onPageChange(p)}>
+                <button className="page-link" onClick={() => onPageChange(p)}>
                   {p}
-                </a>
+                </button>
               </li>
             )
           )}
 
           {/* Next */}
           <li className={`paginate_button page-item ${page >= totalPages ? "disabled" : ""}`}>
-            <a href="#" className="page-link" onClick={() => onPageChange(page + 1)}>
+            <button className="page-link" onClick={() => onPageChange(page + 1)}>
               ›
-            </a>
+            </button>
           </li>
 
           {/* Last */}
           <li className={`paginate_button page-item ${page >= totalPages ? "disabled" : ""}`}>
-            <a href="#" className="page-link" onClick={() => onPageChange(totalPages)}>
+            <button className="page-link" onClick={() => onPageChange(totalPages)}>
               »
-            </a>
+            </button>
           </li>
         </ul>
       </div>
