@@ -24,3 +24,8 @@ export type AlertsApiResponse = {
   totalPages: number;
   content: Alerts[];
 };
+
+export type AlertsUpdateStatus = {
+  ip: string;
+  status: string;
+};

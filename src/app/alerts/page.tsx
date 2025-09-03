@@ -9,7 +9,7 @@ import Col from '@/components/ui/Col';
 import Card from '@/components/ui/Card';
 import CardBody from '@/components/ui/CardBody';
 import { getBadgeClass, getDateOptions } from '@/utils/commonMethod';
-import type { AlertsRequestBody, Alerts} from "@/types/alerts";
+import type { AlertsRequestBody, Alerts, AlertsUpdateStatus} from "@/types/alerts";
 import { useAlerts } from "@/hooks/useAlerts";
 import { useState, useEffect, useMemo, Key } from "react";
 import Select, { MultiValue } from "react-select";
@@ -18,6 +18,9 @@ import { ColumnConfig } from '@/types/server-data-table';
 import { dtRenderer, getAlertActionButton } from '@/components/ui/Datatable/DefaultRenderer';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { createRoot } from 'react-dom/client';
+import { toast } from "react-toastify";
+import { useQueryClient } from "@tanstack/react-query";
+import { updateAlertStatus } from '@/services/allApiService';
 
 type Filters = {
   date: string;
@@ -28,6 +31,7 @@ type Filters = {
 };
 
 export default function AlertsPage() {
+  const queryClient = useQueryClient();
   const dateOptions = getDateOptions();
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
@@ -145,19 +149,38 @@ export default function AlertsPage() {
   ]), []);
 
   const handleStatusUpdate = async (row: Alerts, newStatus: string) => {
-    console.log("handleStatusUpdate");
-    try {
-      // Call API
-      // await axios.put(`/api/alerts/${row.alertId}/status`, { status: newStatus });
+    // console.log(row, 'row alert');
+    // console.log(newStatus, 'newStatus alert');
+    const requestBody: AlertsUpdateStatus = {
+      ip: String(row?.ip),
+      status: newStatus,
+    };
 
-      // Update local alerts
-      setAlerts((prev) =>
-        prev.map((item) =>
-          item.ip === row.ip ? { ...item, status: newStatus } : item
-        )
-      );
-    } catch (error) {
-      console.error("Failed to update status", error);
+    try {
+      const res = await updateAlertStatus(requestBody);
+      if (res?.status === 200 || res?.status === 204) {
+        console.log(res,'updateAlertStatus');
+        toast.dismiss();
+        toast.success(res?.statusText);
+        setAlerts((prev) =>
+          prev.map((item) =>
+            item.ip === row.ip ? { ...item, status: newStatus } : item
+          )
+        );
+        // queryClient.invalidateQueries({ queryKey: ["systems"] });
+      } else {
+        toast.dismiss();
+        toast.error(`Failed to update alert status: ${res?.status} ${res?.statusText}`);
+      }
+    } catch (err: any) {
+      // console.log(err,'errerrerrerr')
+      if (err.status === 409) {
+        toast.dismiss();
+        toast.error(`Failed to update alert status: ${err.response.data || "Unknown error"}`);
+      } else {
+        toast.dismiss();
+        toast.error(`Failed to update alert status: ${err?.message || "Unknown error"}`);
+      }
     }
   };
 

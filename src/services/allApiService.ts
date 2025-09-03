@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import api from '@/lib/axios';
-import { AlertsApiResponse, AlertsRequestBody } from '@/types/alerts';
+import { AlertsApiResponse, AlertsRequestBody, AlertsUpdateStatus } from '@/types/alerts';
 import { PostGroupsRequestBody } from '@/types/groups';
 import { PostRulesRequestBody } from '@/types/rules';
 import type { SystemsApiResponse, SystemsRequestBody } from '@/types/systems';
@@ -117,4 +117,9 @@ export const fetchAlerts = async (body: AlertsRequestBody): Promise<AlertsApiRes
     },
   });
   return res.data;
+};
+
+export const updateAlertStatus = async (body: AlertsUpdateStatus): Promise<{ data: any; status: number; statusText: string } | null> => {
+  const res = await api.put(`/update-status`, body);
+  return { data: res.data, status: res.status, statusText: res.statusText };
 };

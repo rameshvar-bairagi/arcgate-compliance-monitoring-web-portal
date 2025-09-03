@@ -19,7 +19,7 @@ export default function CardHeader({
   transparentBorder = false
 }: CardHeaderProps) {
   return (
-    <div className={`card-header ${transparentBorder ? "border-transparent" : "border-0"}`}>
+    <div className={`card-header ${transparentBorder ? "border-transparent" : ""}`}>
       <div className="d-flex justify-content-between align-items-center">
         <Heading level={3} className="card-title mb-0">
           {title}

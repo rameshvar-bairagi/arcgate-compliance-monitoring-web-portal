@@ -112,6 +112,24 @@ export const getDateOptions = () => {
   ];
 };
 
+export const getReportTypeOption = () => {
+  return [
+    { label: 'Overall Compliance Summary', value: 'overall_compliance_cummary' },
+    { label: 'SOC2 Compliance', value: 'soc2_compliance' },
+    { label: 'Client Group Compliance', value: 'client_group_compliance' },
+    { label: 'Alert History', value: 'Alert History' },
+  ];
+};
+
+export const getExportOption = () => {
+  return [
+    { label: 'CSV', value: 'csv' },
+    { label: 'EXCEL', value: 'excel' },
+    { label: 'PDF', value: 'pdf' },
+    { label: 'PRINT', value: 'print' },
+  ];
+};
+
 export interface Option<Value extends string | number = string | number> {
   label: string;
   value: Value;
