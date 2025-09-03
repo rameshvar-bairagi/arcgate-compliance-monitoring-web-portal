@@ -328,7 +328,7 @@ export default function SystemsPage() {
                     // columnDefs={[{ orderable: false, targets: [0, 1, 2, 3] }]} // Let individual columns control orderable
                     columnDefs={[]} // Empty array to override defaults
                     exportButtons={["csv", "excel", "pdf", "print"]}
-                    domLayout="Bfrtip"
+                    domLayout="Bfrtip" // if hide export button then pass blank string ""
                   />
                 </CardBody>
               </Card>

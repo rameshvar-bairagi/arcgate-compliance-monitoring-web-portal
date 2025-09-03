@@ -115,13 +115,14 @@ export const ServerDataTable: React.FC<ServerDataTableProps> = ({
   useEffect(() => {
     if (initialized.current && tableRef.current) {
       tableRef.current.clear();
+      const buttonsContainer = tableRef.current.buttons().container?.();
       if (data && data.length > 0) {
         tableRef.current.rows.add(data);
         tableRef.current.draw(false);
-        tableRef.current.buttons().container().show();
+        exportButtons?.length > 0 ? buttonsContainer.show() : buttonsContainer.hide();
       } else {
         tableRef.current.draw(false);
-        tableRef.current.buttons().container().hide();
+        buttonsContainer.hide();
       }
       // console.log("Rows added:", tableRef.current.rows().count());
     }
