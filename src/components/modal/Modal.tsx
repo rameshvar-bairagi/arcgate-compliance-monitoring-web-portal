@@ -11,6 +11,7 @@ interface ModalProps {
   onClose: () => void;
   onSave?: () => void;
   size?: 'sm' | "md" | 'lg' | 'xl';
+  showFooter?: boolean;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -20,6 +21,7 @@ const Modal: React.FC<ModalProps> = ({
   onClose,
   onSave,
   size = 'xl',
+  showFooter = true, 
 }) => {
   if (!isOpen) return null;
 
@@ -52,17 +54,18 @@ const Modal: React.FC<ModalProps> = ({
           </div>
 
           {/* Footer stays fixed */}
-          <div className="modal-footer justify-content-between">
-            <Button type="button" className="btn btn-default" onClick={onClose}>
-              Close
-            </Button>
-            {onSave && (
-              <Button type="button" className="btn btn-primary" onClick={onSave}>
-                Save changes
+          {showFooter && (
+            <div className="modal-footer justify-content-between">
+              <Button type="button" className="btn btn-default" onClick={onClose}>
+                Close
               </Button>
-            )}
-          </div>
-
+              {onSave && (
+                <Button type="button" className="btn btn-primary" onClick={onSave}>
+                  Save changes
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

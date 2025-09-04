@@ -2,7 +2,7 @@ export type SystemsRequestBody = {
   date: string;
   systemName: string;
   complianceRule: string;
-  clientGroup: string;
+  clientGroup: string | number;
   metricList: string[] | number[] | null;
   page:number;
   size:number;
@@ -41,3 +41,12 @@ export interface SystemsListData {
   totalElements: number;
   totalPages: number;
 }
+
+export interface ExportOverAllData {
+  ip: string;
+  complianceStatus: boolean;
+  complianceServices: string[];
+  nonComplianceServices: string[];
+  systemDate: string;
+  _rowId: string;
+};

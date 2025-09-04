@@ -8,15 +8,15 @@ import "react-datepicker/dist/react-datepicker.css";
 type PresetType = 'today' | 'last7Days' | 'last30Days' | 'thisFY' | 'lastFY' | 'custom';
 
 interface FinancialYearDatePickerProps {
-  onChange?: (range: { startDate: Date; endDate: Date }) => void;
+  onChange?: (range: { startDate: Date; endDate: Date, date?: string }) => void;
 }
 
 const presetOptions = [
   { label: "Today", value: "today" },
   { label: "Last 7 Days", value: "last7Days" },
-  { label: "Last 30 Days", value: "last30Days" },
-  { label: "This Financial Year", value: "thisFY" },
-  { label: "Last Financial Year", value: "lastFY" },
+  // { label: "Last 30 Days", value: "last30Days" },
+  // { label: "This Financial Year", value: "thisFY" },
+  // { label: "Last Financial Year", value: "lastFY" },
   // { label: "Custom Range", value: "custom" },
 ] as const;
 
@@ -30,7 +30,7 @@ const FinancialYearDatePicker: React.FC<FinancialYearDatePickerProps> = ({ onCha
     const range = ranges[preset] || [new Date(), new Date()];
     setStartDate(range[0]);
     setEndDate(range[1]);
-    onChange?.({ startDate: range[0], endDate: range[1] });
+    onChange?.({ startDate: range[0], endDate: range[1], date: preset, });
   };
 
   const handlePresetChange = (selected: { value: PresetType; label: string } | null) => {

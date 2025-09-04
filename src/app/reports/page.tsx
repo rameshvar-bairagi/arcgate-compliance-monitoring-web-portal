@@ -16,11 +16,17 @@ import FinancialYearDatePicker from '@/components/ui/FinancialYearDatePicker/Fin
 import CardHeader from '@/components/ui/CardHeader';
 import CardFooter from '@/components/ui/CardFooter';
 import { useClientGroupList } from '@/hooks/useOptionList';
+import { ExportOverAllData, SystemsRequestBody } from '@/types/systems';
+import { useSystems } from '@/hooks/useSystems';
+import { mapFilterDateToRequestDate } from '@/utils/dateUtils';
+import ExportButtons from '@/components/exportData/ExportButtons';
+import Modal from '@/components/modal/Modal';
+import { ScheduleForm } from '@/types/scheduleForm';
+import ScheduleReportModal from '@/components/modal/ScheduleReportModal';
 
 type Filters = {
   date: string;
   reportType: string;
-  export: string,
   clientGroups?: string | number;
   startDate?: Date;
   endDate?: Date;
@@ -39,23 +45,126 @@ export default function ReportsPage() {
     { label: 'Reports', active: true },
   ];
 
-  // Manage filters in state
-  const [filters, setFilters] = useState<Filters>({
-    date: dateOptions[0].value,
-    reportType: reportTypeOption[0].value,
-    export: exportOption[0].value,
-    page: 0,
-    size: 10,
-    sortBy: "", // Add sort fields
-    sortDirection: "desc" as 'asc' | 'desc',
-  });
-
   const { 
     list: clientGroupList,
     loading: clientGroupListLoading,
     error: clientGroupListError
   } = useClientGroupList();
   const clientGroupOptions = getClientGroupOptions(clientGroupList ?? []);
+  // console.log(clientGroupList, 'clientGroupList');
+  
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedReport, setSelectedReport] = useState<ScheduleForm | null>(null);
+
+  // Manage filters in state
+  const [filters, setFilters] = useState<Filters>({
+    date: dateOptions[0].value,
+    reportType: reportTypeOption[0].value,
+    clientGroups: "",
+    page: 0,
+    size: 10,
+    sortBy: "", // Add sort fields
+    sortDirection: "desc" as 'asc' | 'desc',
+  });
+  console.log(filters, 'filtersfiltersfilters');
+
+  const requestOverallBody = useMemo<SystemsRequestBody>(() => {
+    const date = mapFilterDateToRequestDate(filters.date);
+    return {
+      // date,
+      date: filters.date,
+      systemName: "",
+      complianceRule: "",
+      clientGroup: filters.reportType === "clientGroupCompliance" ? Number(filters?.clientGroups) : "",
+      metricList: null,
+      page: 1,
+      size: filters.size,
+      sortBy: filters.sortBy ?? "",
+      sortDirection: filters.sortDirection ?? "",
+    };
+  }, [filters]);
+
+  const fileNamesByReportType: Record<string, string> = {
+    overallComplianceSummary: "Overall_Compliance_Report",
+    clientGroupCompliance: "Client_Group_Compliance_Report",
+    soc2Compliance: "SOC2_Compliance_Report",
+    alertHistory: "Alert_History_Report",
+  };
+  
+  const headersByReportType: Record<string, string[]> = {
+    overallComplianceSummary: [
+      "IP Address",
+      "Compliance Status",
+      "Compliance Services",
+      "Non-Compliance Services",
+      "System Date",
+    ],
+    clientGroupCompliance: [
+      "IP Address",
+      "Compliance Status",
+      "Compliance Services",
+      "Non-Compliance Services",
+      "System Date",
+    ],
+    // clientGroupCompliance: [
+    //   "Client Groups",
+    //   "Systems IP's",
+    //   "Compliant Rules",
+    //   "Compliant Metrics",
+    //   "Non-Compliant Metrics",
+    // ],
+    soc2Compliance: [
+      "Control ID",
+      "Control Description",
+      "Compliant Systems",
+      "Non-Compliant Systems",
+      "Compliance %",
+    ],
+    alertHistory: [
+      "System Name",
+      "Non-Compliant Systems",
+      "Client Groups",
+      "Compliance Rules",
+      "Level",
+      "Systems Date",
+      "Status",
+    ],
+  };
+
+  const exportFileName = useMemo(() => {
+    const baseName = fileNamesByReportType[filters.reportType] || "Report";
+    const dateSuffix = new Date().toISOString().split("T")[0]; // e.g., "2025-09-02"
+    return `${baseName}_${dateSuffix}`;
+  }, [filters.reportType]);
+
+  const reportHeaders = useMemo(() => {
+    return headersByReportType[filters.reportType] || [];
+  }, [filters.reportType]);
+
+  const isOverallSelected = filters.reportType === "overallComplianceSummary";
+
+  const { 
+    systemsData, 
+    systemsLoading, 
+    systemsError, 
+    refetchSystems 
+  } = useSystems(requestOverallBody, isOverallSelected); // if isOverallSelected true then call useSystem
+  console.log(systemsData,'Overall Compliance Summary');
+
+
+
+  useEffect(() => {
+    if (
+      filters.reportType === 'clientGroupCompliance' &&
+      !filters.clientGroups &&
+      clientGroupOptions.length > 0
+    ) {
+      setFilters((prev) => ({
+        ...prev,
+        clientGroups: clientGroupOptions[0].value, // Default to the first available group
+      }));
+    }
+  }, [filters.reportType, filters.clientGroups, clientGroupOptions]);
 
   const updateFilters = (updates: Partial<Filters>, resetPage = true) => {
     setFilters(prev => {
@@ -69,6 +178,94 @@ export default function ReportsPage() {
       if (JSON.stringify(prev) === JSON.stringify(newFilters)) return prev;
       return newFilters;
     });
+  };
+
+  const transformedData = useMemo(() => {
+    if (filters.reportType === "overallComplianceSummary" || filters.reportType === "clientGroupCompliance") {
+      return (systemsData?.content ?? []).map((item: ExportOverAllData) => ({
+        "IP Address": item.ip,
+        "Compliance Status": item.complianceStatus ? "Compliant" : "Non-Compliant",
+        "Compliance Services": item.complianceServices.join(", "),
+        "Non-Compliance Services": item.nonComplianceServices.join(", "),
+        "System Date": item.systemDate,
+      }));
+    }
+
+    // if (filters.reportType === "clientGroupCompliance") {
+    //   return (clientGroupList ?? []).map((group: any) => {
+    //     const systemsIPs = group.allSystems
+    //       ? "All Systems"
+    //       : (group.systemIps || []).join(", ");
+
+    //     const rule = group.complianceRules?.[0]; // single rule assumed
+
+    //     const compliantRules = rule?.name || "-";
+
+    //     const compliantMetrics = (rule?.compliantMetrics ?? [])
+    //       .map((metric: any) => metric.metricsName)
+    //       .join(", ") || "-";
+
+    //     const nonCompliantMetrics = (rule?.nonCompliantMetrics ?? [])
+    //       .map((metric: any) => metric.metricsName)
+    //       .join(", ") || "-";
+
+    //     return {
+    //       "Client Groups": group.name,
+    //       "Systems IP's": systemsIPs,
+    //       "Compliant Rules": compliantRules,
+    //       "Compliant Metrics": compliantMetrics,
+    //       "Non-Compliant Metrics": nonCompliantMetrics,
+    //     };
+    //   });
+    // }
+
+    return [];
+  }, [systemsData, filters.reportType]);
+
+  const dummyScheduleData: ScheduleForm[] = [
+    {
+      reportType: 'Overall Compliance Summary',
+      frequency: 'Monthly',
+      recipients: ['arcgate@gmail.com'],
+      format: 'PDF',
+      startDate: new Date('2025-10-07'),
+      status: 'Active',
+    },
+    {
+      reportType: 'SOC2 Compliance',
+      frequency: 'Daily',
+      recipients: ['arcgate@gmail.com'],
+      format: 'CSV',
+      startDate: new Date('2025-10-07'),
+      status: 'Inactive',
+    },
+    {
+      reportType: 'Client Group Compliance',
+      frequency: 'Weekly',
+      recipients: ['arcgate@gmail.com'],
+      format: 'Excel',
+      startDate: new Date('2025-10-07'),
+      status: 'Inactive',
+    },
+    {
+      reportType: 'Alert History',
+      frequency: 'Daily',
+      recipients: ['arcgate@gmail.com'],
+      format: 'DOC',
+      startDate: new Date('2025-10-07'),
+      status: 'Inactive',
+    },
+  ];
+
+  const handleEditClick = (report: ScheduleForm) => {
+    setSelectedReport(report);
+    setModalOpen(true);
+  };
+
+  const handleSaveSchedule = (data: ScheduleForm) => {
+    console.log("Saved:", data);
+    // TODO: Update backend or state here
+    setModalOpen(false);
   };
 
   return (
@@ -121,38 +318,43 @@ export default function ReportsPage() {
                     )}
                     <Col className="col-md-3 mt-2 mb-2">
                       <div className="form-group mb-0">
-                        <FinancialYearDatePicker
-                          onChange={({ startDate, endDate }) => {
-                            updateFilters({
-                              startDate,
-                              endDate,
-                            });
-                          }}
-                        />
-                      </div>
-                    </Col>
-                    <Col className="col-md-3 mt-2 mb-2">
-                      <div className="form-group mb-0">
                         <Select
-                          options={exportOption}
-                          value={exportOption.find((opt) => opt.value === filters.export) || null}
+                          options={dateOptions}
+                          value={dateOptions.find((opt) => opt.value === filters.date) || null}
                           onChange={(newValue) =>
                             updateFilters({
-                              export: newValue?.value || "",
+                              date: newValue?.value || "",
                             })
                           }
                           classNamePrefix="react-select"
                           className={`react-select-container`}
-                          placeholder={"Select export format..."}
+                          placeholder={"Select date..."}
                           isClearable={false}
                         />
+                        {/* <FinancialYearDatePicker
+                          onChange={({ startDate, endDate, date }) => {
+                            console.log();
+                            updateFilters({
+                              startDate,
+                              endDate,
+                              date,
+                            });
+                          }}
+                        /> */}
                       </div>
                     </Col>
-                    <Col className={`mt-2 mb-2 ${filters.reportType === 'clientGroupCompliance' ? 'col-md-12' : 'col-md-3'}`}>
+                    <Col className={`mt-2 mb-2 ${filters.reportType === 'clientGroupCompliance' ? 'col-md-3' : 'col-md-6'}`}>
                       <div className="d-flex justify-content-end">
-                        <button type="button" className={`btn btn-success ${filters.reportType !== 'clientGroupCompliance' ? 'btn-block' : ''}`}>
+                        {systemsData && systemsData?.content?.length > 0 && (
+                          <ExportButtons
+                            data={transformedData}
+                            fileName={exportFileName}
+                            headers={reportHeaders}
+                          />
+                        )}
+                        {/* <button type="button" className={`btn btn-success ${filters.reportType !== 'clientGroupCompliance' ? 'btn-block' : ''}`}>
                           Generate Report
-                        </button>
+                        </button> */}
                       </div>
                     </Col>
                   </Row>
@@ -179,59 +381,39 @@ export default function ReportsPage() {
                           <th>Frequency</th>
                           <th>Recipients</th>
                           <th>Next Run</th>
+                          <th>Format</th>
                           <th>Status</th>
                           <th>Actions</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td>Overall Compliance Summary</td>
-                          <td>Monthly</td>
-                          <td>arcgate@gmail.com</td>
-                          <td>Oct 7</td>
-                          <td>Active</td>
-                          <td>
-                            <a className="nav-link" href="#" role="button">
-                              <i className="fas fa-edit text-info"></i>
-                            </a>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>SOC2 Compliance</td>
-                          <td>Daily</td>
-                          <td>arcgate@gmail.com</td>
-                          <td>Oct 7</td>
-                          <td>Active</td>
-                          <td>
-                            <a className="nav-link" href="#" role="button">
-                              <i className="fas fa-edit text-info"></i>
-                            </a>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Client Group Compliance</td>
-                          <td>Weekly</td>
-                          <td>arcgate@gmail.com</td>
-                          <td>Oct 7</td>
-                          <td>Active</td>
-                          <td>
-                            <a className="nav-link" href="#" role="button">
-                              <i className="fas fa-edit text-info"></i>
-                            </a>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Alert History</td>
-                          <td>Daily</td>
-                          <td>arcgate@gmail.com</td>
-                          <td>Oct 7</td>
-                          <td>Active</td>
-                          <td>
-                            <a className="nav-link" href="#" role="button">
-                              <i className="fas fa-edit text-info"></i>
-                            </a>
-                          </td>
-                        </tr>
+                        {dummyScheduleData.map((schedule, idx) => (
+                          <tr key={idx}>
+                            <td>{schedule.reportType}</td>
+                            <td>{schedule.frequency}</td>
+                            <td>{schedule.recipients.join(', ')}</td>
+                            <td>{schedule.startDate?.toLocaleDateString()}</td>
+                            <td>{schedule.format}</td>
+                            <td>
+                              <span className={schedule.status === 'Active' ? 'text-success' : 'text-danger'}>
+                                {schedule.status}
+                              </span>
+                            </td>
+                            <td>
+                              <a
+                                href="#"
+                                className="nav-link"
+                                role="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleEditClick(schedule);
+                                }}
+                              >
+                                <i className="fas fa-edit text-info"></i>
+                              </a>
+                            </td>
+                          </tr>
+                        ))}
                       </tbody>
                     </table>
                 </CardBody>
@@ -241,6 +423,13 @@ export default function ReportsPage() {
           </Row>
         </div>
       </Section>
+
+      <ScheduleReportModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSave={handleSaveSchedule}
+        initialData={selectedReport}
+      />
     </ContentWrapper>
   );
 }

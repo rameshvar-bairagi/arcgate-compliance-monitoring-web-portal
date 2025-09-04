@@ -25,3 +25,17 @@ export const getFinancialYearRanges = (): Record<string, DateRange> => {
     lastFY: [lastFyStart, lastFyEnd],
   };
 };
+
+export const mapFilterDateToRequestDate = (preset: string): string => {
+  switch (preset) {
+    case "today":
+      return "Today";
+    case "last7Days":
+      return "7";
+    case "last30Days":
+      return "7";  
+      // return "30";
+    default:
+      return "Today";
+  }
+};
