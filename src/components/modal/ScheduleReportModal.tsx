@@ -121,7 +121,7 @@ const ScheduleReportModal: React.FC<Props> = ({
             classNamePrefix="react-select"
             className={`react-select-container`}
           />
-          {errors.reportType && <div className="text-danger">{errors.reportType}</div>}
+          {errors.reportType && <div className="text-sm text-danger">{errors.reportType}</div>}
         </Form.Group>
 
         <Form.Group className="mb-3 col-md-6">
@@ -136,7 +136,7 @@ const ScheduleReportModal: React.FC<Props> = ({
                 classNamePrefix="react-select"
                 className={`react-select-container`}
             />
-            {errors.frequency && <div className="text-danger">{errors.frequency}</div>}
+            {errors.frequency && <div className="text-sm text-danger">{errors.frequency}</div>}
         </Form.Group>
 
         <Form.Group className="mb-3 col-md-6">
@@ -154,7 +154,7 @@ const ScheduleReportModal: React.FC<Props> = ({
               setForm((prev) => ({ ...prev, recipients: emails }));
             }}
           />
-          {errors.recipients && <div className="text-danger">{errors.recipients}</div>}
+          {errors.recipients && <div className="text-sm text-danger">{errors.recipients}</div>}
         </Form.Group>
 
         <Form.Group className="mb-3 col-md-6">
@@ -169,7 +169,7 @@ const ScheduleReportModal: React.FC<Props> = ({
                 classNamePrefix="react-select"
                 className={`react-select-container`}
             />
-            {errors.format && <div className="text-danger">{errors.format}</div>}
+            {errors.format && <div className="text-sm text-danger">{errors.format}</div>}
         </Form.Group>
 
         <Form.Group className="mb-3 col-md-6">
@@ -188,7 +188,7 @@ const ScheduleReportModal: React.FC<Props> = ({
                 <i className="fas fa-calendar"></i>
             </span>
           </div>
-          {errors.startDate && <div className="text-danger">{errors.startDate}</div>}
+          {errors.startDate && <div className="text-sm text-danger">{errors.startDate}</div>}
         </Form.Group>
 
         <Form.Group className="mb-3 col-md-6">
