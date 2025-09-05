@@ -202,7 +202,7 @@ div.dt-container > div.row {
 
 .slider:before {
   content: "";
-    z-index: 1;
+    z-index: 0;
     background-color: rgb(234, 237, 240);
     border-radius: 4px;
     border: 1px solid rgb(183, 180, 180);
@@ -223,14 +223,14 @@ div.dt-container > div.row {
 }
 
 .slider .on {
-  z-index: 2;
+  z-index: 0;
   color: #fff;
   flex: 1;
   text-align: left;
 }
 
 .slider .off {
-  z-index: 2;
+  z-index: 0;
   color: #fff;
   flex: 1;
   text-align: right;
