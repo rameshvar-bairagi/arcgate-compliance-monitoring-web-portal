@@ -142,14 +142,14 @@ export default function ReportsPage() {
     return headersByReportType[filters.reportType] || [];
   }, [filters.reportType]);
 
-  const isOverallSelected = filters.reportType === "overallComplianceSummary";
+  const isOverallSelected = filters.reportType === "overallComplianceSummary" || filters.reportType === "clientGroupCompliance";
 
   const { 
     systemsData, 
     systemsLoading, 
     systemsError, 
     refetchSystems 
-  } = useSystems(requestOverallBody, true); // if isOverallSelected true then call useSystem
+  } = useSystems(requestOverallBody, isOverallSelected); // if isOverallSelected true then call useSystem
   console.log(systemsData,'Overall Compliance Summary');
 
   const updateFilters = (updates: Partial<Filters>, resetPage = true) => {
