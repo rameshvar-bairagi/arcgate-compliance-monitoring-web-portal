@@ -66,10 +66,10 @@ export default function ReportsPage() {
     sortBy: "", // Add sort fields
     sortDirection: "desc" as 'asc' | 'desc',
   });
-  console.log(filters, 'filtersfiltersfilters');
+  // console.log(filters, 'filtersfiltersfilters');
 
   const requestOverallBody = useMemo<SystemsRequestBody>(() => {
-    const date = mapFilterDateToRequestDate(filters.date);
+    // const date = mapFilterDateToRequestDate(filters.date);
     return {
       // date,
       date: filters.date,
@@ -83,6 +83,7 @@ export default function ReportsPage() {
       sortDirection: filters.sortDirection ?? "",
     };
   }, [filters]);
+  console.log(requestOverallBody, 'requestOverallBody');
 
   const fileNamesByReportType: Record<string, string> = {
     overallComplianceSummary: "Overall_Compliance_Report",
@@ -148,23 +149,8 @@ export default function ReportsPage() {
     systemsLoading, 
     systemsError, 
     refetchSystems 
-  } = useSystems(requestOverallBody, isOverallSelected); // if isOverallSelected true then call useSystem
+  } = useSystems(requestOverallBody, true); // if isOverallSelected true then call useSystem
   console.log(systemsData,'Overall Compliance Summary');
-
-
-
-  useEffect(() => {
-    if (
-      filters.reportType === 'clientGroupCompliance' &&
-      !filters.clientGroups &&
-      clientGroupOptions.length > 0
-    ) {
-      setFilters((prev) => ({
-        ...prev,
-        clientGroups: clientGroupOptions[0].value, // Default to the first available group
-      }));
-    }
-  }, [filters.reportType, filters.clientGroups, clientGroupOptions]);
 
   const updateFilters = (updates: Partial<Filters>, resetPage = true) => {
     setFilters(prev => {
@@ -286,7 +272,7 @@ export default function ReportsPage() {
                           onChange={(newValue) =>
                             updateFilters({
                               reportType: newValue?.value || "",
-                              clientGroups: newValue?.value === "clientGroupCompliance" ? filters.clientGroups : "",
+                              clientGroups: newValue?.value === "clientGroupCompliance" ? clientGroupOptions[0]?.value : "",
                             })
                           }
                           classNamePrefix="react-select"
@@ -311,7 +297,7 @@ export default function ReportsPage() {
                             classNamePrefix="react-select"
                             className={`react-select-container`}
                             placeholder={"Select client groups..."}
-                            isClearable={true}
+                            isClearable={false}
                           />
                         </div>
                       </Col>
