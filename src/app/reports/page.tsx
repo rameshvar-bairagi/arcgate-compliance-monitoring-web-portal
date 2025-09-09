@@ -8,14 +8,14 @@ import Row from '@/components/ui/Row';
 import Col from '@/components/ui/Col';
 import Card from '@/components/ui/Card';
 import CardBody from '@/components/ui/CardBody';
-import { getBadgeClass, getDateOptions, getReportTypeOption, getExportOption, getClientGroupOptions } from '@/utils/commonMethod';
+import { getBadgeClass, getDateOptions, getReportTypeOption, getExportOption, getClientGroupOptions, getReportTypeOptions } from '@/utils/commonMethod';
 import { useState, useEffect, useMemo, Key } from "react";
 import Select, { MultiValue } from "react-select";
 import { toast } from "react-toastify";
 import FinancialYearDatePicker from '@/components/ui/FinancialYearDatePicker/FinancialYearDatePicker';
 import CardHeader from '@/components/ui/CardHeader';
 import CardFooter from '@/components/ui/CardFooter';
-import { useClientGroupList } from '@/hooks/useOptionList';
+import { useClientGroupList, useScheduledReportsList } from '@/hooks/useOptionList';
 import { ExportOverAllData, SystemsRequestBody } from '@/types/systems';
 import { useSystems } from '@/hooks/useSystems';
 import { mapFilterDateToRequestDate } from '@/utils/dateUtils';
@@ -23,6 +23,14 @@ import ExportButtons from '@/components/exportData/ExportButtons';
 import Modal from '@/components/modal/Modal';
 import { ScheduleForm } from '@/types/scheduleForm';
 import ScheduleReportModal from '@/components/modal/ScheduleReportModal';
+import { useQueryClient } from "@tanstack/react-query";
+import { updateScheduledReport } from '@/services/allApiService';
+import { Alerts, AlertsRequestBody } from '@/types/alerts';
+import { useReportAlerts } from '@/hooks/useAlerts';
+export interface Option<T = string> {
+  label: string;
+  value: T;
+}
 
 type Filters = {
   date: string;
@@ -36,9 +44,15 @@ type Filters = {
   sortDirection?: 'asc' | 'desc';
 };
 
+type SchedulePayload = Omit<ScheduleForm, "start_date" | "recipients"> & {
+  start_date: string | null;
+  recipients: string[] | string;
+};
+
 export default function ReportsPage() {
+  const queryClient = useQueryClient();
   const dateOptions = getDateOptions();
-  const reportTypeOption = getReportTypeOption();
+  // const reportTypeOption = getReportTypeOption();
   const exportOption = getExportOption();
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
@@ -56,10 +70,19 @@ export default function ReportsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState<ScheduleForm | null>(null);
 
+  const { 
+        list: scheduledReportsList,
+        loading: scheduledReportsLoading,
+        error: scheduledReportsError
+    } = useScheduledReportsList();
+  // console.log(scheduledReportsList,'scheduledReportsList');
+  const reportTypeOption: Option<string | number>[] = getReportTypeOption(scheduledReportsList ?? []);
+  // console.log(reportTypeOption,'reportTypeOption');
+
   // Manage filters in state
   const [filters, setFilters] = useState<Filters>({
     date: dateOptions[0].value,
-    reportType: reportTypeOption[0].value,
+    reportType: String(reportTypeOption[0]?.value),
     clientGroups: "",
     page: 0,
     size: 10,
@@ -83,7 +106,7 @@ export default function ReportsPage() {
       sortDirection: filters.sortDirection ?? "",
     };
   }, [filters]);
-  console.log(requestOverallBody, 'requestOverallBody');
+  // console.log(requestOverallBody, 'requestOverallBody');
 
   const fileNamesByReportType: Record<string, string> = {
     overallComplianceSummary: "Overall_Compliance_Report",
@@ -150,7 +173,21 @@ export default function ReportsPage() {
     systemsError, 
     refetchSystems 
   } = useSystems(requestOverallBody, isOverallSelected); // if isOverallSelected true then call useSystem
-  console.log(systemsData,'Overall Compliance Summary');
+  // console.log(systemsData,'Overall Compliance Summary');
+
+  const requestReportsAlertBody = useMemo<AlertsRequestBody>(() => ({
+    date: filters.date,
+  }), [filters]);
+  
+  // Call the hook with filters
+  const isReportAlertSelected = filters.reportType === "alertHistory";
+  const { 
+    reportAlertsData, 
+    reportAlertsLoading, 
+    reportAlertsError, 
+    refetchReportAlerts 
+  } = useReportAlerts(requestReportsAlertBody, isReportAlertSelected);
+  // console.log(reportAlertsData,'reportAlertsData');
 
   const updateFilters = (updates: Partial<Filters>, resetPage = true) => {
     setFilters(prev => {
@@ -177,81 +214,68 @@ export default function ReportsPage() {
       }));
     }
 
-    // if (filters.reportType === "clientGroupCompliance") {
-    //   return (clientGroupList ?? []).map((group: any) => {
-    //     const systemsIPs = group.allSystems
-    //       ? "All Systems"
-    //       : (group.systemIps || []).join(", ");
-
-    //     const rule = group.complianceRules?.[0]; // single rule assumed
-
-    //     const compliantRules = rule?.name || "-";
-
-    //     const compliantMetrics = (rule?.compliantMetrics ?? [])
-    //       .map((metric: any) => metric.metricsName)
-    //       .join(", ") || "-";
-
-    //     const nonCompliantMetrics = (rule?.nonCompliantMetrics ?? [])
-    //       .map((metric: any) => metric.metricsName)
-    //       .join(", ") || "-";
-
-    //     return {
-    //       "Client Groups": group.name,
-    //       "Systems IP's": systemsIPs,
-    //       "Compliant Rules": compliantRules,
-    //       "Compliant Metrics": compliantMetrics,
-    //       "Non-Compliant Metrics": nonCompliantMetrics,
-    //     };
-    //   });
-    // }
+    if (filters.reportType === "alertHistory") {
+      return (reportAlertsData ?? []).map((item: Alerts) => ({
+        "System Name": item?.ip,
+        "Non-Compliant Systems": Array.isArray(item?.metricsName)
+          ? item.metricsName.join(", ")
+          : item?.metricsName || "-",
+        "Client Groups": item?.clientGroupName || "-",
+        "Compliance Rules": item?.complianceRuleName || "-",
+        "Level": item?.level || "-",
+        "Systems Date": item?.systemDate,
+        "Status": item?.status,
+      }));
+    }
 
     return [];
-  }, [systemsData, filters.reportType]);
-
-  const dummyScheduleData: ScheduleForm[] = [
-    {
-      reportType: 'Overall Compliance Summary',
-      frequency: 'Monthly',
-      recipients: ['arcgate@gmail.com'],
-      format: 'PDF',
-      startDate: new Date('2025-10-07'),
-      status: 'Active',
-    },
-    {
-      reportType: 'SOC2 Compliance',
-      frequency: 'Daily',
-      recipients: ['arcgate@gmail.com'],
-      format: 'CSV',
-      startDate: new Date('2025-10-07'),
-      status: 'Inactive',
-    },
-    {
-      reportType: 'Client Group Compliance',
-      frequency: 'Weekly',
-      recipients: ['arcgate@gmail.com'],
-      format: 'Excel',
-      startDate: new Date('2025-10-07'),
-      status: 'Inactive',
-    },
-    {
-      reportType: 'Alert History',
-      frequency: 'Daily',
-      recipients: ['arcgate@gmail.com'],
-      format: 'DOC',
-      startDate: new Date('2025-10-07'),
-      status: 'Inactive',
-    },
-  ];
+  }, [systemsData, reportAlertsData, filters.reportType]);
 
   const handleEditClick = (report: ScheduleForm) => {
     setSelectedReport(report);
     setModalOpen(true);
   };
 
-  const handleSaveSchedule = (data: ScheduleForm) => {
-    console.log("Saved:", data);
-    // TODO: Update backend or state here
-    setModalOpen(false);
+  const handleSaveSchedule = async (data: ScheduleForm) => {
+    // console.log("Saved:", data);
+    // Ensure start_date is in yyyy-MM-dd format
+    // const payload = {
+    //   ...data,
+    //   start_date: data.start_date instanceof Date
+    //     ? format(data.start_date, "yyyy-MM-dd")
+    //     : data.start_date,
+    // };
+    const payload: SchedulePayload = {
+      ...data,
+      start_date: data.start_date instanceof Date
+        ? data.start_date.toISOString().split("T")[0]
+        : data.start_date,
+      recipients: Array.isArray(data.recipients)
+        ? data.recipients.join(", ")
+        : data.recipients,
+    };
+    try {
+      const res = await updateScheduledReport(payload);
+      if (res?.status === 200 || res?.status === 204) {
+        // console.log(res,'Update-Scheduled-Report');
+        toast.dismiss();
+        toast.success("Scheduled Reports: Updated successfully!");
+        setModalOpen(false);
+        queryClient.invalidateQueries({ queryKey: ["scheduledReportsList"] });
+      } else {
+        toast.dismiss();
+        toast.error(`Failed to update scheduled report: ${res?.status} ${res?.statusText}`);
+      }
+    } catch (err: any) {
+      // console.log(err,'errerrerrerr')
+      if (err.status === 409) {
+        toast.dismiss();
+        toast.error(`Failed to update scheduled report: ${err.response.data || "Unknown error"}`);
+      } else {
+        toast.dismiss();
+        toast.error(`Failed to update scheduled report: ${err?.message || "Unknown error"}`);
+      }
+    }
   };
 
   return (
@@ -271,7 +295,7 @@ export default function ReportsPage() {
                           value={reportTypeOption.find((opt) => opt.value === filters.reportType) || null}
                           onChange={(newValue) =>
                             updateFilters({
-                              reportType: newValue?.value || "",
+                              reportType: String(newValue?.value) || "",
                               clientGroups: newValue?.value === "clientGroupCompliance" ? clientGroupOptions[0]?.value : "",
                             })
                           }
@@ -331,7 +355,7 @@ export default function ReportsPage() {
                     </Col>
                     <Col className={`mt-2 mb-2 ${filters.reportType === 'clientGroupCompliance' ? 'col-md-3' : 'col-md-6'}`}>
                       <div className="d-flex justify-content-end">
-                        {systemsData && systemsData?.content?.length > 0 && (
+                        {((systemsData && systemsData?.content?.length > 0) || (reportAlertsData?.length > 0)) && (
                           <ExportButtons
                             data={transformedData}
                             fileName={exportFileName}
@@ -373,15 +397,21 @@ export default function ReportsPage() {
                         </tr>
                       </thead>
                       <tbody>
-                        {dummyScheduleData.map((schedule, idx) => (
+                        {scheduledReportsList?.map((schedule, idx) => (
                           <tr key={idx}>
-                            <td>{schedule.reportType}</td>
+                            <td>{schedule.name}</td>
                             <td>{schedule.frequency}</td>
-                            <td>{schedule.recipients.join(', ')}</td>
-                            <td>{schedule.startDate?.toLocaleDateString()}</td>
+                            <td>
+                              {Array.isArray(schedule?.recipients)
+                              ? schedule.recipients.join(", ")
+                              : typeof schedule?.recipients === "string"
+                                ? schedule.recipients
+                                : "-"}
+                            </td>
+                            <td>{new Date(schedule.start_date)?.toLocaleDateString()}</td>
                             <td>{schedule.format}</td>
                             <td>
-                              <span className={schedule.status === 'Active' ? 'text-success' : 'text-danger'}>
+                              <span className={schedule.status === 'ON' ? 'text-success' : 'text-danger'}>
                                 {schedule.status}
                               </span>
                             </td>

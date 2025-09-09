@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { format, subDays } from 'date-fns';
 
 export const formatDateTime = (dateString: string): string => {
@@ -112,14 +113,13 @@ export const getDateOptions = () => {
   ];
 };
 
-export const getReportTypeOption = () => {
-  return [
-    { label: 'Overall Compliance Summary', value: 'overallComplianceSummary' },
-    { label: 'SOC2 Compliance', value: 'soc2Compliance' },
-    { label: 'Client Group Compliance', value: 'clientGroupCompliance' },
-    { label: 'Alert History', value: 'alertHistory' },
-  ];
-};
+function toCamelCase(str: string): string {
+  return str
+    .replace(/[^a-zA-Z0-9 ]/g, "")     // remove special chars
+    .replace(/\s+(.)/g, (_, chr) => chr.toUpperCase()) // upper after space
+    .replace(/\s/g, "")                // remove spaces
+    .replace(/^(.)/, (_, chr) => chr.toLowerCase());   // lowercase first
+}
 
 export const getExportOption = () => {
   return [
@@ -183,5 +183,20 @@ export const getClientGroupOptions = (clientGroup: ClientGroup[]): Option[] => {
   return clientGroup.map(group => ({
     label: group.name,  // show group name
     value: group.id     // use id as value
+  }));
+}
+
+export const getReportTypeOption = (list: any[]): Option[] => {
+  return list.map((item) => {
+    const label = String(item.label || item.name || item); // flexible source
+    const value = toCamelCase(label);
+    return { label, value };
+  });
+};
+
+export const getReportTypeOptions = (rules: any[]): Option[] => {
+  return rules.map(rule => ({
+    label: rule.name,  // show rule name
+    value: rule.name     // use id as value
   }));
 }

@@ -189,7 +189,7 @@ export default function AddRulePage({ defaultValues, id }: RuleFormProps) {
 
     CheckExistRules(debouncedRuleName)
       .then((res) => {
-        console.log(res, 'CheckExistRules');
+        // console.log(res, 'CheckExistRules');
         if (res?.data) {
           setNameError("Rule name already exists!");
         } else {

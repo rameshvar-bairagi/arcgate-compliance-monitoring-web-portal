@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // hooks/useOptionList.ts
 import { useFetchList } from '@/hooks/useFetchList';
-import { fetchSystemNameList, fetchMetricsNameList, fetchComplianceRulesList, fetchAllComplianceRulesList, fetchClientGroupList } from '@/services/allApiService';
+import { fetchSystemNameList, fetchMetricsNameList, fetchComplianceRulesList, fetchAllComplianceRulesList, fetchClientGroupList, fetchScheduledReportsList } from '@/services/allApiService';
 
 export const useSystemNameList = (enabled = true) =>
   useFetchList<any>(['systemNameList'], fetchSystemNameList, enabled);
@@ -17,3 +17,6 @@ export const useAllComplianceRulesList = (enabled = true) =>
 
 export const useClientGroupList = (enabled = true) =>
   useFetchList<any>(['clientGroupList'], fetchClientGroupList, enabled);
+
+export const useScheduledReportsList = (enabled = true) =>
+  useFetchList<any>(['scheduledReportsList'], fetchScheduledReportsList, enabled);

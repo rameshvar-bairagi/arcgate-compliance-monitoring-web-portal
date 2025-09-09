@@ -65,7 +65,7 @@ export default function AlertsPage() {
     alertsError, 
     refetchAlerts 
   } = useAlerts(requestBody, true);
-  console.log(requestBody,'alertsData');
+  // console.log(requestBody,'alertsData');
 
   const roots = new WeakMap<HTMLElement, ReturnType<typeof createRoot>>();
 
@@ -88,18 +88,18 @@ export default function AlertsPage() {
     },
     {
       title: "Client Group",
-      data: "clientGroupId",
+      data: "clientGroupName",
       render: (data: any, type: any, row: any, meta: any) =>
         // renderToStaticMarkup(dtRenderer(data, {field: "clientGroupId", row})),
-        dtRenderer(data, {field: "clientGroupId", row}),
+        dtRenderer(data, {field: "clientGroupName", row}),
       orderable: true,
     },
     {
       title: "Compliance Rule",
-      data: "complianceRuleId",
+      data: "complianceRuleName",
       render: (data: any, type: any, row: any, meta: any) =>
         // renderToStaticMarkup(dtRenderer(data, {field: "complianceRuleId", row})),
-        dtRenderer(data, {field: "complianceRuleId", row}),
+        dtRenderer(data, {field: "complianceRuleName", row}),
       orderable: true,
     },
     {
@@ -126,7 +126,13 @@ export default function AlertsPage() {
         // renderToStaticMarkup(dtRenderer(data, {field: "alertStatus", row, onAction: handleStatusUpdate})),
         // dtRenderer(data, {field: "alertStatus", row, onAction: handleStatusUpdate}),
       render: (data, type, rowData, meta) => {
-        const containerId = `react-btn-${rowData.ip}`;
+        // debugger;
+        // console.log(type, 'export types');
+        // if (type === "export" || type === "print" || type === 'filter' || type === 'sort') {
+        //   return rowData.status ?? "-";
+        // }
+
+        const containerId = `react-btn-${rowData.ip}${type}`;
 
         setTimeout(() => {
           const container = document.getElementById(containerId);
@@ -143,7 +149,7 @@ export default function AlertsPage() {
           }
         }, 0);
 
-        return `<div id="${containerId}"></div>`;
+        return `<div id="${containerId}">${rowData.status}</div>`;
       }
     },
   ]), []);
@@ -159,15 +165,15 @@ export default function AlertsPage() {
     try {
       const res = await updateAlertStatus(requestBody);
       if (res?.status === 200 || res?.status === 204) {
-        console.log(res,'updateAlertStatus');
+        // console.log(res,'updateAlertStatus');
         toast.dismiss();
-        toast.success(res?.statusText);
+        toast.success(res?.data);
         setAlerts((prev) =>
           prev.map((item) =>
             item.ip === row.ip ? { ...item, status: newStatus } : item
           )
         );
-        // queryClient.invalidateQueries({ queryKey: ["systems"] });
+        // queryClient.invalidateQueries({ queryKey: ["alerts"] });
       } else {
         toast.dismiss();
         toast.error(`Failed to update alert status: ${res?.status} ${res?.statusText}`);

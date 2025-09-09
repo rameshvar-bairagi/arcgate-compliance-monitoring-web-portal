@@ -186,7 +186,7 @@ export default function AddGroupPage({ defaultValues, id }: GroupFormProps) {
   
       CheckExistGroups(debouncedGroupName)
         .then((res) => {
-          console.log(res, 'CheckExistGroup');
+          // console.log(res, 'CheckExistGroup');
           if (res?.data) {
             setNameError("Group name already exists!");
           } else {

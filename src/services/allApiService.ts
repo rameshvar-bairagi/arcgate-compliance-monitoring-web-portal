@@ -3,6 +3,7 @@ import api from '@/lib/axios';
 import { AlertsApiResponse, AlertsRequestBody, AlertsUpdateStatus } from '@/types/alerts';
 import { PostGroupsRequestBody } from '@/types/groups';
 import { PostRulesRequestBody } from '@/types/rules';
+import { ScheduleForm } from '@/types/scheduleForm';
 import type { SystemsApiResponse, SystemsRequestBody } from '@/types/systems';
 
 export const fetchSystems = async (body: SystemsRequestBody): Promise<SystemsApiResponse> => {
@@ -119,7 +120,28 @@ export const fetchAlerts = async (body: AlertsRequestBody): Promise<AlertsApiRes
   return res.data;
 };
 
+export const fetchReportAlerts = async (body: AlertsRequestBody): Promise<any> => {
+  const res = await api.get(`/all-alerts`, {
+    params: {
+      date: body?.date
+    },
+  });
+  return res.data;
+};
+
 export const updateAlertStatus = async (body: AlertsUpdateStatus): Promise<{ data: any; status: number; statusText: string } | null> => {
   const res = await api.put(`/update-status`, body);
+  return { data: res.data, status: res.status, statusText: res.statusText };
+};
+
+export const fetchScheduledReportsList = async (): Promise<any | null> => {
+  const res = await api.get('/reports'); // adjust endpoint
+  // if (process.env.NODE_ENV === 'development') console.error('fetchMetricsNameList', res.data);
+  return res.data;
+};
+
+export const updateScheduledReport = async (body: any): Promise<{ data: any; status: number; statusText: string } | null> => {
+  if (!body?.id) throw new Error("ID is required for PUT request");
+  const res = await api.put(`/reports/${body.id}`, body);
   return { data: res.data, status: res.status, statusText: res.statusText };
 };

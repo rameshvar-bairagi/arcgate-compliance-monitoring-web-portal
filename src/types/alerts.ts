@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type AlertsRequestBody = {
   date: string;
-  page: number;
-  size: number;
+  page?: number;
+  size?: number;
 };
 
 export type Alerts = { 
@@ -11,7 +11,9 @@ export type Alerts = {
   metricsName: any; 
   alertId: string | number;
   clientGroupId: string | number;
+  clientGroupName?: string;
   complianceRuleId: string | number;
+  complianceRuleName?: string;
   level: string;
   systemDate: string;
   status: string | number;

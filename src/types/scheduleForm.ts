@@ -1,8 +1,9 @@
 export type ScheduleForm = {
-  reportType: string;
+  id?: string | number;
+  name: string;
   frequency: 'Daily' | 'Weekly' | 'Monthly';
-  recipients: string[];
-  format: 'PDF' | 'CSV' | 'Excel' | 'DOC';
-  startDate: Date | null;
-  status: 'Active' | 'Inactive';
+  recipients: string[] | string;
+  format: 'PDF' | 'CSV' | 'EXCEL' | 'DOC';
+  start_date: Date | null;
+  status: 'ON' | 'OFF';
 };
