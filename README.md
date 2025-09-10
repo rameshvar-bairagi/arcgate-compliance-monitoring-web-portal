@@ -57,7 +57,8 @@ Create .env.lan in the project root
         NEXT_PUBLIC_HOST=http://192.168.238
 
 Run the project in LAN mode:
-    npm run dev:lan
+    sudo iptables -I INPUT 1 -p tcp --dport 3001 -j ACCEPT
+    # npm run dev:lan
 
 Access from your machine or any device in the same network:
 http://192.168.238:3000 (Replace 192.168.238 with your detected LAN IP if different)
