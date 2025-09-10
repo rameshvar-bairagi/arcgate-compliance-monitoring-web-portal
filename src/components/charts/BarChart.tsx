@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, memo } from 'react';
 import {
   Chart,
   ChartConfiguration,
@@ -20,7 +20,7 @@ interface BarChartProps {
   width?: number;
 }
 
-export default function BarChart({
+function BarChart({
   id,
   data,
   options,
@@ -64,3 +64,5 @@ export default function BarChart({
     />
   );
 }
+
+export default memo(BarChart);

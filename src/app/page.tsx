@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Section from "@/components/ui/Section";
 // import styles from "./page.module.css";
 import ContentHeader from '@/components/ui/ContentHeader';
@@ -83,15 +83,16 @@ export default function HomePage() {
     { label: 'Dashboard', active: true },
   ];
 
-  const chartData = getChartDataFromCompliance(complianceData);
+  // const chartData = getChartDataFromCompliance(complianceData);
+  const chartData = useMemo(() => getChartDataFromCompliance(complianceData), [complianceData]);
 
-  const chartOptions = {
+  const chartOptions = useMemo(() => ({
     ...defaultBarChartOptions,
     plugins: {
       ...defaultBarChartOptions.plugins,
       legend: {
-        display: false // override display from false → true
-      }
+        display: false,
+      },
     },
     scales: {
       ...defaultBarChartOptions.scales,
@@ -100,18 +101,46 @@ export default function HomePage() {
         ticks: {
           ...defaultBarChartOptions.scales?.y?.ticks,
           callback: function (value: string | number) {
-            if (typeof value === 'number' && value >= 1000) {
+            if (typeof value === "number" && value >= 1000) {
               return `${value / 1000}k`;
             }
             return `${value}`;
           },
           font: {
-            weight: 'bold' as const  // Fix: explicitly cast to allowed literal
-          }
-        }
-      }
-    }
-  };
+            weight: "bold" as const,
+          },
+        },
+      },
+    },
+  }), []);
+
+  // const chartOptions = {
+  //   ...defaultBarChartOptions,
+  //   plugins: {
+  //     ...defaultBarChartOptions.plugins,
+  //     legend: {
+  //       display: false // override display from false → true
+  //     }
+  //   },
+  //   scales: {
+  //     ...defaultBarChartOptions.scales,
+  //     y: {
+  //       ...defaultBarChartOptions.scales?.y,
+  //       ticks: {
+  //         ...defaultBarChartOptions.scales?.y?.ticks,
+  //         callback: function (value: string | number) {
+  //           if (typeof value === 'number' && value >= 1000) {
+  //             return `${value / 1000}k`;
+  //           }
+  //           return `${value}`;
+  //         },
+  //         font: {
+  //           weight: 'bold' as const  // Fix: explicitly cast to allowed literal
+  //         }
+  //       }
+  //     }
+  //   }
+  // };
 
   useEffect(() => {
     setRequestBody(prev => ({
