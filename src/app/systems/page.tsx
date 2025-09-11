@@ -322,6 +322,9 @@ export default function SystemsPage() {
                         updateFilters({ page: newPage }, false);
                       }
                     }}
+                    onPageSizeChange={(newSize) => {
+                      updateFilters({ size: newSize, page: 1 }); // reset page
+                    }}
                     onSort={handleSort} // Pass the sorting handler
                     searching={false}
                     // order={4} //  Server handles initial sort, not client
