@@ -3,6 +3,8 @@ interface PaginationProps {
   size: number;
   totalElements: number;
   onPageChange: (page: number) => void; // will always receive 1-based page
+  onPageSizeChange?: (size: number) => void;
+  pageSizeOptions?: (number | "All")[];
 }
 
 export const CustomPagination: React.FC<PaginationProps> = ({
@@ -10,8 +12,15 @@ export const CustomPagination: React.FC<PaginationProps> = ({
   size,
   totalElements,
   onPageChange,
+  onPageSizeChange,
+  pageSizeOptions = [10, 25, 50, 100, "All"],
 }) => {
   const totalPages = Math.max(1, Math.ceil(totalElements / size));
+
+  const handlePageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value === "All" ? -1 : parseInt(e.target.value, 10);
+    onPageSizeChange?.(value);
+  };
 
   const getPageNumbers = () => {
     const pages: (number | "...")[] = [];
@@ -44,8 +53,21 @@ export const CustomPagination: React.FC<PaginationProps> = ({
   return (
     <div className="d-flex justify-content-between align-items-center p-2">
       {/* Left side - summary */}
-      <div>
-        Page {page === 0 ? 1 : page} of {totalPages}
+      <div className="row">
+        <div className="form-group mb-0">
+          <select
+            className="form-control"
+            value={size === -1 ? "All" : size}
+            onChange={handlePageSizeChange}
+          >
+            {pageSizeOptions.map((opt, idx) => (
+              <option key={idx} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+        </div>
+        <span className="p-2">Page {page === 0 ? 1 : page} of {totalPages}</span>
       </div>
 
       {/* Right side - pagination */}

@@ -30,4 +30,6 @@ export type ServerDataTableProps = {
   columnDefs?: any[];
   exportButtons?: string[];
   domLayout?: string;
+  onPageSizeChange?: (size: number) => void;
+  pageSizeOptions?: (number | "All")[];
 }

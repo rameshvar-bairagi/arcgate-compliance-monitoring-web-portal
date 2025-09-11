@@ -280,6 +280,9 @@ export default function AlertsPage() {
                         updateFilters({ page: newPage }, false);
                       }
                     }}
+                    onPageSizeChange={(newSize) => {
+                      updateFilters({ size: newSize, page: 1 }); // reset page
+                    }}
                     onSort={handleSort}
                     searching={false}
                     // order={6}
