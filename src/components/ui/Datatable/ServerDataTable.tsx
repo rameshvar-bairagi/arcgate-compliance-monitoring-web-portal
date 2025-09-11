@@ -75,6 +75,22 @@ export const ServerDataTable: React.FC<ServerDataTableProps> = ({
         columnDefs: columnDefs,
         buttons: exportButtons,
         dom: domLayout,
+        scrollY: "450px",
+        scrollCollapse: true,
+      });
+
+      // Fix shrink on first load
+      table.on("init.dt", function () {
+        setTimeout(() => {
+          table.columns.adjust().draw(false);
+        }, 0);
+      });
+
+      // Keep adjusting on every redraw
+      table.on("draw.dt", function () {
+        setTimeout(() => {
+          table.columns.adjust().draw(false);
+        }, 0);
       });
 
       tableRef.current = table;
@@ -119,14 +135,17 @@ export const ServerDataTable: React.FC<ServerDataTableProps> = ({
       tableRef.current.clear();
       const buttonsContainer = tableRef.current.buttons().container?.();
       if (data && data.length > 0) {
-        tableRef.current.rows.add(data);
-        tableRef.current.draw(false);
+        tableRef.current.rows.add(data).draw(false);
         exportButtons?.length > 0 ? buttonsContainer.show() : buttonsContainer.hide();
       } else {
         tableRef.current.draw(false);
         buttonsContainer.hide();
       }
       // console.log("Rows added:", tableRef.current.rows().count());
+
+      // setTimeout(() => {
+      //   tableRef.current.columns.adjust().draw(false);
+      // }, 0);
     }
   }, [data]);
 
@@ -141,50 +160,52 @@ export const ServerDataTable: React.FC<ServerDataTableProps> = ({
   // return null;
 
   return (
-    <table id={id} className="table table-bordered table-striped">
-      <thead>
-        <tr>
-          {columns.map((col, idx) => (
-            <th key={idx}>{col.title}</th>
-          ))}
-        </tr>
-      </thead>
-      <tbody></tbody>
-      {/* <tbody>
-        {data && data.length === 0 ? (
+    <div className="table-responsive p-0">
+      <table id={id} className="table table-bordered table-striped">
+        <thead>
           <tr>
-            <td colSpan={columns.length} className="text-center">
-              No records found
-            </td>
+            {columns.map((col, idx) => (
+              <th key={idx}>{col.title}</th>
+            ))}
           </tr>
-        ) : (
-          data.map((row: any, rowIdx: Key) => (
-            <tr key={rowIdx}>
-              {columns.map((col, colIdx) => (
-                <td key={colIdx}>
-                  {renderCell(col, row, rowIdx as number, colIdx)}
-                </td>
-              ))}
+        </thead>
+        <tbody></tbody>
+        {/* <tbody>
+          {data && data.length === 0 ? (
+            <tr>
+              <td colSpan={columns.length} className="text-center">
+                No records found
+              </td>
             </tr>
-          ))
-        )}
-      </tbody> */}
-      <tfoot>
-        {data && data.length > 0 && (
-          <tr>
-            <td colSpan={columns.length}>
-              <CustomPagination
-                page={page}
-                size={size}
-                totalElements={totalElements ?? 0}
-                onPageChange={onPageChange}
-                onPageSizeChange={onPageSizeChange}
-                pageSizeOptions={pageSizeOptions}
-              />
-            </td>
-          </tr>
-        )}
-      </tfoot>
-    </table>
+          ) : (
+            data.map((row: any, rowIdx: Key) => (
+              <tr key={rowIdx}>
+                {columns.map((col, colIdx) => (
+                  <td key={colIdx}>
+                    {renderCell(col, row, rowIdx as number, colIdx)}
+                  </td>
+                ))}
+              </tr>
+            ))
+          )}
+        </tbody> */}
+        <tfoot>
+          {data && data.length > 0 && (
+            <tr>
+              <td colSpan={columns.length}>
+                <CustomPagination
+                  page={page}
+                  size={size}
+                  totalElements={totalElements ?? 0}
+                  onPageChange={onPageChange}
+                  onPageSizeChange={onPageSizeChange}
+                  pageSizeOptions={pageSizeOptions}
+                />
+              </td>
+            </tr>
+          )}
+        </tfoot>
+      </table>
+    </div>
   );
 };

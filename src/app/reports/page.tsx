@@ -85,7 +85,7 @@ export default function ReportsPage() {
     reportType: String(reportTypeOption[0]?.value),
     clientGroups: "",
     page: 0,
-    size: 3000,
+    size: -1,
     sortBy: "", // Add sort fields
     sortDirection: "desc" as 'asc' | 'desc',
   });

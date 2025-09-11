@@ -311,6 +311,7 @@ export default function SystemsPage() {
                     </Col>
                   </Row>
                   <ServerDataTable 
+                    // key={filters.size}
                     id={"systemsTable"}
                     columns={columns}
                     data={systemsData?.content}

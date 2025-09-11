@@ -269,6 +269,7 @@ export default function AlertsPage() {
                     </Col>
                   </Row>
                   <ServerDataTable 
+                    // key={filters.size}
                     id={"alertsTable"} 
                     columns={columns}
                     data={alerts}
