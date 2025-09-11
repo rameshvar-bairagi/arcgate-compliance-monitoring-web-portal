@@ -126,12 +126,17 @@ export default function Navbar() {
 
                     {dropdownOpen && (
                         <div className="dropdown-menu dropdown-menu-lg dropdown-menu-right show" style={{ position: 'absolute', right: 0 }}>
-                        <span className="dropdown-item-text">
-                            <i className="fas fa-user mr-2"></i>
-                            <strong>{capitalize(userProfile?.username ?? '')} </strong>
-                            <small className="text-muted">{userProfile?.email}</small>
-                        </span>
-                        <div className="dropdown-divider" />
+                            {/* <span className="dropdown-item-text"> */}
+                                <Link href="/profile" role="button" className="dropdown-item">
+                                    <i className="fas fa-user mr-2"></i>
+                                    <strong>{capitalize(userProfile?.username ?? '')} </strong>
+                                    <small className="text-muted">{userProfile?.email}</small>
+                                </Link>
+                                {/* <i className="fas fa-user mr-2"></i>
+                                <strong>{capitalize(userProfile?.username ?? '')} </strong>
+                                <small className="text-muted">{userProfile?.email}</small> */}
+                            {/* </span> */}
+                            <div className="dropdown-divider" />
                             <Button onClick={handleLogout} className="dropdown-item">
                                 <i className="fas fa-sign-out-alt mr-2"></i> Logout
                             </Button>

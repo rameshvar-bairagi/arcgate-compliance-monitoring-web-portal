@@ -108,7 +108,7 @@ export default function Sidebar() {
       </div>
 
       <div className="sidebar-custom">
-        <Link href="#" className="btn btn-link d-flex align-items-left disabled" onClick={handleLinkClick}>
+        <Link href="/" className="btn btn-link d-flex align-items-left" onClick={handleLinkClick}>
           <i className="fas fa-cog"></i>
           {/* <p className="hide-on-collapse"> Settings</p> */}
         </Link>
@@ -117,4 +117,3 @@ export default function Sidebar() {
     </aside>
   );
 }
-
