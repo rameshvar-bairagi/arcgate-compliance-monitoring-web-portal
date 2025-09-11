@@ -13,7 +13,8 @@ export const CustomPagination: React.FC<PaginationProps> = ({
   totalElements,
   onPageChange,
   onPageSizeChange,
-  pageSizeOptions = [10, 25, 50, 100, "All"],
+  pageSizeOptions = [10, 25, 50, 100],
+  // pageSizeOptions = [10, 25, 50, 100, "All"],
 }) => {
   const totalPages = Math.max(1, Math.ceil(totalElements / size));
 
@@ -56,6 +57,7 @@ export const CustomPagination: React.FC<PaginationProps> = ({
       <div className="row">
         <div className="form-group mb-0">
           <select
+            key={"pagination_dropdown"}
             className="form-control"
             value={size === -1 ? "All" : size}
             onChange={handlePageSizeChange}

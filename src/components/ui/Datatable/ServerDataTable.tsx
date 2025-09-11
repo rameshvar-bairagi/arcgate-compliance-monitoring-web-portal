@@ -35,7 +35,8 @@ export const ServerDataTable: React.FC<ServerDataTableProps> = ({
   totalElements,
   onPageChange,
   onPageSizeChange,
-  pageSizeOptions = [10, 25, 50, 100, "All"],
+  pageSizeOptions = [10, 25, 50, 100],
+  // pageSizeOptions = [10, 25, 50, 100, "All"],
   onSort,
   searching = true,
   order = 0, // this is which column default desc order. pass prop 0, 1, 2, 3, 4 etc
