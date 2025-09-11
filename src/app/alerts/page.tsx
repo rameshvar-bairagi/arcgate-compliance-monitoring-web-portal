@@ -44,7 +44,7 @@ export default function AlertsPage() {
   // Manage filters in state
   const [filters, setFilters] = useState<Filters>({
     date: dateOptions[0].value,
-    page: 0,
+    page: 1,
     size: 10,
     sortBy: "", // Add sort fields
     sortDirection: "desc" as 'asc' | 'desc',
@@ -195,7 +195,7 @@ export default function AlertsPage() {
       const newFilters = {
         ...prev,
         ...updates,
-        ...(resetPage ? { page: 0 } : {}),
+        ...(resetPage ? { page: 1 } : {}),
       };
 
       // Prevent unnecessary state updates
@@ -221,7 +221,7 @@ export default function AlertsPage() {
         ...filters,
         sortBy: columnField as string,
         sortDirection: direction,
-        page: 0, // reset to first page only when sorting changes
+        page: 1, // reset to first page only when sorting changes
       });
     }
   };
