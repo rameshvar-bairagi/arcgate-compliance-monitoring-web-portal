@@ -22,6 +22,7 @@ import { ReactNode } from 'react';
 // import Image from 'next/image';
 import ClientProviders from '@/components/common/ClientProviders';
 import ClientLayoutWrapper from '@/components/common/ClientLayoutWrapper';
+import BodyWrapper from "@/components/common/BodyWrapper";
 // import Wrapper from "@/components/ui/Wrapper";
 
 export const metadata: Metadata = {
@@ -55,14 +56,14 @@ export default function RootLayout({
           strategy="beforeInteractive"
         />
       </head>
-      <body>
+      <BodyWrapper>
           <ClientProviders>
             <ToastContainer position="top-right" autoClose={3000} />
             <ClientLayoutWrapper>
               {children}
             </ClientLayoutWrapper>
           </ClientProviders>
-      </body>
+      </BodyWrapper>
     </html>
   );
 }
