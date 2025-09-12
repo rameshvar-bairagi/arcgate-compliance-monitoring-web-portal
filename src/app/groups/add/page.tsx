@@ -25,6 +25,7 @@ import { getClientRuleById, CheckExistGroups } from "@/services/allApiService";
 import { PostGroupsRequestBody } from "@/types/groups";
 import { toast } from "react-toastify";
 import { useDebounce } from "use-debounce";
+import { downloadTemplate, parseFile } from "@/utils/fileUtils";
 
 interface GroupFormProps {
   defaultValues?: Partial<GroupFormData>;
@@ -60,6 +61,7 @@ export default function AddGroupPage({ defaultValues, id }: GroupFormProps) {
     watch,
     trigger,
     reset, // <-- for setting API data as defaults
+    setValue,
     formState: { errors, isValid },
   } = useForm<GroupFormData>({
     resolver: zodResolver(groupsSchema),
@@ -119,7 +121,12 @@ export default function AddGroupPage({ defaultValues, id }: GroupFormProps) {
   ];
 
   const { list: systemNameList } = useSystemNameList();
-  const systemNameOptions: Option[] = getIpOptions(systemNameList ?? []);
+  // const systemNameOptions: Option[] = getIpOptions(systemNameList ?? []);
+  const [systemNameOptions, setSystemNameOptions] = useState<Option[]>([]);
+
+  useEffect(() => {
+    setSystemNameOptions(getIpOptions(systemNameList ?? []));
+  }, [systemNameList]);
   // console.log(systemNameOptions, 'systemNameOptions');
 
   const { list: allComplianceRulesList } = useAllComplianceRulesList();
@@ -375,6 +382,71 @@ export default function AddGroupPage({ defaultValues, id }: GroupFormProps) {
                             );
                           }}
                         />
+
+                        <div className="flex items-center gap-2 mb-2">
+                          {/* Hidden file input */}
+                          <input
+                            id="import-file"
+                            type="file"
+                            accept=".csv, .xlsx"
+                            className="hidden d-none"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                try {
+                                  const ips = await parseFile(file); // e.g. ["192.168.0.1", "10.0.0.5"]
+
+                                  const existing = watch("systemIps") || [];
+
+                                  // Build missing options
+                                  const newOptions = ips
+                                    .filter((ip) => !systemNameOptions.some((opt) => opt.value === ip))
+                                    .map((ip) => ({ label: ip, value: ip }));
+
+                                  if (newOptions.length > 0) {
+                                    setSystemNameOptions((prev) => [...prev, ...newOptions]); // ✅ update state
+                                  }
+
+                                  // Merge unique IPs
+                                  const uniqueIps = Array.from(new Set([...existing, ...ips]));
+
+                                  // Update form values
+                                  setValue("systemIps", uniqueIps, { shouldValidate: true });
+
+                                  toast.success(`${ips.length} IPs imported successfully`);
+                                } catch (err: any) {
+                                  toast.error("Failed to parse file: " + err.message);
+                                }
+                              }
+                            }}
+                          />
+
+                          {/* Import button (triggers file input) */}
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-primary"
+                            onClick={() => document.getElementById("import-file")?.click()}
+                          >
+                            <i className="fa fa-upload"></i> Import
+                          </button>
+
+                          {/* Download template buttons */}
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-success"
+                            onClick={() => downloadTemplate("xlsx")}
+                          >
+                            <i className="fa fa-file-excel"></i> <i className="fa fa-download"></i>
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-secondary"
+                            onClick={() => downloadTemplate("csv")}
+                          >
+                            <i className="fa fa-file-csv"></i> <i className="fa fa-download"></i>
+                          </button>
+                        </div>
+
                         {errors.systemIps && (
                           <span className="invalid-feedback d-block">
                             {errors.systemIps?.message as string}
