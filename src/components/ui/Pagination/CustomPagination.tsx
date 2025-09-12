@@ -58,7 +58,7 @@ export const CustomPagination: React.FC<PaginationProps> = ({
         <div className="form-group mb-0">
           <select
             key={"pagination_dropdown"}
-            className="form-control"
+            className="custom-select custom-select-sm form-control form-control-sm"
             value={size === -1 ? "All" : size}
             onChange={handlePageSizeChange}
           >
