@@ -43,7 +43,7 @@ export default function AlertsPage() {
 
   // Manage filters in state
   const [filters, setFilters] = useState<Filters>({
-    date: dateOptions[0].value,
+    date: "7", //dateOptions[0].value,
     page: 1,
     size: 10,
     sortBy: "", // Add sort fields
@@ -249,7 +249,7 @@ export default function AlertsPage() {
                   actionHref="javascript:void(0);" 
                 /> */}
                 <CardBody className="p-0">
-                  <Row className='p-2 d-flex justify-content-end'>
+                  {/* <Row className='p-2 d-flex justify-content-end'>
                     <Col className="col-md-3 mt-2 mb-2">
                       <div className="form-group mb-0">
                         <Select
@@ -267,7 +267,7 @@ export default function AlertsPage() {
                         />
                       </div>
                     </Col>
-                  </Row>
+                  </Row> */}
                   <ServerDataTable 
                     // key={filters.size}
                     id={"alertsTable"} 
@@ -285,7 +285,7 @@ export default function AlertsPage() {
                       updateFilters({ size: newSize, page: 1 }); // reset page
                     }}
                     onSort={handleSort}
-                    searching={false}
+                    searching={true}
                     // order={6}
                     // columnDefs={[{ orderable: false, targets: [0, 1, 2, 3, 4, 5] }]}
                     exportButtons={["csv", "excel", "pdf", "print"]}
