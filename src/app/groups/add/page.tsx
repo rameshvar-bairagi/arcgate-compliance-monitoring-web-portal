@@ -171,6 +171,19 @@ export default function AddGroupPage({ defaultValues, id }: GroupFormProps) {
 
       const systemIpsValues = groupData.systemIps ?? [];
 
+      // Add missing saved IPs into options
+      const missingIps = systemIpsValues.filter(
+        (ip: string) => !systemNameOptions.some((opt) => opt.value === ip)
+      );
+
+      if (missingIps.length > 0) {
+        const newOptions = missingIps.map((ip: string) => ({
+          label: ip,
+          value: ip,
+        }));
+        setSystemNameOptions((prev) => [...prev, ...newOptions]);
+      }
+
       const mappedData: GroupFormData = {
         name: groupData.name ?? "",
         complianceRuleId: matchedComplianceRule?.value ?? "",
@@ -398,7 +411,6 @@ export default function AddGroupPage({ defaultValues, id }: GroupFormProps) {
 
                                   const existing = watch("systemIps") || [];
 
-                                  // Build missing options
                                   const newOptions = ips
                                     .filter((ip) => !systemNameOptions.some((opt) => opt.value === ip))
                                     .map((ip) => ({ label: ip, value: ip }));
@@ -407,10 +419,8 @@ export default function AddGroupPage({ defaultValues, id }: GroupFormProps) {
                                     setSystemNameOptions((prev) => [...prev, ...newOptions]); // ✅ update state
                                   }
 
-                                  // Merge unique IPs
                                   const uniqueIps = Array.from(new Set([...existing, ...ips]));
 
-                                  // Update form values
                                   setValue("systemIps", uniqueIps, { shouldValidate: true });
 
                                   toast.success(`${ips.length} IPs imported successfully`);
@@ -436,16 +446,21 @@ export default function AddGroupPage({ defaultValues, id }: GroupFormProps) {
                             className="btn btn-sm btn-outline-success"
                             onClick={() => downloadTemplate("xlsx")}
                           >
-                            <i className="fa fa-file-excel"></i> <i className="fa fa-download"></i>
+                            <i className="fa fa-file-excel"></i> <i className="fa fa-download"></i> Format
                           </button>
                           <button
                             type="button"
                             className="btn btn-sm btn-outline-secondary"
                             onClick={() => downloadTemplate("csv")}
                           >
-                            <i className="fa fa-file-csv"></i> <i className="fa fa-download"></i>
+                            <i className="fa fa-file-csv"></i> <i className="fa fa-download"></i> Format
                           </button>
                         </div>
+
+                        <small className="form-text text-muted">
+                          Only <strong>Excel (.xlsx)</strong> or <strong>CSV (.csv)</strong> files are supported.<br />
+                          The file must contain <strong>one column</strong> with header: <code>System IP</code>.
+                        </small>
 
                         {errors.systemIps && (
                           <span className="invalid-feedback d-block">
