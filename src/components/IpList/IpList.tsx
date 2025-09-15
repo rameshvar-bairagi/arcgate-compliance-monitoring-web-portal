@@ -9,14 +9,23 @@ import Heading from '../ui/Heading';
 interface DateIPList {
   date: string;
   ipList: string[];
+  nonActiveList: string[];
 }
 
 interface Props {
   data: DateIPList[];
+  type: 'Active' | 'Non-Active';
 }
 
-const IpList: React.FC<Props> = ({ data }) => {
+const IpList: React.FC<Props> = ({ data, type }) => {
   const [activeDate, setActiveDate] = useState<string>(data[0]?.date || '');
+
+  // Pick list based on type
+  const getList = (date: string) => {
+    const entry = data.find((d) => d.date === date);
+    if (!entry) return [];
+    return type === 'Active' ? entry.ipList : entry.nonActiveList;
+  };
 
   return (
     <div>
@@ -48,17 +57,15 @@ const IpList: React.FC<Props> = ({ data }) => {
         className="max-h-calc overflow-auto"
       >
         <Ul className="list-group">
-          {data
-            .find((entry) => entry.date === activeDate)
-            ?.ipList.map((ip, idx) => (
-              <Li
-                key={idx}
-                className="list-group-item py-1 px-2"
-                style={{ fontFamily: 'monospace' }}
-              >
-                {ip}
-              </Li>
-            ))}
+          {getList(activeDate).map((ip, idx) => (
+            <Li
+              key={idx}
+              className="list-group-item py-1 px-2"
+              style={{ fontFamily: 'monospace' }}
+            >
+              {ip}
+            </Li>
+          ))}
         </Ul>
       </div>
     </div>

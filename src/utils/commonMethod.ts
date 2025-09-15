@@ -27,6 +27,7 @@ export const getBadgeClass = (level: string = ''): string => {
 type ComplianceItem = {
   date: string;
   complianceCount: number;
+  nonActiveCount: number;
   nonComplianceCount: number;
   totalWorkStations: number;
 };
@@ -41,6 +42,7 @@ export const getComplianceTotals = (data?: ComplianceItem[]) => {
 
       acc.totalWorkStations += item.totalWorkStations || 0;
       acc.activeWorkStations += compliance + nonCompliance;
+      acc.nonActiveCount += item.nonActiveCount || 0;
       acc.complianceCount += compliance;
       acc.nonComplianceCount += nonCompliance;
       return acc;
@@ -48,6 +50,7 @@ export const getComplianceTotals = (data?: ComplianceItem[]) => {
     {
       totalWorkStations: 0,
       activeWorkStations: 0,
+      nonActiveCount: 0,
       complianceCount: 0,
       nonComplianceCount: 0,
     }

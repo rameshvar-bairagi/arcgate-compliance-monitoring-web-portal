@@ -150,6 +150,13 @@ div.dt-container > div.row {
   }
 }
 
+@media (min-width: 992px) {
+  .col-lg-5th {
+    flex: 0 0 20%;
+    max-width: 20%;
+  }
+}
+
 .dark-mode .react-select__control, .dark-mode .react-select__menu {
   /* background: transparent; */
   background-color: #343a40;

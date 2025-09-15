@@ -42,6 +42,7 @@ export default function HomePage() {
   // const [selectedDate, setSelectedDate] = useState<Option | null>(dateOptions[0]); // default to Today
   const [selectedDate, setSelectedDate] = useState<Option<string> | null>(dateOptions[0]);
   const [isActiveWorkstationModalOpen, setIsActiveWorkstationModalOpen] = useState(false);
+  const [isNonActiveWorkstationModalOpen, setIsNonActiveWorkstationModalOpen] = useState(false);
   const [modalType, setModalType] = useState<'compliant' | 'non-compliant' | null>(null);
   // console.log(isModalOpen, 'isModalOpen')
 
@@ -222,7 +223,7 @@ export default function HomePage() {
                   Call Dashboard and Alert API
                 </button>
               </Col> */}
-              <Col className="col-12 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+              <Col className="col-12 col-sm-6 col-md-4 col-lg-5th">
                 {/* <SmallBox
                   value={500}
                   label="Workstations"
@@ -238,7 +239,7 @@ export default function HomePage() {
                   // unit="%"
                 />
               </Col>
-              <Col className="col-12 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+              <Col className="col-12 col-sm-6 col-md-4 col-lg-5th">
                 {/* <SmallBox
                   value={500}
                   label="Workstations"
@@ -255,8 +256,25 @@ export default function HomePage() {
                   onClick={() => setIsActiveWorkstationModalOpen(true)}
                 />
               </Col>
+              <Col className="col-12 col-sm-6 col-md-4 col-lg-5th">
+                {/* <SmallBox
+                  value={500}
+                  label="Workstations"
+                  iconClass="fas fa-building"
+                  bgColorClass="bg-info"
+                  link="/"
+                /> */}
+                <InfoBox
+                  iconClass="fas fa-network-wired"
+                  bgColorClass="bg-gray"
+                  label="Non-Active Workstation"
+                  value={getComplianceTotals(complianceData)?.nonActiveCount || 0}
+                  // unit="%"
+                  onClick={() => setIsNonActiveWorkstationModalOpen(true)}
+                />
+              </Col>
 
-              <Col className="col-12 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+              <Col className="col-12 col-sm-6 col-md-4 col-lg-5th">
                 {/* <SmallBox
                   value={2500}
                   label="Compliant Systems"
@@ -274,7 +292,7 @@ export default function HomePage() {
                 />
               </Col>
 
-              <Col className="col-12 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+              <Col className="col-12 col-sm-6 col-md-4 col-lg-5th">
                 {/* <SmallBox
                   value={700}
                   label="Non-Compliant Systems"
@@ -407,7 +425,21 @@ export default function HomePage() {
           //   setIsModalOpen(false);
           // }}
         >
-          <IpList data={complianceData} />
+          <IpList data={complianceData} type={"Active"} />
+        </Modal>
+
+        <Modal
+          title="Non-Active Workstation"
+          isOpen={isNonActiveWorkstationModalOpen}
+          onClose={() => setIsNonActiveWorkstationModalOpen(false)}
+          size="md"
+          // size="md" | "sm" | "lg" | "xl"
+          // onSave={() => {
+          //   alert('Changes saved!');
+          //   setIsModalOpen(false);
+          // }}
+        >
+          <IpList data={complianceData} type={"Non-Active"} />
         </Modal>
 
         <Modal
