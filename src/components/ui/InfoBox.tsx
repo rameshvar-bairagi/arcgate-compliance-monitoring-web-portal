@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
+import { useAppSelector } from '@/hooks/useRedux';
 import { importWorkStations } from '@/services/allApiService';
 import { parseFile } from '@/utils/fileUtils';
 import React from 'react';
@@ -25,7 +26,8 @@ const InfoBox: React.FC<InfoBoxProps> = ({
   onClick,
   importAction = false,
 }) => {
-
+  const userProfile = useAppSelector((state) => state.auth.userProfile);
+  // console.log(userProfile,'userProfile');
   const sendToApi = async (ips: string[]) => {
     try {
       const payload = {
@@ -61,7 +63,7 @@ const InfoBox: React.FC<InfoBoxProps> = ({
           {value} {unit && <small>{unit}</small>}
 
           {/* Import button (triggers file input) */}
-          {importAction && (
+          {importAction && userProfile?.roles === "ROLE_ADMIN" && (
             <>
               <input
                 id="import-file"

@@ -31,6 +31,7 @@ import IpList from '@/components/IpList/IpList';
 import CompliantTableGeneric from "@/components/CompliantTableGeneric/CompliantTableGeneric";
 import { Option } from '@/types/dashboard';
 import { useAllComplianceRulesList, useClientGroupList } from "@/hooks/useOptionList";
+import { useAppSelector } from "@/hooks/useRedux";
 
 // interface Option {
 //   value: string;
@@ -45,6 +46,7 @@ export default function HomePage() {
   const [isNonActiveWorkstationModalOpen, setIsNonActiveWorkstationModalOpen] = useState(false);
   const [modalType, setModalType] = useState<'compliant' | 'non-compliant' | null>(null);
   // console.log(isModalOpen, 'isModalOpen')
+  const userProfile = useAppSelector((state) => state.auth.userProfile);
 
   const [requestBody, setRequestBody] = useState<ComplianceRequestBody>({
     date: selectedDate?.value || '',
@@ -257,23 +259,25 @@ export default function HomePage() {
                   onClick={() => setIsActiveWorkstationModalOpen(true)}
                 />
               </Col>
-              <Col className="col-12 col-sm-6 col-md-4 col-lg-5th">
-                {/* <SmallBox
-                  value={500}
-                  label="Workstations"
-                  iconClass="fas fa-building"
-                  bgColorClass="bg-info"
-                  link="/"
-                /> */}
-                <InfoBox
-                  iconClass="fas fa-network-wired"
-                  bgColorClass="bg-gray"
-                  label="Non-Active Workstation"
-                  value={getComplianceTotals(complianceData)?.nonActiveCount || 0}
-                  // unit="%"
-                  onClick={() => setIsNonActiveWorkstationModalOpen(true)}
-                />
-              </Col>
+              {/* {userProfile?.roles === "ROLE_ADMIN" && ( */}
+                <Col className="col-12 col-sm-6 col-md-4 col-lg-5th">
+                  {/* <SmallBox
+                    value={500}
+                    label="Workstations"
+                    iconClass="fas fa-building"
+                    bgColorClass="bg-info"
+                    link="/"
+                  /> */}
+                  <InfoBox
+                    iconClass="fas fa-network-wired"
+                    bgColorClass="bg-gray"
+                    label="Non-Active Workstation"
+                    value={getComplianceTotals(complianceData)?.nonActiveCount || 0}
+                    // unit="%"
+                    onClick={() => setIsNonActiveWorkstationModalOpen(true)}
+                  />
+                </Col>
+              {/* )} */}
 
               <Col className="col-12 col-sm-6 col-md-4 col-lg-5th">
                 {/* <SmallBox
