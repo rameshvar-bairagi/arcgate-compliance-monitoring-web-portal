@@ -127,7 +127,7 @@ export default function SystemsPage() {
     list: systemNameList,
     loading: systemNameListLoading,
     error: systemNameListError
-  } = useSystemNameList();
+  } = useSystemNameList(filters.date);
   const systemNameOptions: Option[] = getIpOptions(systemNameList ?? []);
 
   const { 

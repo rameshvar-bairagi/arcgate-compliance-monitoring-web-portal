@@ -120,7 +120,7 @@ export default function AddGroupPage({ defaultValues, id }: GroupFormProps) {
     { label: "System IP`s", value: "SYSTEM_IP" },
   ];
 
-  const { list: systemNameList } = useSystemNameList();
+  const { list: systemNameList } = useSystemNameList("7");
   // const systemNameOptions: Option[] = getIpOptions(systemNameList ?? []);
   const [systemNameOptions, setSystemNameOptions] = useState<Option[]>([]);
 

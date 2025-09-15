@@ -12,9 +12,16 @@ export const fetchSystems = async (body: SystemsRequestBody): Promise<SystemsApi
   return res.data;
 };
 
-export const fetchSystemNameList = async (): Promise<any | null> => {
-  const res = await api.get('/systemNameList'); // adjust endpoint
-  // if (process.env.NODE_ENV === 'development') console.error('fetchSystemNameList', res.data);
+// export const fetchSystemNameList = async (): Promise<any | null> => {
+//   const res = await api.get('/systemNameList'); // adjust endpoint
+//   // if (process.env.NODE_ENV === 'development') console.error('fetchSystemNameList', res.data);
+//   return res.data;
+// };
+
+export const fetchSystemNameList = async (date?: string): Promise<any[]> => {
+  const res = await api.get('/systemNameList', {
+    params: date ? { date } : {}, // only include param if provided
+  });
   return res.data;
 };
 

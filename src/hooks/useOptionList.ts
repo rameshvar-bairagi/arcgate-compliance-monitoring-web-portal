@@ -3,8 +3,16 @@
 import { useFetchList } from '@/hooks/useFetchList';
 import { fetchSystemNameList, fetchMetricsNameList, fetchComplianceRulesList, fetchAllComplianceRulesList, fetchClientGroupList, fetchScheduledReportsList } from '@/services/allApiService';
 
-export const useSystemNameList = (enabled = true) =>
-  useFetchList<any>(['systemNameList'], fetchSystemNameList, enabled);
+// export const useSystemNameList = (enabled = true) =>
+//   useFetchList<any>(['systemNameList'], fetchSystemNameList, enabled);
+
+export function useSystemNameList(date: string) {
+  return useFetchList<any>(
+    ['systemNameList', date],        // include date in query key for caching
+    () => fetchSystemNameList(date), // lazy function, not executed yet
+    !!date                           // only run when date exists
+  );
+}
 
 export const useMetricsNameList = (enabled = true) =>
   useFetchList<any>(['metricsNameList'], fetchMetricsNameList, enabled);
