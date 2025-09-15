@@ -237,6 +237,7 @@ export default function HomePage() {
                   label="Total Workstations"
                   value={getComplianceTotals(complianceData)?.totalWorkStations || 0}
                   // unit="%"
+                  importAction={true}
                 />
               </Col>
               <Col className="col-12 col-sm-6 col-md-4 col-lg-5th">

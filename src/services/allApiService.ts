@@ -145,3 +145,9 @@ export const updateScheduledReport = async (body: any): Promise<{ data: any; sta
   const res = await api.put(`/reports/${body.id}`, body);
   return { data: res.data, status: res.status, statusText: res.statusText };
 };
+
+export const importWorkStations = async (body: any): Promise<any | null> => {
+  const res = await api.post('/workstations', body); // adjust endpoint
+  // if (process.env.NODE_ENV === 'development') console.error('fetchSystems', res.data);
+  return res.data;
+};
