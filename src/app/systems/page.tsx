@@ -185,12 +185,12 @@ export default function SystemsPage() {
       }
 
       // Update sort and reset to first page
-      updateFilters({
-        ...filters,
-        sortBy: columnField as string,
-        sortDirection: direction,
-        page: 1, // reset to first page only when sorting changes
-      });
+      // updateFilters({
+      //   ...filters,
+      //   sortBy: columnField as string,
+      //   sortDirection: direction,
+      //   page: 1, // reset to first page only when sorting changes
+      // });
     }
   };
 
