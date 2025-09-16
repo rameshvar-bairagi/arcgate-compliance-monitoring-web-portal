@@ -72,7 +72,7 @@ export const ServerDataTable: React.FC<ServerDataTableProps> = ({
         processing: true,
         searching: searching,
         ordering: !!onSort, // Enable ordering only if onSort callback is provided
-        // order: [[order, "desc"]],
+        order: [[order, "desc"]],
         columnDefs: columnDefs,
         buttons: exportButtons,
         dom: domLayout,

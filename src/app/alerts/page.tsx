@@ -286,7 +286,7 @@ export default function AlertsPage() {
                     }}
                     onSort={handleSort}
                     searching={true}
-                    // order={6}
+                    order={5}
                     // columnDefs={[{ orderable: false, targets: [0, 1, 2, 3, 4, 5] }]}
                     exportButtons={["csv", "excel", "pdf", "print"]}
                     domLayout="Bfrtip"
